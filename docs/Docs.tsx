@@ -96,8 +96,10 @@ export function Docs() {
           <code>npm install agent-state-ui</code>
         </pre>
         <p className="head__status">
-          Pre-release. Not published to npm yet. Source on{' '}
-          <a href="https://github.com/ladanjohari/agent-state-ui">GitHub</a>.
+          <a href="https://www.npmjs.com/package/agent-state-ui">v0.1.0 on npm</a>
+          {'. Source on '}
+          <a href="https://github.com/ladanjohari/agent-state-ui">GitHub</a>
+          {'. MIT licensed.'}
         </p>
       </header>
 
