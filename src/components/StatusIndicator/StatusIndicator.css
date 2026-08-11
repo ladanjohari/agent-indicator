@@ -1,0 +1,116 @@
+/* StatusIndicator
+ *
+ * Every colour below is a token you can override. What you cannot override is
+ * which state means what, the ring on error, or the Reduce Motion behaviour.
+ * You own the values, this component owns the meaning.
+ *
+ * idle, working and running are drawn from currentColor, so they inherit your
+ * text colour and are correct in light and dark without you configuring
+ * anything.
+ */
+
+.asu-status {
+  --asu-color-idle: color-mix(in srgb, currentColor 18%, transparent);
+  --asu-color-working: currentColor;
+  --asu-color-running: currentColor;
+  --asu-color-needs-you: #e8952a;
+  --asu-color-error: #ff3b30;
+  --asu-color-done: #34c759;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  line-height: 1;
+}
+
+.asu-status--sm {
+  --asu-dot-size: 6px;
+}
+
+.asu-status--md {
+  --asu-dot-size: 8px;
+}
+
+.asu-status--lg {
+  --asu-dot-size: 12px;
+}
+
+.asu-status__dot {
+  flex: none;
+  width: var(--asu-dot-size);
+  height: var(--asu-dot-size);
+  border-radius: 50%;
+  background: var(--asu-dot-color, var(--asu-color-idle));
+  /* Returning from the breath is quick and one way, so a session that stops
+     running settles rather than fading out over most of a second. */
+  transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+}
+
+.asu-status[data-state='idle'] .asu-status__dot {
+  --asu-dot-color: var(--asu-color-idle);
+}
+
+.asu-status[data-state='working'] .asu-status__dot {
+  --asu-dot-color: var(--asu-color-working);
+}
+
+.asu-status[data-state='running'] .asu-status__dot {
+  --asu-dot-color: var(--asu-color-running);
+  /* The only motion in the component. Scale as well as opacity, because
+     something that changes size reads as alive, and something that only
+     changes brightness reads as blinking. */
+  animation: asu-breathe 1.6s ease-in-out infinite;
+}
+
+.asu-status[data-state='needsYou'] .asu-status__dot {
+  --asu-dot-color: var(--asu-color-needs-you);
+}
+
+.asu-status[data-state='done'] .asu-status__dot {
+  --asu-dot-color: var(--asu-color-done);
+}
+
+/* Error is a ring, not a fill. Amber and red collapse into one colour for
+   people who cannot separate them, so the difference has to be shape. */
+.asu-status[data-state='error'] .asu-status__dot {
+  background: transparent;
+  border: max(1px, calc(var(--asu-dot-size) / 3.5)) solid var(--asu-color-error);
+}
+
+@keyframes asu-breathe {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.15;
+    transform: scale(0.35);
+  }
+}
+
+/* Reduce Motion is not a setting this component offers, it is one it obeys.
+   The dot still shows the state, it just stops breathing. */
+@media (prefers-reduced-motion: reduce) {
+  .asu-status[data-state='running'] .asu-status__dot {
+    animation: none;
+  }
+
+  .asu-status__dot {
+    transition: none;
+  }
+}
+
+/* Visible to screen readers, invisible to eyes. Used when showLabel is false,
+   so the state is never communicated by colour alone. */
+.asu-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  border: 0;
+  clip-path: inset(50%);
+}
