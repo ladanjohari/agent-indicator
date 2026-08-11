@@ -50,6 +50,15 @@ light and dark.
 per component. Its own Vite app in `docs/`, deployed by
 `.github/workflows/pages.yml`.
 
+**Done.** Pushed and public, 11 August 2026. CI green, docs site deployed.
+
+- Repo: https://github.com/ladanjohari/agent-state-ui
+- Docs: https://ladanjohari.com/agent-state-ui/
+
+The docs live under the portfolio domain rather than github.io, because
+GitHub Pages serves project sites from whatever custom domain the account
+already has, and hers is ladanjohari.com.
+
 **Next.** Publish to npm, which makes the install line real.
 
 ## Decided, do not reopen
