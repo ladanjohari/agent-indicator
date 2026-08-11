@@ -1,6 +1,50 @@
-import { StatusIndicator } from '../src'
-import type { SessionState } from '../src'
+import { useState } from 'react'
+import { ApprovalGate, StatusIndicator } from '../src'
+import type { ApprovalRequest, SessionState } from '../src'
 import { SessionDemo } from './SessionDemo'
+
+// The refactor example the design was argued over: three safe things and two
+// that cannot be undone.
+const REQUESTS: ApprovalRequest[] = [
+  { id: 'write', consequence: 'Writes 3 files in src', detail: 'src/auth.ts, src/session.ts, src/index.ts', reversible: true },
+  { id: 'test', consequence: 'Runs the test suite', detail: 'npm test', reversible: true },
+  { id: 'commit', consequence: 'Commits locally. Nothing is pushed.', detail: 'git commit -am "refactor auth"', reversible: true },
+  { id: 'delete', consequence: 'Deletes the legacy folder and everything in it', detail: 'rm -rf legacy', reversible: false },
+  { id: 'push', consequence: 'Force pushes to main, overwriting what is there', detail: 'git push --force origin main', reversible: false },
+]
+
+function GateDemo() {
+  const [pending, setPending] = useState(REQUESTS)
+  const [log, setLog] = useState<string[]>([])
+
+  const settle = (verb: string) => (ids: string[]) => {
+    setPending((current) => current.filter((request) => !ids.includes(request.id)))
+    setLog((current) => [...current, `${verb}: ${ids.join(', ')}`])
+  }
+
+  return (
+    <>
+      <ApprovalGate
+        requests={pending}
+        onApprove={settle('approved')}
+        onDeny={settle('denied')}
+        onDismiss={() => setLog((current) => [...current, 'dismissed, nothing decided'])}
+      />
+      {log.length > 0 ? (
+        <ul className="wb-log">
+          {log.map((line, index) => (
+            <li key={index}>{line}</li>
+          ))}
+        </ul>
+      ) : null}
+      {pending.length === 0 ? (
+        <button type="button" className="wb-reset" onClick={() => setPending(REQUESTS)}>
+          Reset
+        </button>
+      ) : null}
+    </>
+  )
+}
 
 // The local workbench. Not part of the published package.
 //
@@ -40,6 +84,18 @@ export function Workbench() {
             </li>
           ))}
         </ul>
+      </section>
+
+      <section className="wb-panel">
+        <h2>ApprovalGate</h2>
+        <p className="wb-note">
+          Three reversible requests batch into one button. The two that cannot be
+          undone sit below the rule with no approve control at all until you open
+          them. Dismissing decides nothing and everything stays pending.
+        </p>
+        <div className="wb-gate">
+          <GateDemo />
+        </div>
       </section>
 
       <section className="wb-panel">

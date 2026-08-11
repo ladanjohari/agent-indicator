@@ -6,3 +6,6 @@
 
 export { StatusIndicator } from './components/StatusIndicator/StatusIndicator'
 export type { SessionState, StatusIndicatorProps } from './components/StatusIndicator/types'
+
+export { ApprovalGate } from './components/ApprovalGate/ApprovalGate'
+export type { ApprovalGateProps, ApprovalRequest } from './components/ApprovalGate/types'

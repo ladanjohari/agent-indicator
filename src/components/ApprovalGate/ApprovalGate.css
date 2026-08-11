@@ -1,0 +1,180 @@
+/* ApprovalGate
+ *
+ * Colours are tokens you can retint. What you cannot change is that
+ * irreversible requests never batch and have no approve control until opened.
+ *
+ * Neutrals are mixed from currentColor, so the gate is correct in light and
+ * dark without being configured.
+ */
+
+.asu-gate {
+  --asu-gate-rule: color-mix(in srgb, currentColor 12%, transparent);
+  --asu-gate-quiet: color-mix(in srgb, currentColor 60%, transparent);
+  --asu-gate-fill: color-mix(in srgb, currentColor 6%, transparent);
+  --asu-gate-danger: #ff3b30;
+
+  display: block;
+  max-width: 480px;
+  border: 1px solid var(--asu-gate-rule);
+  border-radius: 14px;
+  padding: 16px;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.asu-gate__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.asu-gate__title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.asu-gate__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.asu-gate__item {
+  display: grid;
+  gap: 4px;
+}
+
+.asu-gate__consequence {
+  display: block;
+}
+
+.asu-gate__detail {
+  display: block;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  color: var(--asu-gate-quiet);
+  overflow-wrap: anywhere;
+}
+
+.asu-gate__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+/* Buttons. Capsules, 1px rules, no shadows and no gradients. */
+.asu-gate__approve,
+.asu-gate__approve-one,
+.asu-gate__deny,
+.asu-gate__dismiss {
+  font: inherit;
+  border-radius: 999px;
+  border: 1px solid var(--asu-gate-rule);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  transition: background-color 0.15s ease-out;
+}
+
+.asu-gate__approve,
+.asu-gate__approve-one,
+.asu-gate__deny {
+  padding: 7px 15px;
+  font-size: 13px;
+}
+
+.asu-gate__approve {
+  background: var(--asu-gate-fill);
+  font-weight: 500;
+}
+
+/* The single destructive approval is deliberately not a primary button. It
+   should not look like the thing you were already pressing. */
+.asu-gate__approve-one {
+  border-color: color-mix(in srgb, var(--asu-gate-danger) 55%, transparent);
+  color: var(--asu-gate-danger);
+}
+
+.asu-gate__dismiss {
+  border: 0;
+  padding: 0;
+  font-size: 13px;
+  color: var(--asu-gate-quiet);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.asu-gate__approve:hover,
+.asu-gate__deny:hover {
+  background: color-mix(in srgb, currentColor 9%, transparent);
+}
+
+.asu-gate__approve-one:hover {
+  background: color-mix(in srgb, var(--asu-gate-danger) 10%, transparent);
+}
+
+.asu-gate__approve:focus-visible,
+.asu-gate__approve-one:focus-visible,
+.asu-gate__deny:focus-visible,
+.asu-gate__dismiss:focus-visible,
+.asu-gate__reveal:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* The irreversible group. */
+.asu-gate__group--destructive {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--asu-gate-rule);
+}
+
+.asu-gate__note {
+  margin: 0 0 12px;
+  font-size: 12px;
+  color: var(--asu-gate-danger);
+}
+
+.asu-gate__reveal {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  font: inherit;
+  text-align: left;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.asu-gate__reveal-hint {
+  flex: none;
+  font-size: 12px;
+  color: var(--asu-gate-quiet);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.asu-gate__revealed {
+  margin-top: 8px;
+  padding-left: 12px;
+  border-left: 2px solid color-mix(in srgb, var(--asu-gate-danger) 40%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .asu-gate__approve,
+  .asu-gate__approve-one,
+  .asu-gate__deny,
+  .asu-gate__dismiss {
+    transition: none;
+  }
+}

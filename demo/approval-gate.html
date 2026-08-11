@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ApprovalGate</title>
+    <style>
+      :root {
+        --bg: #f7f6f3;
+        --ink: #111111;
+        --mid: #6b6b6b;
+        --rule: rgba(0, 0, 0, 0.1);
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root { --bg: #1a1a1a; --ink: #e8e8e8; --mid: #9a9a9a; --rule: #333333; }
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+        font-size: 15px;
+        line-height: 1.55;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      main { max-width: 1060px; margin: 0 auto; padding: 48px 24px 72px; }
+      h1 { font-size: 20px; font-weight: 500; margin: 0 0 8px; letter-spacing: -0.01em; }
+      p.lede { color: var(--mid); margin: 0 0 6px; max-width: 660px; }
+
+      .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; margin-top: 36px; }
+      @media (max-width: 860px) { .pair { grid-template-columns: 1fr; } }
+
+      .step-title { font-size: 13px; font-weight: 500; margin: 0 0 3px; }
+      .step-note { font-size: 12px; color: var(--mid); margin: 0 0 16px; }
+
+      /* The component's own styles, copied exactly. */
+      .asu-gate {
+        --asu-gate-rule: color-mix(in srgb, currentColor 12%, transparent);
+        --asu-gate-quiet: color-mix(in srgb, currentColor 60%, transparent);
+        --asu-gate-fill: color-mix(in srgb, currentColor 6%, transparent);
+        --asu-gate-danger: #ff3b30;
+        display: block;
+        border: 1px solid var(--asu-gate-rule);
+        border-radius: 14px;
+        padding: 16px;
+        font-size: 14px;
+        line-height: 1.45;
+      }
+
+      .asu-gate__head {
+        display: flex; align-items: baseline; justify-content: space-between;
+        gap: 16px; margin-bottom: 14px;
+      }
+      .asu-gate__title { margin: 0; font-size: 14px; font-weight: 500; }
+      .asu-gate__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+      .asu-gate__item { display: grid; gap: 4px; }
+      .asu-gate__consequence { display: block; }
+      .asu-gate__detail {
+        display: block;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 12px; color: var(--asu-gate-quiet); overflow-wrap: anywhere;
+      }
+      .asu-gate__actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+
+      .asu-gate__approve, .asu-gate__approve-one, .asu-gate__deny, .asu-gate__dismiss {
+        font: inherit; border-radius: 999px; border: 1px solid var(--asu-gate-rule);
+        background: transparent; color: inherit; cursor: pointer;
+      }
+      .asu-gate__approve, .asu-gate__approve-one, .asu-gate__deny {
+        padding: 7px 15px; font-size: 13px;
+      }
+      .asu-gate__approve { background: var(--asu-gate-fill); font-weight: 500; }
+      .asu-gate__approve-one {
+        border-color: color-mix(in srgb, var(--asu-gate-danger) 55%, transparent);
+        color: var(--asu-gate-danger);
+      }
+      .asu-gate__dismiss {
+        border: 0; padding: 0; font-size: 13px; color: var(--asu-gate-quiet);
+        text-decoration: underline; text-underline-offset: 3px;
+      }
+
+      .asu-gate__group--destructive {
+        margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--asu-gate-rule);
+      }
+      .asu-gate__note { margin: 0 0 12px; font-size: 12px; color: var(--asu-gate-danger); }
+      .asu-gate__reveal {
+        display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
+        width: 100%; font: inherit; text-align: left; padding: 0; border: 0;
+        background: transparent; color: inherit; cursor: pointer;
+      }
+      .asu-gate__reveal-hint {
+        flex: none; font-size: 12px; color: var(--asu-gate-quiet);
+        text-decoration: underline; text-underline-offset: 3px;
+      }
+      .asu-gate__revealed {
+        margin-top: 8px; padding-left: 12px;
+        border-left: 2px solid color-mix(in srgb, var(--asu-gate-danger) 40%, transparent);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>ApprovalGate</h1>
+      <p class="lede">
+        The agent finished a refactor and wants to do five things. Three can be
+        undone. Two cannot.
+      </p>
+      <p class="lede">
+        The three safe ones batch into a single button, because being asked three
+        separate times about three safe things is what teaches people to stop
+        reading. The two that cannot be undone have no approve button at all
+        until they are opened, so the motion that clears the safe ones cannot
+        reach them.
+      </p>
+
+      <div class="pair">
+        <section>
+          <p class="step-title">As it arrives</p>
+          <p class="step-note">Nothing destructive can be approved from this screen.</p>
+
+          <section class="asu-gate">
+            <header class="asu-gate__head">
+              <h2 class="asu-gate__title">Waiting for you</h2>
+              <button type="button" class="asu-gate__dismiss">Not now</button>
+            </header>
+
+            <div class="asu-gate__group">
+              <ul class="asu-gate__list">
+                <li class="asu-gate__item">
+                  <span class="asu-gate__consequence">Writes 3 files in src</span>
+                  <code class="asu-gate__detail">src/auth.ts, src/session.ts, src/index.ts</code>
+                </li>
+                <li class="asu-gate__item">
+                  <span class="asu-gate__consequence">Runs the test suite</span>
+                  <code class="asu-gate__detail">npm test</code>
+                </li>
+                <li class="asu-gate__item">
+                  <span class="asu-gate__consequence">Commits locally. Nothing is pushed.</span>
+                  <code class="asu-gate__detail">git commit -am "refactor auth"</code>
+                </li>
+              </ul>
+              <div class="asu-gate__actions">
+                <button type="button" class="asu-gate__approve">Approve all 3</button>
+                <button type="button" class="asu-gate__deny">Deny</button>
+              </div>
+            </div>
+
+            <div class="asu-gate__group asu-gate__group--destructive">
+              <p class="asu-gate__note">These cannot be undone. Each one is answered on its own.</p>
+              <ul class="asu-gate__list">
+                <li class="asu-gate__item">
+                  <button type="button" class="asu-gate__reveal" aria-expanded="false">
+                    <span class="asu-gate__consequence">Deletes the legacy folder and everything in it</span>
+                    <span class="asu-gate__reveal-hint">Review</span>
+                  </button>
+                </li>
+                <li class="asu-gate__item">
+                  <button type="button" class="asu-gate__reveal" aria-expanded="false">
+                    <span class="asu-gate__consequence">Force pushes to main, overwriting what is there</span>
+                    <span class="asu-gate__reveal-hint">Review</span>
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+
+        <section>
+          <p class="step-title">After opening the delete</p>
+          <p class="step-note">Only now does an approve control exist, and only for that one.</p>
+
+          <section class="asu-gate">
+            <header class="asu-gate__head">
+              <h2 class="asu-gate__title">Waiting for you</h2>
+              <button type="button" class="asu-gate__dismiss">Not now</button>
+            </header>
+
+            <div class="asu-gate__group">
+              <ul class="asu-gate__list">
+                <li class="asu-gate__item">
+                  <span class="asu-gate__consequence">Writes 3 files in src</span>
+                  <code class="asu-gate__detail">src/auth.ts, src/session.ts, src/index.ts</code>
+                </li>
+                <li class="asu-gate__item">
+                  <span class="asu-gate__consequence">Runs the test suite</span>
+                  <code class="asu-gate__detail">npm test</code>
+                </li>
+                <li class="asu-gate__item">
+                  <span class="asu-gate__consequence">Commits locally. Nothing is pushed.</span>
+                  <code class="asu-gate__detail">git commit -am "refactor auth"</code>
+                </li>
+              </ul>
+              <div class="asu-gate__actions">
+                <button type="button" class="asu-gate__approve">Approve all 3</button>
+                <button type="button" class="asu-gate__deny">Deny</button>
+              </div>
+            </div>
+
+            <div class="asu-gate__group asu-gate__group--destructive">
+              <p class="asu-gate__note">These cannot be undone. Each one is answered on its own.</p>
+              <ul class="asu-gate__list">
+                <li class="asu-gate__item">
+                  <button type="button" class="asu-gate__reveal" aria-expanded="true">
+                    <span class="asu-gate__consequence">Deletes the legacy folder and everything in it</span>
+                    <span class="asu-gate__reveal-hint">Close</span>
+                  </button>
+                  <div class="asu-gate__revealed">
+                    <code class="asu-gate__detail">rm -rf legacy</code>
+                    <div class="asu-gate__actions">
+                      <button type="button" class="asu-gate__approve-one">Approve this one</button>
+                      <button type="button" class="asu-gate__deny">Deny</button>
+                    </div>
+                  </div>
+                </li>
+                <li class="asu-gate__item">
+                  <button type="button" class="asu-gate__reveal" aria-expanded="false">
+                    <span class="asu-gate__consequence">Force pushes to main, overwriting what is there</span>
+                    <span class="asu-gate__reveal-hint">Review</span>
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+      </div>
+    </main>
+  </body>
+</html>

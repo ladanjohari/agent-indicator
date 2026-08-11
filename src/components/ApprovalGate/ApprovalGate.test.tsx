@@ -1,0 +1,104 @@
+import { describe, expect, it, vi } from 'vitest'
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { ApprovalGate } from './ApprovalGate'
+import type { ApprovalRequest } from './types'
+
+const SAFE: ApprovalRequest[] = [
+  { id: 'write', consequence: 'Writes 3 files in src', reversible: true },
+  { id: 'test', consequence: 'Runs the test suite', detail: 'npm test', reversible: true },
+  { id: 'commit', consequence: 'Commits locally, nothing is pushed', reversible: true },
+]
+
+const DESTRUCTIVE: ApprovalRequest[] = [
+  { id: 'delete', consequence: 'Deletes the legacy folder', detail: 'rm -rf legacy', reversible: false },
+  { id: 'push', consequence: 'Force pushes to main', reversible: false },
+]
+
+describe('ApprovalGate', () => {
+  it('renders nothing when there is nothing to decide', () => {
+    const { container } = render(
+      <ApprovalGate requests={[]} onApprove={vi.fn()} onDeny={vi.fn()} />,
+    )
+    expect(container).toBeEmptyDOMElement()
+  })
+
+  it('batches the reversible ones into a single decision', async () => {
+    const onApprove = vi.fn()
+    render(<ApprovalGate requests={SAFE} onApprove={onApprove} onDeny={vi.fn()} />)
+
+    await userEvent.click(screen.getByRole('button', { name: 'Approve all 3' }))
+    expect(onApprove).toHaveBeenCalledWith(['write', 'test', 'commit'])
+  })
+
+  // The rule this whole component exists to enforce.
+  it('never lets a destructive request into the batch', async () => {
+    const onApprove = vi.fn()
+    render(
+      <ApprovalGate
+        requests={[...SAFE, ...DESTRUCTIVE]}
+        onApprove={onApprove}
+        onDeny={vi.fn()}
+      />,
+    )
+
+    await userEvent.click(screen.getByRole('button', { name: 'Approve all 3' }))
+    expect(onApprove).toHaveBeenCalledWith(['write', 'test', 'commit'])
+    expect(onApprove.mock.calls[0][0]).not.toContain('delete')
+    expect(onApprove.mock.calls[0][0]).not.toContain('push')
+  })
+
+  it('gives a destructive request no approve control until it is opened', async () => {
+    render(
+      <ApprovalGate requests={DESTRUCTIVE} onApprove={vi.fn()} onDeny={vi.fn()} />,
+    )
+
+    expect(screen.queryByRole('button', { name: 'Approve this one' })).not.toBeInTheDocument()
+
+    await userEvent.click(screen.getByRole('button', { name: /Deletes the legacy folder/ }))
+    expect(screen.getByRole('button', { name: 'Approve this one' })).toBeInTheDocument()
+  })
+
+  it('approves a destructive request on its own, never with others', async () => {
+    const onApprove = vi.fn()
+    render(
+      <ApprovalGate requests={DESTRUCTIVE} onApprove={onApprove} onDeny={vi.fn()} />,
+    )
+
+    await userEvent.click(screen.getByRole('button', { name: /Deletes the legacy folder/ }))
+    await userEvent.click(screen.getByRole('button', { name: 'Approve this one' }))
+    expect(onApprove).toHaveBeenCalledWith(['delete'])
+  })
+
+  it('treats an undeclared reversible flag as irreversible', async () => {
+    const sneaky = [{ id: 'x', consequence: 'Does something' }] as unknown as ApprovalRequest[]
+    render(<ApprovalGate requests={sneaky} onApprove={vi.fn()} onDeny={vi.fn()} />)
+
+    expect(screen.queryByRole('button', { name: /Approve all/ })).not.toBeInTheDocument()
+    expect(screen.getByText('This cannot be undone. Open it to answer.')).toBeInTheDocument()
+  })
+
+  it('dismisses without deciding anything', async () => {
+    const onApprove = vi.fn()
+    const onDeny = vi.fn()
+    const onDismiss = vi.fn()
+    render(
+      <ApprovalGate
+        requests={SAFE}
+        onApprove={onApprove}
+        onDeny={onDeny}
+        onDismiss={onDismiss}
+      />,
+    )
+
+    await userEvent.click(screen.getByRole('button', { name: 'Not now' }))
+    expect(onDismiss).toHaveBeenCalled()
+    expect(onApprove).not.toHaveBeenCalled()
+    expect(onDeny).not.toHaveBeenCalled()
+  })
+
+  it('cannot be dismissed when the host gives no way to', () => {
+    render(<ApprovalGate requests={SAFE} onApprove={vi.fn()} onDeny={vi.fn()} />)
+    expect(screen.queryByRole('button', { name: 'Not now' })).not.toBeInTheDocument()
+  })
+})
