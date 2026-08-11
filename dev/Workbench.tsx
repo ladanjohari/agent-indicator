@@ -1,5 +1,6 @@
 import { StatusIndicator } from '../src'
 import type { SessionState } from '../src'
+import { SessionDemo } from './SessionDemo'
 
 // The local workbench. Not part of the published package.
 //
@@ -39,6 +40,18 @@ export function Workbench() {
             </li>
           ))}
         </ul>
+      </section>
+
+      <section className="wb-panel">
+        <h2>Why two busy states</h2>
+        <p className="wb-note">
+          Two real sessions. The first writes, runs a command, writes again and
+          finishes. The second starts a command that never exits. Watch the
+          second one: it stays alive, it never asks for anything, and the only
+          thing telling you it has gone wrong is that Running a command has been
+          on screen far too long. Merge the two states and that signal is gone.
+        </p>
+        <SessionDemo />
       </section>
 
       <section className="wb-panel">

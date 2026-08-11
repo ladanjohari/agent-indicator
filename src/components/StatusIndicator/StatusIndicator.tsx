@@ -4,13 +4,14 @@ import './StatusIndicator.css'
 /**
  * The wording each state shows by default. Pass `label` to replace it.
  *
- * "Active" rather than "Working" is deliberate: it is what the menu bar says,
- * and it reads as a description of the session rather than an instruction.
+ * "Writing" and "Running a command" say who is doing the work. The earlier
+ * pair, "Active" and "Running", were synonyms in English and nobody could hold
+ * them apart, including the person who designed them.
  */
 const DEFAULT_LABEL: Record<SessionState, string> = {
   idle: 'Idle',
-  working: 'Active',
-  running: 'Running',
+  working: 'Writing',
+  running: 'Running a command',
   needsYou: 'Waiting for you',
   error: 'Error',
   done: 'Done',

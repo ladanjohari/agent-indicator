@@ -16,8 +16,8 @@ describe('StatusIndicator', () => {
   it('says what state it is in, for every state', () => {
     const expected: Record<SessionState, string> = {
       idle: 'Idle',
-      working: 'Active',
-      running: 'Running',
+      working: 'Writing',
+      running: 'Running a command',
       needsYou: 'Waiting for you',
       error: 'Error',
       done: 'Done',
