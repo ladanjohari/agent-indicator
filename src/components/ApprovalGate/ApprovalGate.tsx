@@ -50,7 +50,12 @@ export function ApprovalGate({
       className={['asu-gate', className].filter(Boolean).join(' ')}
     >
       <header className="asu-gate__head">
-        <h2 className="asu-gate__title">{title}</h2>
+        {/* Deliberately not a heading tag. This component does not know whether
+            it sits under an h1 or an h3 in your page, and guessing wrong breaks
+            the document outline for anyone navigating by headings. The section
+            already carries the name through aria-label, so assistive technology
+            still announces it. */}
+        <p className="asu-gate__title">{title}</p>
         {onDismiss ? (
           <button type="button" className="asu-gate__dismiss" onClick={onDismiss}>
             Not now

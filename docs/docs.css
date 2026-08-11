@@ -1,0 +1,337 @@
+/* The docs site. Its own styling, deliberately separate from the components,
+   so nothing here can leak into the published package. */
+
+:root {
+  --bg: #f7f6f3;
+  --ink: #111111;
+  --mid: #6b6b6b;
+  --rule: rgba(0, 0, 0, 0.1);
+  --accent: #0066ff;
+  --stage: rgba(0, 0, 0, 0.02);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1a1a1a;
+    --ink: #e8e8e8;
+    --mid: #9a9a9a;
+    --rule: #333333;
+    --accent: #4d94ff;
+    --stage: rgba(255, 255, 255, 0.03);
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--accent);
+  text-underline-offset: 3px;
+}
+
+code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.head,
+.page,
+.foot {
+  max-width: 760px;
+  margin: 0 auto;
+  padding-left: 28px;
+  padding-right: 28px;
+}
+
+@media (max-width: 540px) {
+  .head,
+  .page,
+  .foot {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
+
+.head {
+  padding-top: 72px;
+  padding-bottom: 40px;
+}
+
+.head h1 {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.head__line {
+  margin: 8px 0 22px;
+  font-size: 17px;
+  color: var(--mid);
+}
+
+.head__install,
+.block {
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  background: var(--stage);
+  font-size: 13px;
+  overflow-x: auto;
+}
+
+.block {
+  margin: 14px 0;
+}
+
+.head__status {
+  margin: 14px 0 0;
+  font-size: 13px;
+  color: var(--mid);
+}
+
+/* The one rule. The most important block on the page, so it gets the only
+   heavier treatment anywhere in the site. */
+.rule {
+  padding: 26px 0 8px;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+
+.rule h2 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.rule__line {
+  margin: 10px 0 18px;
+  font-size: 22px;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+.rule p {
+  color: var(--mid);
+  max-width: 62ch;
+}
+
+.rule__list {
+  margin: 18px 0;
+  padding-left: 20px;
+  color: var(--mid);
+  max-width: 62ch;
+}
+
+.rule__list li {
+  margin-bottom: 6px;
+}
+
+.rule__list strong {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.component {
+  padding-top: 52px;
+}
+
+.component h2 {
+  margin: 0 0 10px;
+  font-size: 19px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.component > p {
+  color: var(--mid);
+  max-width: 62ch;
+  margin: 0 0 14px;
+}
+
+.example {
+  margin: 26px 0;
+}
+
+.example__note {
+  margin: 0 0 12px;
+  font-size: 13px;
+  color: var(--mid);
+  max-width: 62ch;
+}
+
+.example__stage {
+  padding: 22px;
+  border: 1px solid var(--rule);
+  border-radius: 12px 12px 0 0;
+  background: var(--stage);
+}
+
+.example__code {
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid var(--rule);
+  border-top: 0;
+  border-radius: 0 0 12px 12px;
+  font-size: 12.5px;
+  color: var(--mid);
+  overflow-x: auto;
+  white-space: pre;
+}
+
+.states {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.states li {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.states li > span:first-child {
+  min-width: 170px;
+}
+
+.states code,
+.picked {
+  font-size: 12px;
+  color: var(--mid);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+}
+
+.picked {
+  margin: 14px 0 0;
+}
+
+.gate-example__log {
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 4px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  color: var(--mid);
+}
+
+.gate-example__reset {
+  margin-top: 14px;
+  font: inherit;
+  font-size: 13px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--rule);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+/* Props tables scroll inside themselves rather than pushing the page sideways. */
+.props {
+  margin: 26px 0;
+  overflow-x: auto;
+}
+
+.props__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+  min-width: 520px;
+}
+
+.props__table th {
+  text-align: left;
+  font-weight: 500;
+  font-size: 12px;
+  color: var(--mid);
+  padding: 0 14px 8px 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.props__table td {
+  padding: 11px 14px 11px 0;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: top;
+  color: var(--mid);
+}
+
+.props__table td:first-child {
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.props__type {
+  font-size: 12px;
+}
+
+.props__required {
+  display: inline-block;
+  margin-left: 8px;
+  font-size: 10.5px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--mid);
+}
+
+.locked {
+  margin: 26px 0;
+  padding: 16px 18px;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+}
+
+.locked__title {
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.locked__list {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 13.5px;
+  color: var(--mid);
+}
+
+.locked__list li {
+  margin-bottom: 5px;
+}
+
+.restyle {
+  font-size: 13.5px;
+  color: var(--mid);
+  max-width: 62ch;
+}
+
+.foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 72px;
+  padding-top: 18px;
+  padding-bottom: 64px;
+  border-top: 1px solid var(--rule);
+  font-size: 13px;
+  color: var(--mid);
+}

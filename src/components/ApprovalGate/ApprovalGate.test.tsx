@@ -101,4 +101,12 @@ describe('ApprovalGate', () => {
     render(<ApprovalGate requests={SAFE} onApprove={vi.fn()} onDeny={vi.fn()} />)
     expect(screen.queryByRole('button', { name: 'Not now' })).not.toBeInTheDocument()
   })
+
+  // A library cannot know whether it sits under an h1 or an h3, so it injects
+  // no heading at all and lets the section landmark carry the name.
+  it('puts no heading into the host page outline', () => {
+    render(<ApprovalGate requests={SAFE} onApprove={vi.fn()} onDeny={vi.fn()} />)
+    expect(screen.queryAllByRole('heading')).toHaveLength(0)
+    expect(screen.getByRole('region', { name: 'Waiting for you' })).toBeInTheDocument()
+  })
 })

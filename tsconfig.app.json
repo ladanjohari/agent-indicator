@@ -23,5 +23,5 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src", "dev", "vitest.setup.ts"]
+  "include": ["src", "dev", "docs", "vitest.setup.ts"]
 }

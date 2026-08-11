@@ -42,7 +42,9 @@
   },
   "scripts": {
     "dev": "vite",
+    "dev:docs": "vite --config vite.docs.config.ts",
     "build": "vite build && tsc -p tsconfig.build.json",
+    "build:docs": "vite build --config vite.docs.config.ts",
     "typecheck": "tsc -b",
     "lint": "oxlint",
     "test": "vitest run",
