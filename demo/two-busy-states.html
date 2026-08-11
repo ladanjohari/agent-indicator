@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Why two busy states</title>
+    <style>
+      :root {
+        --bg: #f7f6f3;
+        --ink: #111111;
+        --mid: #6b6b6b;
+        --rule: rgba(0, 0, 0, 0.1);
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #1a1a1a;
+          --ink: #e8e8e8;
+          --mid: #9a9a9a;
+          --rule: #333333;
+        }
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+        font-size: 15px;
+        line-height: 1.55;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      main { max-width: 620px; margin: 0 auto; padding: 56px 24px 80px; }
+      h1 { font-size: 20px; font-weight: 500; margin: 0 0 8px; letter-spacing: -0.01em; }
+      p { color: var(--mid); margin: 0 0 8px; }
+
+      .rows { list-style: none; margin: 32px 0 0; padding: 24px 0 0; border-top: 1px solid var(--rule); display: grid; gap: 18px; }
+      .row { display: flex; align-items: center; gap: 14px; }
+      .name { min-width: 110px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; color: var(--mid); }
+      .elapsed { font-size: 12px; color: var(--mid); font-variant-numeric: tabular-nums; }
+      .verdict { margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--rule); font-size: 14px; }
+
+      /* Exactly the component's own styles. */
+      .asu-status {
+        --asu-color-idle: color-mix(in srgb, currentColor 18%, transparent);
+        --asu-color-needs-you: #e8952a;
+        --asu-color-error: #ff3b30;
+        --asu-color-done: #34c759;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5em;
+        line-height: 1;
+        min-width: 175px;
+      }
+
+      .asu-status__dot {
+        flex: none;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--asu-color-idle);
+        transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+      }
+
+      .asu-status[data-state='working'] .asu-status__dot { background: currentColor; }
+
+      .asu-status[data-state='running'] .asu-status__dot {
+        background: currentColor;
+        animation: asu-breathe 1.6s ease-in-out infinite;
+      }
+
+      .asu-status[data-state='needsYou'] .asu-status__dot { background: var(--asu-color-needs-you); }
+      .asu-status[data-state='done'] .asu-status__dot { background: var(--asu-color-done); }
+
+      .asu-status[data-state='error'] .asu-status__dot {
+        background: transparent;
+        border: 2px solid var(--asu-color-error);
+      }
+
+      @keyframes asu-breathe {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.15; transform: scale(0.35); }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .asu-status[data-state='running'] .asu-status__dot { animation: none; }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Why two busy states</h1>
+      <p>
+        Two sessions. The first writes, runs a command, writes again, finishes.
+        The second starts a command that never exits.
+      </p>
+      <p>
+        Watch the second one. It stays alive. It never turns amber, because
+        amber means it needs you and it does not. The only thing telling you it
+        has gone wrong is that <strong>Running a command</strong> has been on
+        screen far too long.
+      </p>
+
+      <ul class="rows">
+        <li class="row">
+          <span class="asu-status" data-state="idle" id="s1">
+            <span class="asu-status__dot"></span>
+            <span class="label">Idle</span>
+          </span>
+          <span class="name">write-docs</span>
+          <span class="elapsed" id="e1">0s</span>
+        </li>
+        <li class="row">
+          <span class="asu-status" data-state="idle" id="s2">
+            <span class="asu-status__dot"></span>
+            <span class="label">Idle</span>
+          </span>
+          <span class="name">dev-server</span>
+          <span class="elapsed" id="e2">0s</span>
+        </li>
+      </ul>
+
+      <p class="verdict">
+        Merge the two into one busy state and the stuck session becomes
+        indistinguishable from a healthy one. That is the whole argument.
+      </p>
+    </main>
+
+    <script>
+      const LABELS = {
+        idle: 'Idle',
+        working: 'Writing',
+        running: 'Running a command',
+        needsYou: 'Waiting for you',
+        error: 'Error',
+        done: 'Done',
+      }
+
+      const HEALTHY = [
+        { state: 'idle', hold: 2000 },
+        { state: 'working', hold: 4000 },
+        { state: 'running', hold: 5000 },
+        { state: 'working', hold: 3000 },
+        { state: 'done', hold: 4000 },
+      ]
+
+      // The command never exits, so this session never leaves running.
+      const STUCK = [
+        { state: 'idle', hold: 2000 },
+        { state: 'working', hold: 4000 },
+        { state: 'running', hold: 1000 * 60 * 60 },
+      ]
+
+      function play(steps, statusId, elapsedId) {
+        const status = document.getElementById(statusId)
+        const elapsed = document.getElementById(elapsedId)
+        const label = status.querySelector('.label')
+        let index = 0
+        let enteredAt = Date.now()
+
+        function show() {
+          const step = steps[index]
+          status.dataset.state = step.state
+          label.textContent = LABELS[step.state]
+          enteredAt = Date.now()
+          setTimeout(() => {
+            index = (index + 1) % steps.length
+            show()
+          }, step.hold)
+        }
+
+        setInterval(() => {
+          elapsed.textContent = Math.floor((Date.now() - enteredAt) / 1000) + 's'
+        }, 1000)
+
+        show()
+      }
+
+      play(HEALTHY, 's1', 'e1')
+      play(STUCK, 's2', 'e2')
+    </script>
+  </body>
+</html>
