@@ -12,3 +12,6 @@ export type { ApprovalGateProps, ApprovalRequest } from './components/ApprovalGa
 
 export { SessionStrip } from './components/SessionStrip/SessionStrip'
 export type { Session, SessionStripProps } from './components/SessionStrip/types'
+
+export { ActivityTrail } from './components/ActivityTrail/ActivityTrail'
+export type { Activity, ActivityKind, ActivityTrailProps } from './components/ActivityTrail/types'

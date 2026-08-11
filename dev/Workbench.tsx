@@ -1,7 +1,21 @@
 import { useState } from 'react'
-import { ApprovalGate, SessionStrip, StatusIndicator } from '../src'
-import type { ApprovalRequest, Session, SessionState } from '../src'
+import { ActivityTrail, ApprovalGate, SessionStrip, StatusIndicator } from '../src'
+import type { Activity, ApprovalRequest, Session, SessionState } from '../src'
 import { SessionDemo } from './SessionDemo'
+
+const TRAIL: Activity[] = [
+  { id: '1', kind: 'read', summary: 'Read src/auth.ts', at: '14:01' },
+  { id: '2', kind: 'read', summary: 'Read src/session.ts', at: '14:01' },
+  { id: '3', kind: 'read', summary: 'Read src/index.ts', at: '14:02' },
+  { id: '4', kind: 'read', summary: 'Read src/tokens.ts', at: '14:02' },
+  { id: '5', kind: 'ask', summary: 'Asked to delete the legacy folder', detail: 'rm -rf legacy', at: '14:03' },
+  { id: '6', kind: 'edit', summary: 'Edited src/auth.ts', at: '14:04' },
+  { id: '7', kind: 'edit', summary: 'Edited src/session.ts', at: '14:04' },
+  { id: '8', kind: 'run', summary: 'Ran the test suite', detail: 'npm test', at: '14:05' },
+  { id: '9', kind: 'error', summary: 'Test suite failed', detail: 'exit code 1, 2 tests failing', at: '14:06' },
+  { id: '10', kind: 'edit', summary: 'Edited src/auth.test.ts', at: '14:08' },
+  { id: '11', kind: 'run', summary: 'Ran the test suite', detail: 'npm test', at: '14:09' },
+]
 
 const FLEET: Session[] = [
   { id: 'write-docs', name: 'write-docs', state: 'working', elapsed: '1m' },
@@ -95,6 +109,19 @@ export function Workbench() {
             </li>
           ))}
         </ul>
+      </section>
+
+      <section className="wb-panel">
+        <h2>ActivityTrail</h2>
+        <p className="wb-note">
+          Eleven steps, seven rows. Four reads become one line you can open, and
+          so do two edits. The question and the failure never fold, and they are
+          the only things carrying colour, so they are findable without reading a
+          word.
+        </p>
+        <div className="wb-strip">
+          <ActivityTrail activities={TRAIL} />
+        </div>
       </section>
 
       <section className="wb-panel">
