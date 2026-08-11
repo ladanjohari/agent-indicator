@@ -1,7 +1,18 @@
 import { useState } from 'react'
-import { ApprovalGate, StatusIndicator } from '../src'
-import type { ApprovalRequest, SessionState } from '../src'
+import { ApprovalGate, SessionStrip, StatusIndicator } from '../src'
+import type { ApprovalRequest, Session, SessionState } from '../src'
 import { SessionDemo } from './SessionDemo'
+
+const FLEET: Session[] = [
+  { id: 'write-docs', name: 'write-docs', state: 'working', elapsed: '1m' },
+  { id: 'deploy-pipeline', name: 'deploy-pipeline', state: 'done', elapsed: '8m' },
+  { id: 'run-tests', name: 'run-tests', state: 'error', elapsed: '2m' },
+  { id: 'build-assets', name: 'build-assets', state: 'running', elapsed: '4m' },
+  { id: 'analyze-code', name: 'analyze-code', state: 'needsYou', elapsed: '5m' },
+  { id: 'refactor-api', name: 'refactor-api', state: 'working', elapsed: '2m' },
+  { id: 'lint-check', name: 'lint-check', state: 'idle', elapsed: '20m' },
+  { id: 'sync-assets', name: 'sync-assets', state: 'done', elapsed: '31m' },
+]
 
 // The refactor example the design was argued over: three safe things and two
 // that cannot be undone.
@@ -84,6 +95,26 @@ export function Workbench() {
             </li>
           ))}
         </ul>
+      </section>
+
+      <section className="wb-panel">
+        <h2>SessionStrip</h2>
+        <p className="wb-note">
+          Eight sessions. The two that need you are pulled to the top and spell
+          out why. Four calm ones follow. The rest fold into a line of counts,
+          because twelve calm rows is telemetry and nobody reads telemetry.
+        </p>
+        <div className="wb-strip">
+          <SessionStrip sessions={FLEET} />
+        </div>
+
+        <p className="wb-note wb-note--tight">
+          Same eight with the limit at zero. The calm ones all fold. The two that
+          need you never do.
+        </p>
+        <div className="wb-strip">
+          <SessionStrip sessions={FLEET} maxQuiet={0} />
+        </div>
       </section>
 
       <section className="wb-panel">

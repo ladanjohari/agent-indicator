@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SessionStrip</title>
+    <style>
+      :root {
+        --bg: #f7f6f3;
+        --ink: #111111;
+        --mid: #6b6b6b;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root { --bg: #1a1a1a; --ink: #e8e8e8; --mid: #9a9a9a; }
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+        font-size: 15px;
+        line-height: 1.55;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      main { max-width: 1020px; margin: 0 auto; padding: 48px 24px 72px; }
+      h1 { font-size: 20px; font-weight: 500; margin: 0 0 8px; letter-spacing: -0.01em; }
+      p.lede { color: var(--mid); margin: 0 0 6px; max-width: 680px; }
+
+      .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 36px; }
+      @media (max-width: 820px) { .pair { grid-template-columns: 1fr; } }
+
+      .step-title { font-size: 13px; font-weight: 500; margin: 0 0 3px; }
+      .step-note { font-size: 12px; color: var(--mid); margin: 0 0 14px; }
+
+      /* StatusIndicator, copied exactly. */
+      .asu-status {
+        --asu-color-idle: color-mix(in srgb, currentColor 18%, transparent);
+        --asu-color-needs-you: #e8952a;
+        --asu-color-error: #ff3b30;
+        --asu-color-done: #34c759;
+        display: inline-flex; align-items: center; gap: 0.5em; line-height: 1;
+      }
+      .asu-status__dot {
+        flex: none; width: 8px; height: 8px; border-radius: 50%;
+        background: var(--asu-color-idle);
+      }
+      .asu-status[data-state='working'] .asu-status__dot { background: currentColor; }
+      .asu-status[data-state='running'] .asu-status__dot {
+        background: currentColor;
+        animation: asu-breathe 1.6s ease-in-out infinite;
+      }
+      .asu-status[data-state='needsYou'] .asu-status__dot { background: var(--asu-color-needs-you); }
+      .asu-status[data-state='done'] .asu-status__dot { background: var(--asu-color-done); }
+      .asu-status[data-state='error'] .asu-status__dot {
+        background: transparent; border: 2px solid var(--asu-color-error);
+      }
+      @keyframes asu-breathe {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.15; transform: scale(0.35); }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .asu-status[data-state='running'] .asu-status__dot { animation: none; }
+      }
+      .asu-sr-only {
+        position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+        overflow: hidden; white-space: nowrap; border: 0; clip-path: inset(50%);
+      }
+
+      /* SessionStrip, copied exactly. */
+      .asu-strip {
+        --asu-strip-rule: color-mix(in srgb, currentColor 12%, transparent);
+        --asu-strip-quiet: color-mix(in srgb, currentColor 55%, transparent);
+        display: block; font-size: 14px; line-height: 1.4;
+      }
+      .asu-strip__list { list-style: none; margin: 0; padding: 0; }
+      .asu-strip__row {
+        display: flex; align-items: center; gap: 10px; width: 100%;
+        padding: 7px 8px; border-radius: 8px; text-align: left;
+      }
+      .asu-strip__status { flex: none; min-width: 9em; }
+      .asu-strip__name {
+        flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis;
+        white-space: nowrap;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px;
+      }
+      .asu-strip__elapsed {
+        flex: none; font-size: 12px; color: var(--asu-strip-quiet);
+        font-variant-numeric: tabular-nums;
+      }
+      .asu-strip__item:not([data-actionable]) .asu-strip__name { color: var(--asu-strip-quiet); }
+      .asu-strip__summary {
+        margin: 8px 0 0; padding: 10px 8px 0;
+        border-top: 1px solid var(--asu-strip-rule);
+        font-size: 12px; color: var(--asu-strip-quiet);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>SessionStrip</h1>
+      <p class="lede">
+        Eight sessions running at once. Weather, not telemetry.
+      </p>
+      <p class="lede">
+        The two that need a person are pulled to the top and are the only ones
+        that spell out their state. The calm ones step back to a dot and a dimmed
+        name. Anything past the limit folds into a line of counts, because twelve
+        calm rows is telemetry and nobody reads telemetry.
+      </p>
+
+      <div class="pair">
+        <section>
+          <p class="step-title">Default</p>
+          <p class="step-note">Four calm rows shown, the last two folded.</p>
+
+          <section class="asu-strip">
+            <ul class="asu-strip__list">
+              <li class="asu-strip__item" data-state="error" data-actionable="true">
+                <span class="asu-strip__row">
+                  <span class="asu-status asu-status--md asu-strip__status" data-state="error">
+                    <span class="asu-status__dot"></span><span class="asu-status__label">Error</span>
+                  </span>
+                  <span class="asu-strip__name">run-tests</span>
+                  <span class="asu-strip__elapsed">2m</span>
+                </span>
+              </li>
+              <li class="asu-strip__item" data-state="needsYou" data-actionable="true">
+                <span class="asu-strip__row">
+                  <span class="asu-status asu-status--md asu-strip__status" data-state="needsYou">
+                    <span class="asu-status__dot"></span><span class="asu-status__label">Waiting for you</span>
+                  </span>
+                  <span class="asu-strip__name">analyze-code</span>
+                  <span class="asu-strip__elapsed">5m</span>
+                </span>
+              </li>
+              <li class="asu-strip__item" data-state="working">
+                <span class="asu-strip__row">
+                  <span class="asu-status asu-status--md asu-strip__status" data-state="working">
+                    <span class="asu-status__dot"></span><span class="asu-status__label asu-sr-only">Writing</span>
+                  </span>
+                  <span class="asu-strip__name">write-docs</span>
+                  <span class="asu-strip__elapsed">1m</span>
+                </span>
+              </li>
+              <li class="asu-strip__item" data-state="done">
+                <span class="asu-strip__row">
+                  <span class="asu-status asu-status--md asu-strip__status" data-state="done">
+                    <span class="asu-status__dot"></span><span class="asu-status__label asu-sr-only">Done</span>
+                  </span>
+                  <span class="asu-strip__name">deploy-pipeline</span>
+                  <span class="asu-strip__elapsed">8m</span>
+                </span>
+              </li>
+              <li class="asu-strip__item" data-state="running">
+                <span class="asu-strip__row">
+                  <span class="asu-status asu-status--md asu-strip__status" data-state="running">
+                    <span class="asu-status__dot"></span><span class="asu-status__label asu-sr-only">Running a command</span>
+                  </span>
+                  <span class="asu-strip__name">build-assets</span>
+                  <span class="asu-strip__elapsed">4m</span>
+                </span>
+              </li>
+              <li class="asu-strip__item" data-state="working">
+                <span class="asu-strip__row">
+                  <span class="asu-status asu-status--md asu-strip__status" data-state="working">
+                    <span class="asu-status__dot"></span><span class="asu-status__label asu-sr-only">Writing</span>
+                  </span>
+                  <span class="asu-strip__name">refactor-api</span>
+                  <span class="asu-strip__elapsed">2m</span>
+                </span>
+              </li>
+            </ul>
+            <p class="asu-strip__summary">1 done, 1 idle</p>
+          </section>
+        </section>
+
+        <section>
+          <p class="step-title">Limit set to zero</p>
+          <p class="step-note">Every calm session folds. The two that need you never do.</p>
+
+          <section class="asu-strip">
+            <ul class="asu-strip__list">
+              <li class="asu-strip__item" data-state="error" data-actionable="true">
+                <span class="asu-strip__row">
+                  <span class="asu-status asu-status--md asu-strip__status" data-state="error">
+                    <span class="asu-status__dot"></span><span class="asu-status__label">Error</span>
+                  </span>
+                  <span class="asu-strip__name">run-tests</span>
+                  <span class="asu-strip__elapsed">2m</span>
+                </span>
+              </li>
+              <li class="asu-strip__item" data-state="needsYou" data-actionable="true">
+                <span class="asu-strip__row">
+                  <span class="asu-status asu-status--md asu-strip__status" data-state="needsYou">
+                    <span class="asu-status__dot"></span><span class="asu-status__label">Waiting for you</span>
+                  </span>
+                  <span class="asu-strip__name">analyze-code</span>
+                  <span class="asu-strip__elapsed">5m</span>
+                </span>
+              </li>
+            </ul>
+            <p class="asu-strip__summary">3 running, 2 done, 1 idle</p>
+          </section>
+        </section>
+      </div>
+    </main>
+  </body>
+</html>

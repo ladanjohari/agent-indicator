@@ -139,6 +139,15 @@ body {
   margin-top: 20px;
 }
 
+.wb-strip {
+  margin-top: 18px;
+  max-width: 460px;
+}
+
+.wb-note--tight {
+  margin-top: 32px;
+}
+
 .wb-log {
   list-style: none;
   margin: 16px 0 0;
