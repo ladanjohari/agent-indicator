@@ -16,7 +16,7 @@ export default defineConfig({
       entry: resolve(import.meta.dirname, 'src/index.ts'),
       formats: ['es'],
       fileName: 'index',
-      cssFileName: 'agent-state-ui',
+      cssFileName: 'agent-indicator',
     },
     rollupOptions: {
       external: ['react', 'react-dom', 'react/jsx-runtime'],

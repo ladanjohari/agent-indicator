@@ -38,65 +38,65 @@
       .step-note { font-size: 12px; color: var(--mid); margin: 0 0 14px; }
 
       /* StatusIndicator, copied exactly. */
-      .asu-status {
-        --asu-color-idle: color-mix(in srgb, currentColor 18%, transparent);
-        --asu-color-needs-you: #e8952a;
-        --asu-color-error: #ff3b30;
-        --asu-color-done: #34c759;
+      .agent-status {
+        --agent-color-idle: color-mix(in srgb, currentColor 18%, transparent);
+        --agent-color-needs-you: #e8952a;
+        --agent-color-error: #ff3b30;
+        --agent-color-done: #34c759;
         display: inline-flex; align-items: center; gap: 0.5em; line-height: 1;
       }
-      .asu-status__dot {
+      .agent-status__dot {
         flex: none; width: 8px; height: 8px; border-radius: 50%;
-        background: var(--asu-color-idle);
+        background: var(--agent-color-idle);
       }
-      .asu-status[data-state='working'] .asu-status__dot { background: currentColor; }
-      .asu-status[data-state='running'] .asu-status__dot {
+      .agent-status[data-state='working'] .agent-status__dot { background: currentColor; }
+      .agent-status[data-state='running'] .agent-status__dot {
         background: currentColor;
-        animation: asu-breathe 1.6s ease-in-out infinite;
+        animation: agent-breathe 1.6s ease-in-out infinite;
       }
-      .asu-status[data-state='needsYou'] .asu-status__dot { background: var(--asu-color-needs-you); }
-      .asu-status[data-state='done'] .asu-status__dot { background: var(--asu-color-done); }
-      .asu-status[data-state='error'] .asu-status__dot {
-        background: transparent; border: 2px solid var(--asu-color-error);
+      .agent-status[data-state='needsYou'] .agent-status__dot { background: var(--agent-color-needs-you); }
+      .agent-status[data-state='done'] .agent-status__dot { background: var(--agent-color-done); }
+      .agent-status[data-state='error'] .agent-status__dot {
+        background: transparent; border: 2px solid var(--agent-color-error);
       }
-      @keyframes asu-breathe {
+      @keyframes agent-breathe {
         0%, 100% { opacity: 1; transform: scale(1); }
         50% { opacity: 0.15; transform: scale(0.35); }
       }
       @media (prefers-reduced-motion: reduce) {
-        .asu-status[data-state='running'] .asu-status__dot { animation: none; }
+        .agent-status[data-state='running'] .agent-status__dot { animation: none; }
       }
-      .asu-sr-only {
+      .agent-sr-only {
         position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
         overflow: hidden; white-space: nowrap; border: 0; clip-path: inset(50%);
       }
 
       /* SessionStrip, copied exactly. */
-      .asu-strip {
-        --asu-strip-rule: color-mix(in srgb, currentColor 12%, transparent);
-        --asu-strip-quiet: color-mix(in srgb, currentColor 55%, transparent);
+      .agent-strip {
+        --agent-strip-rule: color-mix(in srgb, currentColor 12%, transparent);
+        --agent-strip-quiet: color-mix(in srgb, currentColor 55%, transparent);
         display: block; font-size: 14px; line-height: 1.4;
       }
-      .asu-strip__list { list-style: none; margin: 0; padding: 0; }
-      .asu-strip__row {
+      .agent-strip__list { list-style: none; margin: 0; padding: 0; }
+      .agent-strip__row {
         display: flex; align-items: center; gap: 10px; width: 100%;
         padding: 7px 8px; border-radius: 8px; text-align: left;
       }
-      .asu-strip__status { flex: none; min-width: 9em; }
-      .asu-strip__name {
+      .agent-strip__status { flex: none; min-width: 9em; }
+      .agent-strip__name {
         flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis;
         white-space: nowrap;
         font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px;
       }
-      .asu-strip__elapsed {
-        flex: none; font-size: 12px; color: var(--asu-strip-quiet);
+      .agent-strip__elapsed {
+        flex: none; font-size: 12px; color: var(--agent-strip-quiet);
         font-variant-numeric: tabular-nums;
       }
-      .asu-strip__item:not([data-actionable]) .asu-strip__name { color: var(--asu-strip-quiet); }
-      .asu-strip__summary {
+      .agent-strip__item:not([data-actionable]) .agent-strip__name { color: var(--agent-strip-quiet); }
+      .agent-strip__summary {
         margin: 8px 0 0; padding: 10px 8px 0;
-        border-top: 1px solid var(--asu-strip-rule);
-        font-size: 12px; color: var(--asu-strip-quiet);
+        border-top: 1px solid var(--agent-strip-rule);
+        font-size: 12px; color: var(--agent-strip-quiet);
       }
     </style>
   </head>
@@ -118,64 +118,64 @@
           <p class="step-title">Default</p>
           <p class="step-note">Four calm rows shown, the last two folded.</p>
 
-          <section class="asu-strip">
-            <ul class="asu-strip__list">
-              <li class="asu-strip__item" data-state="error" data-actionable="true">
-                <span class="asu-strip__row">
-                  <span class="asu-status asu-status--md asu-strip__status" data-state="error">
-                    <span class="asu-status__dot"></span><span class="asu-status__label">Error</span>
+          <section class="agent-strip">
+            <ul class="agent-strip__list">
+              <li class="agent-strip__item" data-state="error" data-actionable="true">
+                <span class="agent-strip__row">
+                  <span class="agent-status agent-status--md agent-strip__status" data-state="error">
+                    <span class="agent-status__dot"></span><span class="agent-status__label">Error</span>
                   </span>
-                  <span class="asu-strip__name">run-tests</span>
-                  <span class="asu-strip__elapsed">2m</span>
+                  <span class="agent-strip__name">run-tests</span>
+                  <span class="agent-strip__elapsed">2m</span>
                 </span>
               </li>
-              <li class="asu-strip__item" data-state="needsYou" data-actionable="true">
-                <span class="asu-strip__row">
-                  <span class="asu-status asu-status--md asu-strip__status" data-state="needsYou">
-                    <span class="asu-status__dot"></span><span class="asu-status__label">Waiting for you</span>
+              <li class="agent-strip__item" data-state="needsYou" data-actionable="true">
+                <span class="agent-strip__row">
+                  <span class="agent-status agent-status--md agent-strip__status" data-state="needsYou">
+                    <span class="agent-status__dot"></span><span class="agent-status__label">Waiting for you</span>
                   </span>
-                  <span class="asu-strip__name">analyze-code</span>
-                  <span class="asu-strip__elapsed">5m</span>
+                  <span class="agent-strip__name">analyze-code</span>
+                  <span class="agent-strip__elapsed">5m</span>
                 </span>
               </li>
-              <li class="asu-strip__item" data-state="working">
-                <span class="asu-strip__row">
-                  <span class="asu-status asu-status--md asu-strip__status" data-state="working">
-                    <span class="asu-status__dot"></span><span class="asu-status__label asu-sr-only">Writing</span>
+              <li class="agent-strip__item" data-state="working">
+                <span class="agent-strip__row">
+                  <span class="agent-status agent-status--md agent-strip__status" data-state="working">
+                    <span class="agent-status__dot"></span><span class="agent-status__label agent-sr-only">Writing</span>
                   </span>
-                  <span class="asu-strip__name">write-docs</span>
-                  <span class="asu-strip__elapsed">1m</span>
+                  <span class="agent-strip__name">write-docs</span>
+                  <span class="agent-strip__elapsed">1m</span>
                 </span>
               </li>
-              <li class="asu-strip__item" data-state="done">
-                <span class="asu-strip__row">
-                  <span class="asu-status asu-status--md asu-strip__status" data-state="done">
-                    <span class="asu-status__dot"></span><span class="asu-status__label asu-sr-only">Done</span>
+              <li class="agent-strip__item" data-state="done">
+                <span class="agent-strip__row">
+                  <span class="agent-status agent-status--md agent-strip__status" data-state="done">
+                    <span class="agent-status__dot"></span><span class="agent-status__label agent-sr-only">Done</span>
                   </span>
-                  <span class="asu-strip__name">deploy-pipeline</span>
-                  <span class="asu-strip__elapsed">8m</span>
+                  <span class="agent-strip__name">deploy-pipeline</span>
+                  <span class="agent-strip__elapsed">8m</span>
                 </span>
               </li>
-              <li class="asu-strip__item" data-state="running">
-                <span class="asu-strip__row">
-                  <span class="asu-status asu-status--md asu-strip__status" data-state="running">
-                    <span class="asu-status__dot"></span><span class="asu-status__label asu-sr-only">Running a command</span>
+              <li class="agent-strip__item" data-state="running">
+                <span class="agent-strip__row">
+                  <span class="agent-status agent-status--md agent-strip__status" data-state="running">
+                    <span class="agent-status__dot"></span><span class="agent-status__label agent-sr-only">Running a command</span>
                   </span>
-                  <span class="asu-strip__name">build-assets</span>
-                  <span class="asu-strip__elapsed">4m</span>
+                  <span class="agent-strip__name">build-assets</span>
+                  <span class="agent-strip__elapsed">4m</span>
                 </span>
               </li>
-              <li class="asu-strip__item" data-state="working">
-                <span class="asu-strip__row">
-                  <span class="asu-status asu-status--md asu-strip__status" data-state="working">
-                    <span class="asu-status__dot"></span><span class="asu-status__label asu-sr-only">Writing</span>
+              <li class="agent-strip__item" data-state="working">
+                <span class="agent-strip__row">
+                  <span class="agent-status agent-status--md agent-strip__status" data-state="working">
+                    <span class="agent-status__dot"></span><span class="agent-status__label agent-sr-only">Writing</span>
                   </span>
-                  <span class="asu-strip__name">refactor-api</span>
-                  <span class="asu-strip__elapsed">2m</span>
+                  <span class="agent-strip__name">refactor-api</span>
+                  <span class="agent-strip__elapsed">2m</span>
                 </span>
               </li>
             </ul>
-            <p class="asu-strip__summary">1 done, 1 idle</p>
+            <p class="agent-strip__summary">1 done, 1 idle</p>
           </section>
         </section>
 
@@ -183,28 +183,28 @@
           <p class="step-title">Limit set to zero</p>
           <p class="step-note">Every calm session folds. The two that need you never do.</p>
 
-          <section class="asu-strip">
-            <ul class="asu-strip__list">
-              <li class="asu-strip__item" data-state="error" data-actionable="true">
-                <span class="asu-strip__row">
-                  <span class="asu-status asu-status--md asu-strip__status" data-state="error">
-                    <span class="asu-status__dot"></span><span class="asu-status__label">Error</span>
+          <section class="agent-strip">
+            <ul class="agent-strip__list">
+              <li class="agent-strip__item" data-state="error" data-actionable="true">
+                <span class="agent-strip__row">
+                  <span class="agent-status agent-status--md agent-strip__status" data-state="error">
+                    <span class="agent-status__dot"></span><span class="agent-status__label">Error</span>
                   </span>
-                  <span class="asu-strip__name">run-tests</span>
-                  <span class="asu-strip__elapsed">2m</span>
+                  <span class="agent-strip__name">run-tests</span>
+                  <span class="agent-strip__elapsed">2m</span>
                 </span>
               </li>
-              <li class="asu-strip__item" data-state="needsYou" data-actionable="true">
-                <span class="asu-strip__row">
-                  <span class="asu-status asu-status--md asu-strip__status" data-state="needsYou">
-                    <span class="asu-status__dot"></span><span class="asu-status__label">Waiting for you</span>
+              <li class="agent-strip__item" data-state="needsYou" data-actionable="true">
+                <span class="agent-strip__row">
+                  <span class="agent-status agent-status--md agent-strip__status" data-state="needsYou">
+                    <span class="agent-status__dot"></span><span class="agent-status__label">Waiting for you</span>
                   </span>
-                  <span class="asu-strip__name">analyze-code</span>
-                  <span class="asu-strip__elapsed">5m</span>
+                  <span class="agent-strip__name">analyze-code</span>
+                  <span class="agent-strip__elapsed">5m</span>
                 </span>
               </li>
             </ul>
-            <p class="asu-strip__summary">3 running, 2 done, 1 idle</p>
+            <p class="agent-strip__summary">3 running, 2 done, 1 idle</p>
           </section>
         </section>
       </div>

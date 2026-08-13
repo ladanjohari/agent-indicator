@@ -47,45 +47,45 @@ export function ApprovalGate({
   return (
     <section
       aria-label={title}
-      className={['asu-gate', className].filter(Boolean).join(' ')}
+      className={['agent-gate', className].filter(Boolean).join(' ')}
     >
-      <header className="asu-gate__head">
+      <header className="agent-gate__head">
         {/* Deliberately not a heading tag. This component does not know whether
             it sits under an h1 or an h3 in your page, and guessing wrong breaks
             the document outline for anyone navigating by headings. The section
             already carries the name through aria-label, so assistive technology
             still announces it. */}
-        <p className="asu-gate__title">{title}</p>
+        <p className="agent-gate__title">{title}</p>
         {onDismiss ? (
-          <button type="button" className="asu-gate__dismiss" onClick={onDismiss}>
+          <button type="button" className="agent-gate__dismiss" onClick={onDismiss}>
             Not now
           </button>
         ) : null}
       </header>
 
       {safe.length > 0 ? (
-        <div className="asu-gate__group">
-          <ul className="asu-gate__list">
+        <div className="agent-gate__group">
+          <ul className="agent-gate__list">
             {safe.map((request) => (
-              <li key={request.id} className="asu-gate__item">
-                <span className="asu-gate__consequence">{request.consequence}</span>
+              <li key={request.id} className="agent-gate__item">
+                <span className="agent-gate__consequence">{request.consequence}</span>
                 {request.detail ? (
-                  <code className="asu-gate__detail">{request.detail}</code>
+                  <code className="agent-gate__detail">{request.detail}</code>
                 ) : null}
               </li>
             ))}
           </ul>
-          <div className="asu-gate__actions">
+          <div className="agent-gate__actions">
             <button
               type="button"
-              className="asu-gate__approve"
+              className="agent-gate__approve"
               onClick={() => onApprove(safeIds)}
             >
               {safe.length === 1 ? 'Approve' : `Approve all ${safe.length}`}
             </button>
             <button
               type="button"
-              className="asu-gate__deny"
+              className="agent-gate__deny"
               onClick={() => onDeny(safeIds)}
             >
               Deny
@@ -95,25 +95,25 @@ export function ApprovalGate({
       ) : null}
 
       {destructive.length > 0 ? (
-        <div className="asu-gate__group asu-gate__group--destructive">
-          <p className="asu-gate__note">
+        <div className="agent-gate__group agent-gate__group--destructive">
+          <p className="agent-gate__note">
             {destructive.length === 1
               ? 'This cannot be undone. Open it to answer.'
               : 'These cannot be undone. Each one is answered on its own.'}
           </p>
-          <ul className="asu-gate__list">
+          <ul className="agent-gate__list">
             {destructive.map((request) => {
               const isOpen = openIds.includes(request.id)
               return (
-                <li key={request.id} className="asu-gate__item">
+                <li key={request.id} className="agent-gate__item">
                   <button
                     type="button"
-                    className="asu-gate__reveal"
+                    className="agent-gate__reveal"
                     aria-expanded={isOpen}
                     onClick={() => toggle(request.id)}
                   >
-                    <span className="asu-gate__consequence">{request.consequence}</span>
-                    <span className="asu-gate__reveal-hint">
+                    <span className="agent-gate__consequence">{request.consequence}</span>
+                    <span className="agent-gate__reveal-hint">
                       {isOpen ? 'Close' : 'Review'}
                     </span>
                   </button>
@@ -121,21 +121,21 @@ export function ApprovalGate({
                   {/* The approve control does not exist until this is opened.
                       Not hidden, not disabled. Absent. */}
                   {isOpen ? (
-                    <div className="asu-gate__revealed">
+                    <div className="agent-gate__revealed">
                       {request.detail ? (
-                        <code className="asu-gate__detail">{request.detail}</code>
+                        <code className="agent-gate__detail">{request.detail}</code>
                       ) : null}
-                      <div className="asu-gate__actions">
+                      <div className="agent-gate__actions">
                         <button
                           type="button"
-                          className="asu-gate__approve-one"
+                          className="agent-gate__approve-one"
                           onClick={() => onApprove([request.id])}
                         >
                           Approve this one
                         </button>
                         <button
                           type="button"
-                          className="asu-gate__deny"
+                          className="agent-gate__deny"
                           onClick={() => onDeny([request.id])}
                         >
                           Deny

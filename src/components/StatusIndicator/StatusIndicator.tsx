@@ -43,12 +43,12 @@ export function StatusIndicator({
       // data-state is here so you can style any state from your own CSS
       // without this component needing to expose a prop for every colour.
       data-state={state}
-      className={['asu-status', `asu-status--${size}`, className]
+      className={['agent-status', `agent-status--${size}`, className]
         .filter(Boolean)
         .join(' ')}
     >
-      <span className="asu-status__dot" aria-hidden="true" />
-      <span className={showLabel ? 'asu-status__label' : 'asu-status__label asu-sr-only'}>
+      <span className="agent-status__dot" aria-hidden="true" />
+      <span className={showLabel ? 'agent-status__label' : 'agent-status__label agent-sr-only'}>
         {text}
       </span>
     </span>

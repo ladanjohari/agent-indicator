@@ -18,7 +18,7 @@ const TRAIL: Activity[] = [
 function rowText() {
   return screen
     .getAllByRole('listitem')
-    .map((item) => item.querySelector('.asu-trail__summary')?.textContent ?? '')
+    .map((item) => item.querySelector('.agent-trail__summary')?.textContent ?? '')
 }
 
 describe('ActivityTrail', () => {

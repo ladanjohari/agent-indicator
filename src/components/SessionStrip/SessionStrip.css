@@ -4,23 +4,23 @@
  * arrives at the top with no transition, exactly like the menu bar.
  */
 
-.asu-strip {
-  --asu-strip-rule: color-mix(in srgb, currentColor 12%, transparent);
-  --asu-strip-quiet: color-mix(in srgb, currentColor 55%, transparent);
-  --asu-strip-hover: color-mix(in srgb, currentColor 7%, transparent);
+.agent-strip {
+  --agent-strip-rule: color-mix(in srgb, currentColor 12%, transparent);
+  --agent-strip-quiet: color-mix(in srgb, currentColor 55%, transparent);
+  --agent-strip-hover: color-mix(in srgb, currentColor 7%, transparent);
 
   display: block;
   font-size: 14px;
   line-height: 1.4;
 }
 
-.asu-strip__list {
+.agent-strip__list {
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
-.asu-strip__row {
+.agent-strip__row {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -30,7 +30,7 @@
   text-align: left;
 }
 
-.asu-strip__row--button {
+.agent-strip__row--button {
   font: inherit;
   color: inherit;
   border: 0;
@@ -39,11 +39,11 @@
   transition: background-color 0.12s ease-out;
 }
 
-.asu-strip__row--button:hover {
-  background: var(--asu-strip-hover);
+.agent-strip__row--button:hover {
+  background: var(--agent-strip-hover);
 }
 
-.asu-strip__row--button:focus-visible {
+.agent-strip__row--button:focus-visible {
   outline: 2px solid currentColor;
   outline-offset: -2px;
 }
@@ -51,12 +51,12 @@
 /* A fixed column so the dots line up whether or not the row spells out its
    state. Without it, a row that says "Waiting for you" would shove the names
    of every other row out of alignment. */
-.asu-strip__status {
+.agent-strip__status {
   flex: none;
   min-width: 9em;
 }
 
-.asu-strip__name {
+.agent-strip__name {
   flex: 1 1 auto;
   min-width: 0;
   overflow: hidden;
@@ -66,29 +66,29 @@
   font-size: 13px;
 }
 
-.asu-strip__elapsed {
+.agent-strip__elapsed {
   flex: none;
   font-size: 12px;
-  color: var(--asu-strip-quiet);
+  color: var(--agent-strip-quiet);
   font-variant-numeric: tabular-nums;
 }
 
 /* Rows that need a person read at full strength. Calm rows step back, which is
    what makes the actionable ones findable without adding a second colour. */
-.asu-strip__item:not([data-actionable]) .asu-strip__name {
-  color: var(--asu-strip-quiet);
+.agent-strip__item:not([data-actionable]) .agent-strip__name {
+  color: var(--agent-strip-quiet);
 }
 
-.asu-strip__summary {
+.agent-strip__summary {
   margin: 8px 0 0;
   padding: 10px 8px 0;
-  border-top: 1px solid var(--asu-strip-rule);
+  border-top: 1px solid var(--agent-strip-rule);
   font-size: 12px;
-  color: var(--asu-strip-quiet);
+  color: var(--agent-strip-quiet);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .asu-strip__row--button {
+  .agent-strip__row--button {
     transition: none;
   }
 }

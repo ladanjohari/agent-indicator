@@ -8,7 +8,7 @@ import react from '@vitejs/plugin-react'
 // not from the root of the domain, so every asset path needs that prefix.
 export default defineConfig({
   root: 'docs',
-  base: '/agent-state-ui/',
+  base: '/agent-indicator/',
   plugins: [react()],
   // Its own port, so the docs site and the workbench can run side by side.
   server: { port: 5174 },

@@ -1,4 +1,4 @@
-# agent-state-ui
+# agent-indicator
 
 React components for the states an AI agent is actually in.
 
@@ -10,9 +10,9 @@ may be summarised away and what must always stand at full size, and getting that
 backwards is how a permission prompt turns into something people click without
 reading.
 
-[![npm](https://img.shields.io/npm/v/agent-state-ui)](https://www.npmjs.com/package/agent-state-ui)
+[![npm](https://img.shields.io/npm/v/agent-indicator)](https://www.npmjs.com/package/agent-indicator)
 
-**[Live docs and interactive examples](https://ladanjohari.com/agent-state-ui/)**
+**[Live docs and interactive examples](https://ladanjohari.com/agent-indicator/)**
 
 > Status: v0.1.0, early. The API may still change before 1.0.
 
@@ -30,12 +30,12 @@ There will not be a fifth.
 ## Install
 
 ```bash
-npm install agent-state-ui
+npm install agent-indicator
 ```
 
 ```jsx
-import { StatusIndicator } from 'agent-state-ui'
-import 'agent-state-ui/styles.css'
+import { StatusIndicator } from 'agent-indicator'
+import 'agent-indicator/styles.css'
 
 export function Row() {
   return <StatusIndicator state="needsYou" showLabel />

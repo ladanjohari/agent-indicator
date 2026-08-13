@@ -14,7 +14,7 @@ const SESSIONS: Session[] = [
 
 function names() {
   return screen.getAllByRole('listitem').map((item) => {
-    const name = item.querySelector('.asu-strip__name')
+    const name = item.querySelector('.agent-strip__name')
     return name ? name.textContent : ''
   })
 }
@@ -53,8 +53,8 @@ describe('SessionStrip', () => {
     // Present for everyone, because the label is always readable by a screen
     // reader even when it is not on screen.
     expect(screen.getByText('Waiting for you')).toBeInTheDocument()
-    expect(screen.getByText('Waiting for you')).not.toHaveClass('asu-sr-only')
-    expect(screen.getByText('Writing')).toHaveClass('asu-sr-only')
+    expect(screen.getByText('Waiting for you')).not.toHaveClass('agent-sr-only')
+    expect(screen.getByText('Writing')).toHaveClass('agent-sr-only')
   })
 
   it('is a read out with nothing to click by default', () => {

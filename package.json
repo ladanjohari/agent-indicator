@@ -1,5 +1,5 @@
 {
-  "name": "agent-state-ui",
+  "name": "agent-indicator",
   "version": "0.1.0",
   "description": "React components for AI agent state: status, approval, sessions, and activity.",
   "keywords": [
@@ -16,12 +16,12 @@
   "author": "Ladan Johari",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ladanjohari/agent-state-ui.git"
+    "url": "git+https://github.com/ladanjohari/agent-indicator.git"
   },
   "bugs": {
-    "url": "https://github.com/ladanjohari/agent-state-ui/issues"
+    "url": "https://github.com/ladanjohari/agent-indicator/issues"
   },
-  "homepage": "https://github.com/ladanjohari/agent-state-ui#readme",
+  "homepage": "https://github.com/ladanjohari/agent-indicator#readme",
   "type": "module",
   "sideEffects": [
     "**/*.css"
@@ -37,7 +37,7 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
-    "./styles.css": "./dist/agent-state-ui.css",
+    "./styles.css": "./dist/agent-indicator.css",
     "./package.json": "./package.json"
   },
   "scripts": {

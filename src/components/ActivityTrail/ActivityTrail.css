@@ -5,32 +5,32 @@
  * a question or a failure is findable by eye without reading a single word.
  */
 
-.asu-trail {
-  --asu-trail-rule: color-mix(in srgb, currentColor 14%, transparent);
-  --asu-trail-quiet: color-mix(in srgb, currentColor 55%, transparent);
-  --asu-trail-needs-you: #e8952a;
-  --asu-trail-error: #ff3b30;
+.agent-trail {
+  --agent-trail-rule: color-mix(in srgb, currentColor 14%, transparent);
+  --agent-trail-quiet: color-mix(in srgb, currentColor 55%, transparent);
+  --agent-trail-needs-you: #e8952a;
+  --agent-trail-error: #ff3b30;
 
   display: block;
   font-size: 14px;
   line-height: 1.45;
 }
 
-.asu-trail__earlier {
+.agent-trail__earlier {
   margin: 0 0 10px;
   padding-left: 22px;
   font-size: 12px;
-  color: var(--asu-trail-quiet);
+  color: var(--agent-trail-quiet);
 }
 
-.asu-trail__list,
-.asu-trail__sublist {
+.agent-trail__list,
+.agent-trail__sublist {
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
-.asu-trail__item {
+.agent-trail__item {
   position: relative;
   display: flex;
   align-items: flex-start;
@@ -40,80 +40,80 @@
 
 /* The rail. It runs between the nodes and stops at the last one, so the trail
    reads as finished rather than trailing off. */
-.asu-trail__item::before {
+.agent-trail__item::before {
   content: '';
   position: absolute;
   left: 5px;
   top: 0;
   bottom: 0;
   width: 1px;
-  background: var(--asu-trail-rule);
+  background: var(--agent-trail-rule);
 }
 
-.asu-trail__item:first-child::before {
+.agent-trail__item:first-child::before {
   top: 14px;
 }
 
-.asu-trail__item:last-child::before {
+.agent-trail__item:last-child::before {
   bottom: auto;
   height: 14px;
 }
 
-.asu-trail__node {
+.agent-trail__node {
   position: absolute;
   left: 2px;
   top: 12px;
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: var(--asu-trail-quiet);
+  background: var(--agent-trail-quiet);
 }
 
 /* Exceptions, and only exceptions, carry colour. Failure is a ring rather than
    a fill for the same reason it is in StatusIndicator: amber and red read as
    one colour for some people, so the difference has to be shape. */
-.asu-trail__item[data-kind='ask'] .asu-trail__node {
-  background: var(--asu-trail-needs-you);
+.agent-trail__item[data-kind='ask'] .agent-trail__node {
+  background: var(--agent-trail-needs-you);
 }
 
-.asu-trail__item[data-kind='error'] .asu-trail__node {
+.agent-trail__item[data-kind='error'] .agent-trail__node {
   background: transparent;
-  border: 2px solid var(--asu-trail-error);
+  border: 2px solid var(--agent-trail-error);
 }
 
-.asu-trail__item[data-kind='ask'] .asu-trail__summary,
-.asu-trail__item[data-kind='error'] .asu-trail__summary {
+.agent-trail__item[data-kind='ask'] .agent-trail__summary,
+.agent-trail__item[data-kind='error'] .agent-trail__summary {
   font-weight: 500;
 }
 
-.asu-trail__body {
+.agent-trail__body {
   flex: 1 1 auto;
   min-width: 0;
   display: block;
 }
 
-.asu-trail__summary {
+.agent-trail__summary {
   display: block;
 }
 
-.asu-trail__detail {
+.agent-trail__detail {
   display: block;
   margin-top: 2px;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 12px;
-  color: var(--asu-trail-quiet);
+  color: var(--agent-trail-quiet);
   overflow-wrap: anywhere;
 }
 
-.asu-trail__at {
+.agent-trail__at {
   flex: none;
   font-size: 12px;
-  color: var(--asu-trail-quiet);
+  color: var(--agent-trail-quiet);
   font-variant-numeric: tabular-nums;
   padding-top: 1px;
 }
 
-.asu-trail__group {
+.agent-trail__group {
   display: flex;
   align-items: baseline;
   gap: 10px;
@@ -123,31 +123,31 @@
   padding: 0;
   border: 0;
   background: transparent;
-  color: var(--asu-trail-quiet);
+  color: var(--agent-trail-quiet);
   cursor: pointer;
 }
 
-.asu-trail__group-hint {
+.agent-trail__group-hint {
   flex: none;
   font-size: 12px;
   text-decoration: underline;
   text-underline-offset: 3px;
 }
 
-.asu-trail__group:focus-visible {
+.agent-trail__group:focus-visible {
   outline: 2px solid currentColor;
   outline-offset: 2px;
 }
 
-.asu-trail__sublist {
+.agent-trail__sublist {
   margin-top: 6px;
   padding-left: 12px;
-  border-left: 1px solid var(--asu-trail-rule);
+  border-left: 1px solid var(--agent-trail-rule);
   display: grid;
   gap: 5px;
 }
 
-.asu-trail__subitem {
+.agent-trail__subitem {
   font-size: 13px;
-  color: var(--asu-trail-quiet);
+  color: var(--agent-trail-quiet);
 }

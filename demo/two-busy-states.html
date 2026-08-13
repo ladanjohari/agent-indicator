@@ -65,11 +65,11 @@
       .verdict { margin-top: 34px; padding-top: 20px; border-top: 1px solid var(--rule); font-size: 14px; }
 
       /* The component's own styles, copied exactly. */
-      .asu-status {
-        --asu-color-idle: color-mix(in srgb, currentColor 18%, transparent);
-        --asu-color-needs-you: #e8952a;
-        --asu-color-error: #ff3b30;
-        --asu-color-done: #34c759;
+      .agent-status {
+        --agent-color-idle: color-mix(in srgb, currentColor 18%, transparent);
+        --agent-color-needs-you: #e8952a;
+        --agent-color-error: #ff3b30;
+        --agent-color-done: #34c759;
         display: inline-flex;
         align-items: center;
         gap: 0.5em;
@@ -77,36 +77,36 @@
         font-size: 14px;
       }
 
-      .asu-status__dot {
+      .agent-status__dot {
         flex: none;
         width: 8px;
         height: 8px;
         border-radius: 50%;
-        background: var(--asu-color-idle);
+        background: var(--agent-color-idle);
       }
 
-      .asu-status[data-state='working'] .asu-status__dot { background: currentColor; }
+      .agent-status[data-state='working'] .agent-status__dot { background: currentColor; }
 
-      .asu-status[data-state='running'] .asu-status__dot {
+      .agent-status[data-state='running'] .agent-status__dot {
         background: currentColor;
-        animation: asu-breathe 1.6s ease-in-out infinite;
+        animation: agent-breathe 1.6s ease-in-out infinite;
       }
 
-      .asu-status[data-state='needsYou'] .asu-status__dot { background: var(--asu-color-needs-you); }
-      .asu-status[data-state='done'] .asu-status__dot { background: var(--asu-color-done); }
+      .agent-status[data-state='needsYou'] .agent-status__dot { background: var(--agent-color-needs-you); }
+      .agent-status[data-state='done'] .agent-status__dot { background: var(--agent-color-done); }
 
-      .asu-status[data-state='error'] .asu-status__dot {
+      .agent-status[data-state='error'] .agent-status__dot {
         background: transparent;
-        border: 2px solid var(--asu-color-error);
+        border: 2px solid var(--agent-color-error);
       }
 
-      @keyframes asu-breathe {
+      @keyframes agent-breathe {
         0%, 100% { opacity: 1; transform: scale(1); }
         50% { opacity: 0.15; transform: scale(0.35); }
       }
 
       @media (prefers-reduced-motion: reduce) {
-        .asu-status[data-state='running'] .asu-status__dot { animation: none; }
+        .agent-status[data-state='running'] .agent-status__dot { animation: none; }
       }
     </style>
   </head>
@@ -132,23 +132,23 @@
           <ul class="timeline">
             <li class="tick">
               <span class="at">0s</span>
-              <span class="asu-status" data-state="idle"><span class="asu-status__dot"></span>Idle</span>
+              <span class="agent-status" data-state="idle"><span class="agent-status__dot"></span>Idle</span>
             </li>
             <li class="tick">
               <span class="at">2s</span>
-              <span class="asu-status" data-state="working"><span class="asu-status__dot"></span>Writing</span>
+              <span class="agent-status" data-state="working"><span class="agent-status__dot"></span>Writing</span>
             </li>
             <li class="tick">
               <span class="at">6s</span>
-              <span class="asu-status" data-state="running"><span class="asu-status__dot"></span>Running a command</span>
+              <span class="agent-status" data-state="running"><span class="agent-status__dot"></span>Running a command</span>
             </li>
             <li class="tick">
               <span class="at">11s</span>
-              <span class="asu-status" data-state="working"><span class="asu-status__dot"></span>Writing</span>
+              <span class="agent-status" data-state="working"><span class="agent-status__dot"></span>Writing</span>
             </li>
             <li class="tick">
               <span class="at">14s</span>
-              <span class="asu-status" data-state="done"><span class="asu-status__dot"></span>Done</span>
+              <span class="agent-status" data-state="done"><span class="agent-status__dot"></span>Done</span>
             </li>
           </ul>
         </section>
@@ -159,23 +159,23 @@
           <ul class="timeline">
             <li class="tick">
               <span class="at">0s</span>
-              <span class="asu-status" data-state="idle"><span class="asu-status__dot"></span>Idle</span>
+              <span class="agent-status" data-state="idle"><span class="agent-status__dot"></span>Idle</span>
             </li>
             <li class="tick">
               <span class="at">2s</span>
-              <span class="asu-status" data-state="working"><span class="asu-status__dot"></span>Writing</span>
+              <span class="agent-status" data-state="working"><span class="agent-status__dot"></span>Writing</span>
             </li>
             <li class="tick">
               <span class="at">6s</span>
-              <span class="asu-status" data-state="running"><span class="asu-status__dot"></span>Running a command</span>
+              <span class="agent-status" data-state="running"><span class="agent-status__dot"></span>Running a command</span>
             </li>
             <li class="tick still">
               <span class="at">12m</span>
-              <span class="asu-status" data-state="running"><span class="asu-status__dot"></span>Running a command</span>
+              <span class="agent-status" data-state="running"><span class="agent-status__dot"></span>Running a command</span>
             </li>
             <li class="tick still">
               <span class="at">41m</span>
-              <span class="asu-status" data-state="running"><span class="asu-status__dot"></span>Running a command</span>
+              <span class="agent-status" data-state="running"><span class="agent-status__dot"></span>Running a command</span>
             </li>
           </ul>
         </section>

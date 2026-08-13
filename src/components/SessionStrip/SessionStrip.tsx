@@ -64,9 +64,9 @@ export function SessionStrip({
   return (
     <section
       aria-label={label}
-      className={['asu-strip', className].filter(Boolean).join(' ')}
+      className={['agent-strip', className].filter(Boolean).join(' ')}
     >
-      <ul className="asu-strip__list">
+      <ul className="agent-strip__list">
         {rows.map((session) => {
           // One StatusIndicator per row, never two. A second one would read the
           // state out twice to a screen reader.
@@ -79,11 +79,11 @@ export function SessionStrip({
               <StatusIndicator
                 state={session.state}
                 showLabel={isActionable(session)}
-                className="asu-strip__status"
+                className="agent-strip__status"
               />
-              <span className="asu-strip__name">{session.name}</span>
+              <span className="agent-strip__name">{session.name}</span>
               {session.elapsed ? (
-                <span className="asu-strip__elapsed">{session.elapsed}</span>
+                <span className="agent-strip__elapsed">{session.elapsed}</span>
               ) : null}
             </>
           )
@@ -91,27 +91,27 @@ export function SessionStrip({
           return (
             <li
               key={session.id}
-              className="asu-strip__item"
+              className="agent-strip__item"
               data-state={session.state}
               data-actionable={isActionable(session) ? 'true' : undefined}
             >
               {onSelect ? (
                 <button
                   type="button"
-                  className="asu-strip__row asu-strip__row--button"
+                  className="agent-strip__row agent-strip__row--button"
                   onClick={() => onSelect(session.id)}
                 >
                   {content}
                 </button>
               ) : (
-                <span className="asu-strip__row">{content}</span>
+                <span className="agent-strip__row">{content}</span>
               )}
             </li>
           )
         })}
       </ul>
 
-      {summary ? <p className="asu-strip__summary">{summary}</p> : null}
+      {summary ? <p className="agent-strip__summary">{summary}</p> : null}
     </section>
   )
 }

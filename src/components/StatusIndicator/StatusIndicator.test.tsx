@@ -39,7 +39,7 @@ describe('StatusIndicator', () => {
 
   it('shows the label visibly when asked', () => {
     render(<StatusIndicator state="done" showLabel />)
-    expect(screen.getByText('Done')).not.toHaveClass('asu-sr-only')
+    expect(screen.getByText('Done')).not.toHaveClass('agent-sr-only')
   })
 
   it('lets the wording be replaced, for other languages and vocabularies', () => {
@@ -55,13 +55,13 @@ describe('StatusIndicator', () => {
 
   it('keeps its own classes when given one of yours', () => {
     const { container } = render(<StatusIndicator state="idle" className="mine" />)
-    const root = container.querySelector('.asu-status')
+    const root = container.querySelector('.agent-status')
     expect(root).toHaveClass('mine')
-    expect(root).toHaveClass('asu-status--md')
+    expect(root).toHaveClass('agent-status--md')
   })
 
   it('hides the dot from screen readers, because the label already says it', () => {
     const { container } = render(<StatusIndicator state="error" />)
-    expect(container.querySelector('.asu-status__dot')).toHaveAttribute('aria-hidden', 'true')
+    expect(container.querySelector('.agent-status__dot')).toHaveAttribute('aria-hidden', 'true')
   })
 })

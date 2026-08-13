@@ -113,58 +113,58 @@ export function ActivityTrail({
   return (
     <section
       aria-label={label}
-      className={['asu-trail', className].filter(Boolean).join(' ')}
+      className={['agent-trail', className].filter(Boolean).join(' ')}
     >
       {earlier > 0 ? (
-        <p className="asu-trail__earlier">{earlier} earlier steps</p>
+        <p className="agent-trail__earlier">{earlier} earlier steps</p>
       ) : null}
 
-      <ol className="asu-trail__list">
+      <ol className="agent-trail__list">
         {shown.map((row) => {
           if (row.type === 'single') {
             const { activity } = row
             return (
               <li
                 key={row.key}
-                className="asu-trail__item"
+                className="agent-trail__item"
                 data-kind={activity.kind}
               >
-                <span className="asu-trail__node" aria-hidden="true" />
-                <span className="asu-trail__body">
-                  <span className="asu-trail__summary">{activity.summary}</span>
+                <span className="agent-trail__node" aria-hidden="true" />
+                <span className="agent-trail__body">
+                  <span className="agent-trail__summary">{activity.summary}</span>
                   {activity.detail ? (
-                    <code className="asu-trail__detail">{activity.detail}</code>
+                    <code className="agent-trail__detail">{activity.detail}</code>
                   ) : null}
                 </span>
-                {activity.at ? <span className="asu-trail__at">{activity.at}</span> : null}
+                {activity.at ? <span className="agent-trail__at">{activity.at}</span> : null}
               </li>
             )
           }
 
           const isOpen = openKeys.includes(row.key)
           return (
-            <li key={row.key} className="asu-trail__item" data-kind={row.kind}>
-              <span className="asu-trail__node" aria-hidden="true" />
-              <span className="asu-trail__body">
+            <li key={row.key} className="agent-trail__item" data-kind={row.kind}>
+              <span className="agent-trail__node" aria-hidden="true" />
+              <span className="agent-trail__body">
                 <button
                   type="button"
-                  className="asu-trail__group"
+                  className="agent-trail__group"
                   aria-expanded={isOpen}
                   onClick={() => toggle(row.key)}
                 >
-                  <span className="asu-trail__summary">
+                  <span className="agent-trail__summary">
                     {summarise(row.kind, row.activities.length)}
                   </span>
-                  <span className="asu-trail__group-hint">{isOpen ? 'Hide' : 'Show'}</span>
+                  <span className="agent-trail__group-hint">{isOpen ? 'Hide' : 'Show'}</span>
                 </button>
 
                 {isOpen ? (
-                  <ol className="asu-trail__sublist">
+                  <ol className="agent-trail__sublist">
                     {row.activities.map((activity) => (
-                      <li key={activity.id} className="asu-trail__subitem">
-                        <span className="asu-trail__summary">{activity.summary}</span>
+                      <li key={activity.id} className="agent-trail__subitem">
+                        <span className="agent-trail__summary">{activity.summary}</span>
                         {activity.detail ? (
-                          <code className="asu-trail__detail">{activity.detail}</code>
+                          <code className="agent-trail__detail">{activity.detail}</code>
                         ) : null}
                       </li>
                     ))}

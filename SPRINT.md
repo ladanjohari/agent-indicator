@@ -52,9 +52,9 @@ per component. Its own Vite app in `docs/`, deployed by
 
 **Done.** Pushed and public, 11 August 2026. CI green, docs site deployed.
 
-- Repo: https://github.com/ladanjohari/agent-state-ui
-- Docs: https://ladanjohari.com/agent-state-ui/
-- npm: https://www.npmjs.com/package/agent-state-ui
+- Repo: https://github.com/ladanjohari/agent-indicator
+- Docs: https://ladanjohari.com/agent-indicator/
+- npm: https://www.npmjs.com/package/agent-indicator
 
 **Published to npm as v0.1.0 on 11 August 2026.** Verified by installing it from
 the public registry into a clean project and rendering a component.
@@ -71,7 +71,7 @@ already has, and hers is ladanjohari.com.
 
 ## Decided, do not reopen
 
-- **Name: `agent-state-ui`.**
+- **Name: `agent-indicator`.**
 - **Six states, not five.** `working` is the agent producing, `running` is a
   command it started that is still going. One will always finish. The other can
   hang forever and never come back to ask for anything. Labelled **Writing** and
@@ -101,7 +101,7 @@ None blocking.
 
 ## How to pick this back up
 
-Say: "read SPRINT.md in agent-state-ui and carry on from the next step."
+Say: "read SPRINT.md in agent-indicator and carry on from the next step."
 
 Working rules: explain before generating, plain language before any new tool is
 installed, and **no em dashes anywhere in this repo**.

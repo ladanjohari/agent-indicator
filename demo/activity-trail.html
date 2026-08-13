@@ -38,58 +38,58 @@
       }
 
       /* ActivityTrail, copied exactly. */
-      .asu-trail {
-        --asu-trail-rule: color-mix(in srgb, currentColor 14%, transparent);
-        --asu-trail-quiet: color-mix(in srgb, currentColor 55%, transparent);
-        --asu-trail-needs-you: #e8952a;
-        --asu-trail-error: #ff3b30;
+      .agent-trail {
+        --agent-trail-rule: color-mix(in srgb, currentColor 14%, transparent);
+        --agent-trail-quiet: color-mix(in srgb, currentColor 55%, transparent);
+        --agent-trail-needs-you: #e8952a;
+        --agent-trail-error: #ff3b30;
         display: block; font-size: 14px; line-height: 1.45;
       }
-      .asu-trail__list, .asu-trail__sublist { list-style: none; margin: 0; padding: 0; }
-      .asu-trail__item {
+      .agent-trail__list, .agent-trail__sublist { list-style: none; margin: 0; padding: 0; }
+      .agent-trail__item {
         position: relative; display: flex; align-items: flex-start; gap: 10px;
         padding: 6px 0 6px 22px;
       }
-      .asu-trail__item::before {
+      .agent-trail__item::before {
         content: ''; position: absolute; left: 5px; top: 0; bottom: 0;
-        width: 1px; background: var(--asu-trail-rule);
+        width: 1px; background: var(--agent-trail-rule);
       }
-      .asu-trail__item:first-child::before { top: 14px; }
-      .asu-trail__item:last-child::before { bottom: auto; height: 14px; }
-      .asu-trail__node {
+      .agent-trail__item:first-child::before { top: 14px; }
+      .agent-trail__item:last-child::before { bottom: auto; height: 14px; }
+      .agent-trail__node {
         position: absolute; left: 2px; top: 12px; width: 7px; height: 7px;
-        border-radius: 50%; background: var(--asu-trail-quiet);
+        border-radius: 50%; background: var(--agent-trail-quiet);
       }
-      .asu-trail__item[data-kind='ask'] .asu-trail__node { background: var(--asu-trail-needs-you); }
-      .asu-trail__item[data-kind='error'] .asu-trail__node {
-        background: transparent; border: 2px solid var(--asu-trail-error);
+      .agent-trail__item[data-kind='ask'] .agent-trail__node { background: var(--agent-trail-needs-you); }
+      .agent-trail__item[data-kind='error'] .agent-trail__node {
+        background: transparent; border: 2px solid var(--agent-trail-error);
       }
-      .asu-trail__item[data-kind='ask'] .asu-trail__summary,
-      .asu-trail__item[data-kind='error'] .asu-trail__summary { font-weight: 500; }
-      .asu-trail__body { flex: 1 1 auto; min-width: 0; display: block; }
-      .asu-trail__summary { display: block; }
-      .asu-trail__detail {
+      .agent-trail__item[data-kind='ask'] .agent-trail__summary,
+      .agent-trail__item[data-kind='error'] .agent-trail__summary { font-weight: 500; }
+      .agent-trail__body { flex: 1 1 auto; min-width: 0; display: block; }
+      .agent-trail__summary { display: block; }
+      .agent-trail__detail {
         display: block; margin-top: 2px;
         font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-        font-size: 12px; color: var(--asu-trail-quiet); overflow-wrap: anywhere;
+        font-size: 12px; color: var(--agent-trail-quiet); overflow-wrap: anywhere;
       }
-      .asu-trail__at {
-        flex: none; font-size: 12px; color: var(--asu-trail-quiet);
+      .agent-trail__at {
+        flex: none; font-size: 12px; color: var(--agent-trail-quiet);
         font-variant-numeric: tabular-nums; padding-top: 1px;
       }
-      .asu-trail__group {
+      .agent-trail__group {
         display: flex; align-items: baseline; gap: 10px; width: 100%;
         font: inherit; text-align: left; padding: 0; border: 0;
-        background: transparent; color: var(--asu-trail-quiet); cursor: pointer;
+        background: transparent; color: var(--agent-trail-quiet); cursor: pointer;
       }
-      .asu-trail__group-hint {
+      .agent-trail__group-hint {
         flex: none; font-size: 12px; text-decoration: underline; text-underline-offset: 3px;
       }
-      .asu-trail__sublist {
+      .agent-trail__sublist {
         margin-top: 6px; padding-left: 12px;
-        border-left: 1px solid var(--asu-trail-rule); display: grid; gap: 5px;
+        border-left: 1px solid var(--agent-trail-rule); display: grid; gap: 5px;
       }
-      .asu-trail__subitem { font-size: 13px; color: var(--asu-trail-quiet); }
+      .agent-trail__subitem { font-size: 13px; color: var(--agent-trail-quiet); }
     </style>
   </head>
   <body>
@@ -130,64 +130,64 @@
           <p class="step-title">ActivityTrail</p>
           <p class="step-note">Seven rows. The reads and the edits fold, the exceptions never do.</p>
 
-          <section class="asu-trail">
-            <ol class="asu-trail__list">
-              <li class="asu-trail__item" data-kind="read">
-                <span class="asu-trail__node"></span>
-                <span class="asu-trail__body">
-                  <span class="asu-trail__group">
-                    <span class="asu-trail__summary">Read 4 files</span>
-                    <span class="asu-trail__group-hint">Show</span>
+          <section class="agent-trail">
+            <ol class="agent-trail__list">
+              <li class="agent-trail__item" data-kind="read">
+                <span class="agent-trail__node"></span>
+                <span class="agent-trail__body">
+                  <span class="agent-trail__group">
+                    <span class="agent-trail__summary">Read 4 files</span>
+                    <span class="agent-trail__group-hint">Show</span>
                   </span>
                 </span>
               </li>
-              <li class="asu-trail__item" data-kind="ask">
-                <span class="asu-trail__node"></span>
-                <span class="asu-trail__body">
-                  <span class="asu-trail__summary">Asked to delete the legacy folder</span>
-                  <code class="asu-trail__detail">rm -rf legacy</code>
+              <li class="agent-trail__item" data-kind="ask">
+                <span class="agent-trail__node"></span>
+                <span class="agent-trail__body">
+                  <span class="agent-trail__summary">Asked to delete the legacy folder</span>
+                  <code class="agent-trail__detail">rm -rf legacy</code>
                 </span>
-                <span class="asu-trail__at">14:03</span>
+                <span class="agent-trail__at">14:03</span>
               </li>
-              <li class="asu-trail__item" data-kind="edit">
-                <span class="asu-trail__node"></span>
-                <span class="asu-trail__body">
-                  <span class="asu-trail__group">
-                    <span class="asu-trail__summary">Edited 2 files</span>
-                    <span class="asu-trail__group-hint">Show</span>
+              <li class="agent-trail__item" data-kind="edit">
+                <span class="agent-trail__node"></span>
+                <span class="agent-trail__body">
+                  <span class="agent-trail__group">
+                    <span class="agent-trail__summary">Edited 2 files</span>
+                    <span class="agent-trail__group-hint">Show</span>
                   </span>
                 </span>
               </li>
-              <li class="asu-trail__item" data-kind="run">
-                <span class="asu-trail__node"></span>
-                <span class="asu-trail__body">
-                  <span class="asu-trail__summary">Ran the test suite</span>
-                  <code class="asu-trail__detail">npm test</code>
+              <li class="agent-trail__item" data-kind="run">
+                <span class="agent-trail__node"></span>
+                <span class="agent-trail__body">
+                  <span class="agent-trail__summary">Ran the test suite</span>
+                  <code class="agent-trail__detail">npm test</code>
                 </span>
-                <span class="asu-trail__at">14:05</span>
+                <span class="agent-trail__at">14:05</span>
               </li>
-              <li class="asu-trail__item" data-kind="error">
-                <span class="asu-trail__node"></span>
-                <span class="asu-trail__body">
-                  <span class="asu-trail__summary">Test suite failed</span>
-                  <code class="asu-trail__detail">exit code 1, 2 tests failing</code>
+              <li class="agent-trail__item" data-kind="error">
+                <span class="agent-trail__node"></span>
+                <span class="agent-trail__body">
+                  <span class="agent-trail__summary">Test suite failed</span>
+                  <code class="agent-trail__detail">exit code 1, 2 tests failing</code>
                 </span>
-                <span class="asu-trail__at">14:06</span>
+                <span class="agent-trail__at">14:06</span>
               </li>
-              <li class="asu-trail__item" data-kind="edit">
-                <span class="asu-trail__node"></span>
-                <span class="asu-trail__body">
-                  <span class="asu-trail__summary">Edited src/auth.test.ts</span>
+              <li class="agent-trail__item" data-kind="edit">
+                <span class="agent-trail__node"></span>
+                <span class="agent-trail__body">
+                  <span class="agent-trail__summary">Edited src/auth.test.ts</span>
                 </span>
-                <span class="asu-trail__at">14:08</span>
+                <span class="agent-trail__at">14:08</span>
               </li>
-              <li class="asu-trail__item" data-kind="run">
-                <span class="asu-trail__node"></span>
-                <span class="asu-trail__body">
-                  <span class="asu-trail__summary">Ran the test suite</span>
-                  <code class="asu-trail__detail">npm test</code>
+              <li class="agent-trail__item" data-kind="run">
+                <span class="agent-trail__node"></span>
+                <span class="agent-trail__body">
+                  <span class="agent-trail__summary">Ran the test suite</span>
+                  <code class="agent-trail__detail">npm test</code>
                 </span>
-                <span class="asu-trail__at">14:09</span>
+                <span class="agent-trail__at">14:09</span>
               </li>
             </ol>
           </section>
@@ -195,20 +195,20 @@
           <p class="step-note" style="margin-top: 22px">
             Opening the first group shows what was in it.
           </p>
-          <section class="asu-trail">
-            <ol class="asu-trail__list">
-              <li class="asu-trail__item" data-kind="read">
-                <span class="asu-trail__node"></span>
-                <span class="asu-trail__body">
-                  <span class="asu-trail__group">
-                    <span class="asu-trail__summary">Read 4 files</span>
-                    <span class="asu-trail__group-hint">Hide</span>
+          <section class="agent-trail">
+            <ol class="agent-trail__list">
+              <li class="agent-trail__item" data-kind="read">
+                <span class="agent-trail__node"></span>
+                <span class="agent-trail__body">
+                  <span class="agent-trail__group">
+                    <span class="agent-trail__summary">Read 4 files</span>
+                    <span class="agent-trail__group-hint">Hide</span>
                   </span>
-                  <ol class="asu-trail__sublist">
-                    <li class="asu-trail__subitem">Read src/auth.ts</li>
-                    <li class="asu-trail__subitem">Read src/session.ts</li>
-                    <li class="asu-trail__subitem">Read src/index.ts</li>
-                    <li class="asu-trail__subitem">Read src/tokens.ts</li>
+                  <ol class="agent-trail__sublist">
+                    <li class="agent-trail__subitem">Read src/auth.ts</li>
+                    <li class="agent-trail__subitem">Read src/session.ts</li>
+                    <li class="agent-trail__subitem">Read src/index.ts</li>
+                    <li class="agent-trail__subitem">Read src/tokens.ts</li>
                   </ol>
                 </span>
               </li>

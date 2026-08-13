@@ -90,15 +90,15 @@ export function Docs() {
   return (
     <>
       <header className="head">
-        <h1>agent-state-ui</h1>
+        <h1>agent-indicator</h1>
         <p className="head__line">React components for the states an AI agent is actually in.</p>
         <pre className="head__install">
-          <code>npm install agent-state-ui</code>
+          <code>npm install agent-indicator</code>
         </pre>
         <p className="head__status">
-          <a href="https://www.npmjs.com/package/agent-state-ui">v0.1.0 on npm</a>
+          <a href="https://www.npmjs.com/package/agent-indicator">v0.1.0 on npm</a>
           {'. Source on '}
-          <a href="https://github.com/ladanjohari/agent-state-ui">GitHub</a>
+          <a href="https://github.com/ladanjohari/agent-indicator">GitHub</a>
           {'. MIT licensed.'}
         </p>
       </header>
@@ -330,12 +330,12 @@ export function Docs() {
         <section className="component">
           <h2>Getting started</h2>
           <pre className="block">
-            <code>{`npm install agent-state-ui`}</code>
+            <code>{`npm install agent-indicator`}</code>
           </pre>
           <p>Import the component and the stylesheet once, anywhere in your app.</p>
           <pre className="block">
-            <code>{`import { StatusIndicator } from 'agent-state-ui'
-import 'agent-state-ui/styles.css'
+            <code>{`import { StatusIndicator } from 'agent-indicator'
+import 'agent-indicator/styles.css'
 
 export function Row() {
   return <StatusIndicator state="needsYou" showLabel />
@@ -350,7 +350,7 @@ export function Row() {
 
       <footer className="foot">
         <span>MIT licensed</span>
-        <a href="https://github.com/ladanjohari/agent-state-ui">GitHub</a>
+        <a href="https://github.com/ladanjohari/agent-indicator">GitHub</a>
       </footer>
     </>
   )

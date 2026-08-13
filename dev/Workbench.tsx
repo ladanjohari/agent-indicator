@@ -89,7 +89,7 @@ export function Workbench() {
   return (
     <main className="wb">
       <header className="wb-head">
-        <h1>agent-state-ui</h1>
+        <h1>agent-indicator</h1>
         <p>Local workbench. Save a file and this page updates without reloading.</p>
       </header>
 
