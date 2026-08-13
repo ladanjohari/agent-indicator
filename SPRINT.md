@@ -67,7 +67,31 @@ The docs live under the portfolio domain rather than github.io, because
 GitHub Pages serves project sites from whatever custom domain the account
 already has, and hers is ladanjohari.com.
 
-**Next.** Publish to npm, which makes the install line real.
+**Next, in priority order:**
+
+1. **The AI SDK adapter.** Highest leverage by a distance, and it runs in its own
+   session. See `BRIEF-AI-SDK-ADAPTER.md`. The AI SDK ships an
+   `approval-requested` state and no interface, and tells developers to build the
+   buttons themselves. `@ai-sdk/react` is installed around 7.3 million times a
+   week. Becoming the default answer to a question people already search beats
+   any amount of announcing.
+2. **The docs hook**, above the fold: a live `ApprovalGate` where the visitor
+   clears the safe requests by reflex and finds they cannot fat-finger the
+   delete. Two seconds, no reading. This is the equivalent of watching Sonner's
+   toasts stack.
+3. **A motion clip in the README**, through the existing Puppeteer plus ffmpeg
+   pipeline. GitHub is where people land first and it is currently all text.
+4. **The article**, in the shape Emil used: the problem, the insight, the
+   decisions with their reasons, the details nobody sees. After 1 to 3, because
+   it needs something to point at.
+5. **Announce**, once, with the clip.
+
+**Positioning learned from the research on 13 August 2026:** the competitors that
+are actually installed, assistant-ui and CopilotKit, are frameworks that want the
+whole chat surface. Nothing standalone exists for a team that already has its own
+interface and needs this one piece done properly. **ApprovalGate is the lead
+product and the other three components are the supporting cast.** Lead with it
+everywhere.
 
 ## Decided, do not reopen
 
