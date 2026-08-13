@@ -1,5 +1,11 @@
 # Worklog
 
+## 2026-08-13
+
+- **Did:** renamed the package to `agent-indicator` across npm, GitHub, the docs site, the portfolio homepage and every local note; published `agent-indicator@0.1.0` and verified it by installing from the public registry; unpublished the old name inside the free window.
+- **Broke:** the first publish failed with a bare `E404` because the npm session had expired, while the unpublish printed as though it had succeeded and had not, so the terminal and the registry disagreed for a while; renaming the GitHub repo moved the Pages path and left the live homepage pointing at a 404 until the fix was pushed.
+- **Decided:** check the registry rather than the terminal before believing any publish step; a name you do not feel is a name you will not say, which is why `veille` was dropped after being chosen; and not `blinker`, because this library breathes rather than blinks, and blinking reads as alarm where breathing reads as alive.
+
 ## 2026-08-11
 
 - **Did:** built and shipped `agent-indicator@0.1.0`, four components with 34 tests, a docs site at ladanjohari.com/agent-indicator, CI and Pages deploys, repo public, v0.1.0 tagged and released.

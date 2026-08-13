@@ -71,7 +71,16 @@ already has, and hers is ladanjohari.com.
 
 ## Decided, do not reopen
 
-- **Name: `agent-indicator`.**
+- **Name: `agent-indicator`.** Settled 13 August 2026 after publishing once as
+  `agent-state-ui` and renaming inside the free window. An indicator is the
+  family this belongs to: modem lights, traffic lights, turn signals, dashboard
+  lamps. It also continues Session Indicator, so the two read as one person
+  returning to the same problem. Two alternatives were tried and rejected:
+  `veille`, dropped because a name you do not feel is a name you will not say,
+  and `blinker`, dropped because British blinkers are what stop a horse seeing
+  sideways, because `<blink>` is a joke every frontend engineer knows, and above
+  all because this library deliberately **breathes rather than blinks**. Motion
+  means alive; blinking means alarm.
 - **Six states, not five.** `working` is the agent producing, `running` is a
   command it started that is still going. One will always finish. The other can
   hang forever and never come back to ask for anything. Labelled **Writing** and
