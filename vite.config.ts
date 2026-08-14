@@ -13,9 +13,14 @@ export default defineConfig({
   plugins: [react()],
   build: {
     lib: {
-      entry: resolve(import.meta.dirname, 'src/index.ts'),
+      // Two entries, two files. `ai-sdk` is a separate one so that installing
+      // this package never drags AI SDK shaped code into an app that does not
+      // use it.
+      entry: {
+        index: resolve(import.meta.dirname, 'src/index.ts'),
+        'ai-sdk': resolve(import.meta.dirname, 'src/ai-sdk/index.ts'),
+      },
       formats: ['es'],
-      fileName: 'index',
       cssFileName: 'agent-indicator',
     },
     rollupOptions: {

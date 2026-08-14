@@ -6,6 +6,7 @@ import {
   StatusIndicator,
 } from '../src'
 import type { Activity, ApprovalRequest, Session, SessionState } from '../src'
+import { ApprovalGate as SdkApprovalGate } from '../src/ai-sdk'
 import { Example, Locked, PropsTable } from './Example'
 import { Hero } from './Hero'
 
@@ -77,6 +78,72 @@ function GateExample() {
   )
 }
 
+// Real AI SDK message parts, in the shape `useChat` hands them over. Nothing is
+// mocked here beyond the messages themselves: the gate below is doing exactly
+// what it would do against a live model.
+const SDK_MESSAGES = [
+  {
+    parts: [
+      { type: 'tool-searchWeb', toolCallId: 'c1', state: 'approval-requested', input: { query: 'competitor pricing 2026' }, approval: { id: 'a1' } },
+      { type: 'tool-readFile', toolCallId: 'c2', state: 'approval-requested', input: { path: 'src/pricing.ts' }, approval: { id: 'a2' } },
+      { type: 'tool-deleteFile', toolCallId: 'c3', state: 'approval-requested', input: { path: 'src/legacy' }, approval: { id: 'a3' } },
+    ],
+  },
+]
+
+function SdkExample() {
+  const [declared, setDeclared] = useState(false)
+  const [answered, setAnswered] = useState<string[]>([])
+  const [log, setLog] = useState<string[]>([])
+
+  const messages = SDK_MESSAGES.map((message) => ({
+    parts: message.parts.filter((part) => !answered.includes(part.approval.id)),
+  }))
+
+  const reset = () => {
+    setAnswered([])
+    setLog([])
+  }
+
+  return (
+    <div className="gate-example">
+      <button
+        type="button"
+        className="gate-example__reset"
+        onClick={() => {
+          setDeclared((current) => !current)
+          reset()
+        }}
+      >
+        {declared ? 'Take the declaration away' : 'Declare which tools are reversible'}
+      </button>
+
+      <SdkApprovalGate
+        messages={messages}
+        addToolApprovalResponse={({ id, approved }) => {
+          setAnswered((current) => [...current, id])
+          setLog((current) => [...current, (approved ? 'approved' : 'denied') + ': ' + id])
+        }}
+        reversible={declared ? { searchWeb: true, readFile: true } : undefined}
+        title={false}
+      />
+
+      {log.length > 0 ? (
+        <ul className="gate-example__log">
+          {log.map((line, index) => (
+            <li key={index}>{line}</li>
+          ))}
+        </ul>
+      ) : null}
+      {answered.length === 3 ? (
+        <button type="button" className="gate-example__reset" onClick={reset}>
+          Reset
+        </button>
+      ) : null}
+    </div>
+  )
+}
+
 function StripExample() {
   const [chosen, setChosen] = useState<string | null>(null)
   return (
@@ -100,7 +167,7 @@ export function Docs() {
           <code>npm install agent-indicator</code>
         </pre>
         <p className="head__status">
-          <a href="https://www.npmjs.com/package/agent-indicator">v0.1.0 on npm</a>
+          <a href="https://www.npmjs.com/package/agent-indicator">v0.3.0 on npm</a>
           {'. Source on '}
           <a href="https://github.com/ladanjohari/agent-indicator">GitHub</a>
           {'. MIT licensed.'}
@@ -229,7 +296,7 @@ export function Docs() {
               { name: 'onApprove', type: '(ids: string[]) => void', required: true, description: 'Called with the ids being approved. Reversible ones may arrive together, destructive ones never do.' },
               { name: 'onDeny', type: '(ids: string[]) => void', required: true, description: 'Called with the ids being refused.' },
               { name: 'onDismiss', type: '() => void', description: 'Called when it is put away without deciding. Leave it out and the gate cannot be dismissed.' },
-              { name: 'title', type: 'string', description: 'Heading. Defaults to "Waiting for you".' },
+              { name: 'title', type: 'string | false', description: 'Heading. Defaults to "Waiting for you". Pass false to drop the heading when the gate sits inline in a conversation. The landmark keeps its name either way.' },
               { name: 'className', type: 'string', description: 'Your own class, for spacing and positioning from outside.' },
             ]}
           />
@@ -241,13 +308,24 @@ export function Docs() {
             because people approve commands they have not parsed.
           </p>
 
+          <p className="restyle">
+            <code>reversible</code> takes three values, not two. <code>true</code>{' '}
+            batches. <code>false</code> means somebody checked and it is permanent.{' '}
+            <code>&apos;unknown&apos;</code> means nobody has said, which is a
+            different claim and gets a quieter sentence, because a gate that prints
+            &ldquo;this cannot be undone&rdquo; over a web search is spending
+            credibility it will need later. The barrier does not move: unknown is
+            held exactly like permanent.
+          </p>
+
           <Locked
             items={[
               'An irreversible request is never batched with anything.',
               'Its approve control is absent from the page until it is opened, not hidden and not disabled.',
               'Approving it takes a two second hold, not a click, because a click is the same motion that just cleared the reversible ones. Letting go early does nothing.',
               'The hold is skipped for keyboard and for Reduce Motion, because nobody should have to keep a button pressed for two seconds to use this.',
-              'A missing reversible flag counts as irreversible, so an omission fails towards asking.',
+              'Anything not explicitly reversible is held back, so an omission fails towards asking.',
+              'Not knowing is never cheaper than knowing. An undeclared request gets the same barrier as a permanent one.',
               'No timers, no countdowns and no automatic decisions.',
               'Dismissing is neither approval nor refusal, and the requests survive it.',
             ]}
@@ -329,6 +407,83 @@ export function Docs() {
               'Runs fold only when consecutive, because the order is the story.',
               'Colour appears on exceptions and nowhere else.',
               'A failure is a ring rather than a fill, matching StatusIndicator.',
+            ]}
+          />
+        </section>
+
+        <section id="ai-sdk" className="component">
+          <h2>Approval UI for the AI SDK</h2>
+          <p>
+            Vercel&apos;s AI SDK lets you mark a tool as needing approval. When the
+            model reaches for it, the SDK pauses and hands your app a tool part in
+            the <code>approval-requested</code> state, then gives you{' '}
+            <code>addToolApprovalResponse</code> to send the answer back.
+          </p>
+          <p>
+            It ships no interface. The official cookbook tells you to build the
+            buttons yourself, which is why most teams end up with two unstyled
+            buttons under a raw tool name. This is the interface. Hand it{' '}
+            <code>messages</code> and <code>addToolApprovalResponse</code> from{' '}
+            <code>useChat</code> and it works.
+          </p>
+
+          <pre className="block">
+            <code>{`npm install agent-indicator`}</code>
+          </pre>
+          <pre className="block">
+            <code>{`import { ApprovalGate } from 'agent-indicator/ai-sdk'
+import 'agent-indicator/styles.css'
+
+const { messages, addToolApprovalResponse } = useChat()
+
+<ApprovalGate
+  messages={messages}
+  addToolApprovalResponse={addToolApprovalResponse}
+  reversible={{ searchWeb: true, readFile: true }}
+/>`}</code>
+          </pre>
+
+          <Example
+            note="Three real approval requests, in the shape useChat hands them over. Press the button to add or remove one line of configuration and watch what it does. Undeclared, everything is held one at a time behind a two second hold, because nothing in the SDK says what can be undone. Declared, the two safe ones collapse into a single press and the deletion stays exactly where it was."
+            code={`<ApprovalGate
+  messages={messages}
+  addToolApprovalResponse={addToolApprovalResponse}
+  reversible={{ searchWeb: true, readFile: true }}
+  title={false}
+/>`}
+          >
+            <SdkExample />
+          </Example>
+
+          <PropsTable
+            rows={[
+              { name: 'messages', type: 'UIMessage[]', required: true, description: 'Straight from useChat. Anything not waiting on a person is ignored, including approvals the SDK settled automatically and ones already answered.' },
+              { name: 'addToolApprovalResponse', type: '({ id, approved }) => void', required: true, description: 'Straight from useChat. Answers are sent back with the approval id, one call per request.' },
+              { name: 'reversible', type: 'Record<string, Reversibility | (input) => Reversibility> | (toolName, input) => Reversibility', description: 'Which tools can be undone. A map covers most cases; the function form is for tools like runCommand where the arguments decide. Anything unlisted stays unknown.' },
+              { name: 'describe', type: 'Record<string, (input) => string> | (toolName, input) => string', description: 'Write the sentence a person reads. Without it the tool name is tidied into a label, which is honest but plain.' },
+              { name: 'title', type: 'string | false', description: 'Passed through. Use false when the gate sits inline in a conversation.' },
+            ]}
+          />
+
+          <p className="restyle">
+            The SDK carries no notion of whether an action can be undone, so this
+            adapter looks in three places in order: what you said in{' '}
+            <code>reversible</code>, then what the tool declared about itself with{' '}
+            <code>metadata: {'{ reversible: true }'}</code> on the server, then{' '}
+            <code>&apos;unknown&apos;</code>. There is no fourth step where
+            something becomes reversible by accident. Declaring it on the tool is
+            the better habit, because the person who wrote the tool is the person
+            who knows.
+          </p>
+
+          <Locked
+            items={[
+              'Silence is never read as consent. An undeclared tool is held, not batched.',
+              'Approvals the SDK decided on its own never appear, because there is nothing left for a person to decide.',
+              'Answered and denied requests drop out on their own, so nothing lingers in the gate.',
+              'Tools discovered at runtime, such as anything from an MCP server, are handled the same as tools known up front.',
+              'In development the adapter says so, once, when nothing has declared reversibility. It never throws and never puts its own warning on your screen.',
+              'No AI SDK dependency and no peer dependency. The adapter reads the shape of a message rather than importing the library, so there is no version to keep in step.',
             ]}
           />
         </section>

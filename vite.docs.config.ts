@@ -11,7 +11,8 @@ export default defineConfig({
   base: '/agent-indicator/',
   plugins: [react()],
   // Its own port, so the docs site and the workbench can run side by side.
-  server: { port: 5174 },
+  // PORT wins when something else has already taken 5174.
+  server: { port: Number(process.env.PORT) || 5174 },
   build: {
     outDir: '../dist-docs',
     emptyOutDir: true,

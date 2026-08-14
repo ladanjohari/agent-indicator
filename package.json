@@ -1,6 +1,6 @@
 {
   "name": "agent-indicator",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "React components for AI agent state: status, approval, sessions, and activity.",
   "keywords": [
     "react",
@@ -36,6 +36,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./ai-sdk": {
+      "types": "./dist/ai-sdk/index.d.ts",
+      "import": "./dist/ai-sdk.js"
     },
     "./styles.css": "./dist/agent-indicator.css",
     "./package.json": "./package.json"

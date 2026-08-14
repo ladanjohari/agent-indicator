@@ -67,13 +67,44 @@ The second design problem: `consequence` is meant to be plain words, and AI SDK
 gives you a tool name and a JSON input. The adapter needs a sensible default
 rendering plus a way for the developer to write a better sentence per tool.
 
-## Verify before building
+## Verified, 13 August 2026
 
-**Do not trust this brief on the AI SDK's API.** It was written from the docs on
-13 August 2026 and the SDK moves quickly. Read the current human-in-the-loop
-documentation first and confirm the state name, the tool part shape, the
-`approval.id` location, and the response function signature. Correct this file if
-any of it has changed.
+Checked against the shipped type definitions of `ai@7.0.65`,
+`@ai-sdk/react@4.0.68` and `@ai-sdk/provider-utils@5.0.27`, downloaded from the
+registry, rather than against the documentation pages, because the two doc pages
+contradicted each other.
+
+**Correct as written above:** the state is `approval-requested`, the part carries
+the tool name, the input and `approval.id`, and the answer goes back through
+`addToolApprovalResponse`.
+
+**Wrong or incomplete:**
+
+- `needsApproval` on a tool is **deprecated**, word for word: "Tool approval is
+  handled on a `generateText` / `streamText` level now." The current form is a
+  `toolApproval` configuration returning `not-applicable`, `approved`, `denied`
+  or `user-approval`. Vercel's own cookbook still teaches the deprecated form.
+  This is all server side, so it does not change the adapter, only the docs.
+- `addToolApprovalResponse` also accepts an optional `reason`.
+- **`approval.isAutomatic`.** The SDK can settle an approval without a person and
+  the part still arrives. Not filtering these would ask someone to decide
+  something already decided.
+- **More states than one.** `approval-responded` and `output-denied` exist
+  alongside `approval-requested`. Matching on "has an approval object" would
+  leave answered requests in the gate forever.
+- **Two part shapes.** Static tools arrive as `tool-<name>`, runtime ones, which
+  in practice means MCP, arrive as `dynamic-tool` with the name in its own field.
+- **`toolMetadata`.** A tool author can write `metadata` on the server and the
+  SDK copies it onto the client part. Verified in the compiled source. This is
+  the mechanism the brief guessed might exist, and it is what made option three
+  real.
+- The id to answer with is `approval.id`, not `toolCallId`.
+
+**Decided in the session:** `reversible` gained a third value, `'unknown'`,
+because "nobody said" is a different claim from "this is permanent" and printing
+the second when you only know the first is a lie the reader eventually catches.
+Same barrier, quieter sentence. Apple does the same thing: every permission API
+they own has a `notDetermined` case in front of `denied`.
 
 ## Definition of done
 
