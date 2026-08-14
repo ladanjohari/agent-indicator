@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { ApprovalGateProps, ApprovalRequest } from './types'
+import { HoldToConfirm } from './HoldToConfirm'
 import './ApprovalGate.css'
 
 /** Anything not explicitly reversible is treated as irreversible. */
@@ -126,13 +127,7 @@ export function ApprovalGate({
                         <code className="agent-gate__detail">{request.detail}</code>
                       ) : null}
                       <div className="agent-gate__actions">
-                        <button
-                          type="button"
-                          className="agent-gate__approve-one"
-                          onClick={() => onApprove([request.id])}
-                        >
-                          Approve this one
-                        </button>
+                        <HoldToConfirm onConfirm={() => onApprove([request.id])} />
                         <button
                           type="button"
                           className="agent-gate__deny"

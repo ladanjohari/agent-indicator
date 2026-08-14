@@ -212,7 +212,7 @@ export function Docs() {
           </p>
 
           <Example
-            note="Separating a destructive action by position does not work, because a hand already pressing Approve does not stop at a horizontal rule. Separating it by gesture does."
+            note="Separating a destructive action by position does not work, because a hand already pressing Approve does not stop at a horizontal rule. Separating it by gesture does. Open one of the two at the bottom and try to approve it: it takes a two second hold, and letting go early does nothing."
             code={`<ApprovalGate
   requests={requests}
   onApprove={(ids) => ids.forEach(run)}
@@ -245,6 +245,8 @@ export function Docs() {
             items={[
               'An irreversible request is never batched with anything.',
               'Its approve control is absent from the page until it is opened, not hidden and not disabled.',
+              'Approving it takes a two second hold, not a click, because a click is the same motion that just cleared the reversible ones. Letting go early does nothing.',
+              'The hold is skipped for keyboard and for Reduce Motion, because nobody should have to keep a button pressed for two seconds to use this.',
               'A missing reversible flag counts as irreversible, so an omission fails towards asking.',
               'No timers, no countdowns and no automatic decisions.',
               'Dismissing is neither approval nor refusal, and the requests survive it.',

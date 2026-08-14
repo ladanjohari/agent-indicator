@@ -58,7 +58,9 @@ Not configurable, on purpose:
   for you" apart for anyone who cannot separate red from amber.
 - Reduce Motion, which is obeyed rather than offered.
 - A destructive approval never being batched, never being pre-approved, and
-  never being accepted by default.
+  never being accepted by default. It takes a two second hold rather than a
+  click, because a click is the same motion that just cleared the safe ones.
+  Keyboard and Reduce Motion skip the hold.
 - Labels staying readable by a screen reader even when hidden from view.
 
 ## Where the state model comes from

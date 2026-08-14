@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ApprovalGate } from './ApprovalGate'
 import type { ApprovalRequest } from './types'
@@ -53,20 +53,75 @@ describe('ApprovalGate', () => {
       <ApprovalGate requests={DESTRUCTIVE} onApprove={vi.fn()} onDeny={vi.fn()} />,
     )
 
-    expect(screen.queryByRole('button', { name: 'Approve this one' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Hold to approve' })).not.toBeInTheDocument()
 
     await userEvent.click(screen.getByRole('button', { name: /Deletes the legacy folder/ }))
-    expect(screen.getByRole('button', { name: 'Approve this one' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Hold to approve' })).toBeInTheDocument()
   })
 
-  it('approves a destructive request on its own, never with others', async () => {
+  // The fill reaching the far side is what completes the hold, so the test
+  // drives the same transition the browser would.
+  it('approves a destructive request only once the hold completes', async () => {
+    const onApprove = vi.fn()
+    const { container } = render(
+      <ApprovalGate requests={DESTRUCTIVE} onApprove={onApprove} onDeny={vi.fn()} />,
+    )
+
+    await userEvent.click(screen.getByRole('button', { name: /Deletes the legacy folder/ }))
+    const hold = screen.getByRole('button', { name: 'Hold to approve' })
+    const fill = container.querySelector('.agent-gate__hold-fill') as Element
+
+    fireEvent.transitionEnd(fill, { propertyName: 'clip-path' })
+    expect(onApprove).not.toHaveBeenCalled()
+
+    fireEvent.pointerDown(hold, { button: 0, pointerId: 1 })
+    fireEvent.transitionEnd(fill, { propertyName: 'clip-path' })
+    expect(onApprove).toHaveBeenCalledWith(['delete'])
+  })
+
+  // Letting go early is the whole reason a hold is safer than a click.
+  it('does nothing when the hold is released before it finishes', async () => {
+    const onApprove = vi.fn()
+    const { container } = render(
+      <ApprovalGate requests={DESTRUCTIVE} onApprove={onApprove} onDeny={vi.fn()} />,
+    )
+
+    await userEvent.click(screen.getByRole('button', { name: /Deletes the legacy folder/ }))
+    const hold = screen.getByRole('button', { name: 'Hold to approve' })
+    const fill = container.querySelector('.agent-gate__hold-fill') as Element
+
+    fireEvent.pointerDown(hold, { button: 0, pointerId: 1 })
+    fireEvent.pointerUp(hold, { pointerId: 1 })
+    // The fill retreating fires the same event, and must not count.
+    fireEvent.transitionEnd(fill, { propertyName: 'clip-path' })
+    expect(onApprove).not.toHaveBeenCalled()
+  })
+
+  it('ignores a right click, which must never begin a hold', async () => {
+    const onApprove = vi.fn()
+    const { container } = render(
+      <ApprovalGate requests={DESTRUCTIVE} onApprove={onApprove} onDeny={vi.fn()} />,
+    )
+
+    await userEvent.click(screen.getByRole('button', { name: /Deletes the legacy folder/ }))
+    const hold = screen.getByRole('button', { name: 'Hold to approve' })
+    const fill = container.querySelector('.agent-gate__hold-fill') as Element
+
+    fireEvent.pointerDown(hold, { button: 2, pointerId: 1 })
+    fireEvent.transitionEnd(fill, { propertyName: 'clip-path' })
+    expect(onApprove).not.toHaveBeenCalled()
+  })
+
+  // Nobody should have to hold a key down for two seconds to use this.
+  it('lets the keyboard confirm without holding anything', async () => {
     const onApprove = vi.fn()
     render(
       <ApprovalGate requests={DESTRUCTIVE} onApprove={onApprove} onDeny={vi.fn()} />,
     )
 
     await userEvent.click(screen.getByRole('button', { name: /Deletes the legacy folder/ }))
-    await userEvent.click(screen.getByRole('button', { name: 'Approve this one' }))
+    screen.getByRole('button', { name: 'Hold to approve' }).focus()
+    await userEvent.keyboard('{Enter}')
     expect(onApprove).toHaveBeenCalledWith(['delete'])
   })
 

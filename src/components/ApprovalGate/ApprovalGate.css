@@ -124,9 +124,68 @@
 .agent-gate__approve-one:focus-visible,
 .agent-gate__deny:focus-visible,
 .agent-gate__dismiss:focus-visible,
+.agent-gate__hold:focus-visible,
 .agent-gate__reveal:focus-visible {
   outline: 2px solid currentColor;
   outline-offset: 2px;
+}
+
+/* Hold to approve.
+ *
+ * The fill is a clipped overlay rather than a width or a JavaScript timer, so
+ * it runs on the GPU, cannot drift, and retargets cleanly when interrupted.
+ */
+.agent-gate__hold {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  font: inherit;
+  font-size: 13px;
+  padding: 7px 15px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--agent-gate-danger) 55%, transparent);
+  background: transparent;
+  color: var(--agent-gate-danger);
+  cursor: pointer;
+  transition: transform 160ms ease-out;
+  /* A hold must not start a scroll, a text selection, or a callout. */
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* The press is acknowledged instantly, so the control feels heard before the
+   two seconds have gone anywhere. */
+.agent-gate__hold:active {
+  transform: scale(0.97);
+}
+
+.agent-gate__hold-fill {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: color-mix(in srgb, var(--agent-gate-danger) 18%, transparent);
+  clip-path: inset(0 100% 0 0);
+  /* Letting go is the system responding, so it is fast and eases out. */
+  transition: clip-path 200ms ease-out;
+}
+
+.agent-gate__hold[data-pressing='true'] .agent-gate__hold-fill {
+  clip-path: inset(0 0 0 0);
+  /* Holding is the person deciding, so it is slow. Linear because it maps to
+     real elapsed time, and easing would misrepresent how much is left. */
+  transition: clip-path 2000ms linear;
+}
+
+.agent-gate__hold-label {
+  position: relative;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .agent-gate__hold:hover {
+    background: color-mix(in srgb, var(--agent-gate-danger) 8%, transparent);
+  }
 }
 
 /* The irreversible group. */

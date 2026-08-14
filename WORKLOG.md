@@ -1,5 +1,11 @@
 # Worklog
 
+## 2026-08-14
+
+- **Did:** built the docs hook, a reflex test at the top of the page where the visitor clears three requests in one press and finds the two irreversible ones were never reachable; then built hold to approve for irreversible requests, a two second linear fill drawn with `clip-path`, released in 200ms, with keyboard and Reduce Motion skipping the hold entirely. 37 tests.
+- **Broke:** the hook first shipped a stopwatch that always read 0.0 seconds, because the clock started on the same pointer press that approved; `setPointerCapture` threw in the test environment, which turned out to be worth guarding in real code too; and browser verification kept failing until it became clear the pane was not compositing, which freezes CSS transitions.
+- **Decided:** timings come from two different rules, not one, so a 2 second hold and a 300ms ceiling do not conflict: slow where the person is deciding, fast where the system is responding. The hold is drawn as a CSS transition rather than a JavaScript timer, which means it pauses when the tab is hidden and cannot drift.
+
 ## 2026-08-13
 
 - **Did:** renamed the package to `agent-indicator` across npm, GitHub, the docs site, the portfolio homepage and every local note; published `agent-indicator@0.1.0` and verified it by installing from the public registry; unpublished the old name inside the free window.
