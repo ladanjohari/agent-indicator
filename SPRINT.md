@@ -78,24 +78,28 @@ the system responding, and stays under 300ms. A dwell is the person deciding,
 and takes as long as the decision deserves. Slow where the user is deciding,
 fast where the system is responding.
 
+**Done, 13 August 2026.** The AI SDK adapter, `agent-indicator/ai-sdk`. Built,
+tested, documented, committed, **not yet published**. See
+`BRIEF-AI-SDK-ADAPTER.md` for what the verification found, including that
+`needsApproval` on a tool is now deprecated and that Vercel's own cookbook still
+teaches it. The adapter depends on the AI SDK for nothing, not even types: it
+reads the shape of a message, so there is no peer dependency and no version to
+keep in step. `@ai-sdk/react` was installed 7.3 million times in the week to
+9 August 2026, checked against npm rather than repeated from memory.
+
+**Done, 13 August 2026.** `reversible` gained a third value, `'unknown'`. See
+the commit for the reasoning. Additive, so nothing already written breaks.
+
 **Next, in priority order:**
 
-1. **The AI SDK adapter.** Highest leverage by a distance, and it runs in its own
-   session. See `BRIEF-AI-SDK-ADAPTER.md`. The AI SDK ships an
-   `approval-requested` state and no interface, and tells developers to build the
-   buttons themselves. `@ai-sdk/react` is installed around 7.3 million times a
-   week. Becoming the default answer to a question people already search beats
-   any amount of announcing.
-2. **The docs hook**, above the fold: a live `ApprovalGate` where the visitor
-   clears the safe requests by reflex and finds they cannot fat-finger the
-   delete. Two seconds, no reading. This is the equivalent of watching Sonner's
-   toasts stack.
-3. **A motion clip in the README**, through the existing Puppeteer plus ffmpeg
-   pipeline. GitHub is where people land first and it is currently all text.
-4. **The article**, in the shape Emil used: the problem, the insight, the
-   decisions with their reasons, the details nobody sees. After 1 to 3, because
-   it needs something to point at.
-5. **Announce**, once, with the clip.
+1. **Publish v0.3.0**, from a real terminal because of the passkey, then verify
+   against the registry.
+2. **The article**, in the shape Emil used: the problem, the insight, the
+   decisions with their reasons, the details nobody sees. The adapter gave it a
+   spine it did not have before: a component with an opinion meets a data format
+   with no opinion, and the honest answer was a third state rather than a guess.
+3. **Announce**, once, with the clip, leading with the AI SDK line rather than
+   with the library.
 
 **Positioning learned from the research on 13 August 2026:** the competitors that
 are actually installed, assistant-ui and CopilotKit, are frameworks that want the
