@@ -23,6 +23,17 @@ package honest and doubles as proof that restyling works.
 Length went from 9,639px to 5,696px by deleting five props tables, every "not
 configurable" block, and four duplicate component paragraphs.
 
+## A regression introduced by the rewrite, fix this first
+
+**The page is now dark only.** The stylesheet it replaced had a light and a dark
+version through `prefers-color-scheme`, and the rewrite has zero occurrences of
+it. Anyone on a light system gets the dark page.
+
+That was not a decision, it was an oversight. The Session Indicator prototype has
+both appearances and its light tokens are already written down in
+`~/projects/session-indicator/index.html` under `body.lm`, so the values exist and
+only need porting.
+
 ## What Ladan flagged and is not yet resolved
 
 **It may still be too long at 5,696px.** The remaining cut is structural rather
