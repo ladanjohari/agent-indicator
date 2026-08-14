@@ -15,6 +15,18 @@ const DESTRUCTIVE: ApprovalRequest[] = [
   { id: 'push', consequence: 'Force pushes to main', reversible: false },
 ]
 
+// Nobody has assessed this one. Deliberately something harmless sounding, so
+// the tests prove the barrier does not soften even when the action reads as
+// nothing to worry about.
+const UNKNOWN: ApprovalRequest[] = [
+  {
+    id: 'search',
+    consequence: 'Searches the web for competitor pricing',
+    detail: 'GET https://example.com/pricing',
+    reversible: 'unknown',
+  },
+]
+
 describe('ApprovalGate', () => {
   it('renders nothing when there is nothing to decide', () => {
     const { container } = render(
@@ -130,7 +142,96 @@ describe('ApprovalGate', () => {
     render(<ApprovalGate requests={sneaky} onApprove={vi.fn()} onDeny={vi.fn()} />)
 
     expect(screen.queryByRole('button', { name: /Approve all/ })).not.toBeInTheDocument()
+    expect(
+      screen.getByText('This might not be possible to undo. Open it to answer.'),
+    ).toBeInTheDocument()
+  })
+
+  // The behaviour must be identical to a declared permanent action. If not
+  // knowing were ever cheaper than knowing, the default would stop being a
+  // default and start being a suggestion.
+  it('gives an undeclared request exactly the same barrier as a permanent one', async () => {
+    const onApprove = vi.fn()
+    render(
+      <ApprovalGate requests={UNKNOWN} onApprove={onApprove} onDeny={vi.fn()} />,
+    )
+
+    expect(screen.queryByRole('button', { name: /Approve all/ })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Hold to approve' })).not.toBeInTheDocument()
+
+    await userEvent.click(screen.getByRole('button', { name: /Searches the web/ }))
+    expect(screen.getByRole('button', { name: 'Hold to approve' })).toBeInTheDocument()
+  })
+
+  // Only the claim changes, because the component knows less in one case and
+  // must not print a fact it cannot support.
+  it('states what it knows, and no more', () => {
+    const { unmount } = render(
+      <ApprovalGate requests={[DESTRUCTIVE[0]]} onApprove={vi.fn()} onDeny={vi.fn()} />,
+    )
     expect(screen.getByText('This cannot be undone. Open it to answer.')).toBeInTheDocument()
+    unmount()
+
+    render(<ApprovalGate requests={UNKNOWN} onApprove={vi.fn()} onDeny={vi.fn()} />)
+    expect(
+      screen.getByText('This might not be possible to undo. Open it to answer.'),
+    ).toBeInTheDocument()
+  })
+
+  it('does not spend alarm colour on something nobody has assessed', () => {
+    const { container, unmount } = render(
+      <ApprovalGate requests={UNKNOWN} onApprove={vi.fn()} onDeny={vi.fn()} />,
+    )
+    expect(container.querySelector('.agent-gate__note')).toHaveAttribute(
+      'data-tone',
+      'caution',
+    )
+    unmount()
+
+    const second = render(
+      <ApprovalGate requests={DESTRUCTIVE} onApprove={vi.fn()} onDeny={vi.fn()} />,
+    )
+    expect(second.container.querySelector('.agent-gate__note')).toHaveAttribute(
+      'data-tone',
+      'alarm',
+    )
+  })
+
+  it('speaks for the whole group when one of them is known to be permanent', () => {
+    render(
+      <ApprovalGate
+        requests={[...UNKNOWN, DESTRUCTIVE[0]]}
+        onApprove={vi.fn()}
+        onDeny={vi.fn()}
+      />,
+    )
+    expect(
+      screen.getByText('Some of these cannot be undone. Each one is answered on its own.'),
+    ).toBeInTheDocument()
+  })
+
+  it('writes each request state into the page for styling from outside', () => {
+    const { container } = render(
+      <ApprovalGate
+        requests={[SAFE[0], DESTRUCTIVE[0], ...UNKNOWN]}
+        onApprove={vi.fn()}
+        onDeny={vi.fn()}
+      />,
+    )
+    const states = [...container.querySelectorAll('.agent-gate__item')].map((item) =>
+      item.getAttribute('data-reversible'),
+    )
+    expect(states).toEqual(['yes', 'no', 'unknown'])
+  })
+
+  // Inline in a conversation the heading is dead weight, but the landmark name
+  // is not, so it stays.
+  it('can drop the visible heading without taking the landmark name away', () => {
+    render(
+      <ApprovalGate requests={SAFE} title={false} onApprove={vi.fn()} onDeny={vi.fn()} />,
+    )
+    expect(screen.queryByText('Waiting for you')).not.toBeInTheDocument()
+    expect(screen.getByRole('region', { name: 'Waiting for you' })).toBeInTheDocument()
   })
 
   it('dismisses without deciding anything', async () => {

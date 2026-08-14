@@ -195,10 +195,33 @@
   border-top: 1px solid var(--agent-gate-rule);
 }
 
+/* The rule exists to separate this group from the batched one above it. With
+   no heading and nothing batched, which is the ordinary case inline in a
+   conversation, there is nothing to separate it from and the line becomes a
+   lid on an empty box. */
+.agent-gate__group--destructive:first-child {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+
 .agent-gate__note {
   margin: 0 0 12px;
   font-size: 12px;
   color: var(--agent-gate-danger);
+}
+
+/* When nobody has declared whether these can be undone, the sentence is a
+   caution rather than a fact, so it is not painted in alarm red. The barrier
+   does not move: the hold stays exactly as it is. Only the claim gets quieter,
+   because alarm colour spent on things that turn out to be harmless is how a
+   reader learns to stop seeing alarm colour. */
+.agent-gate__note[data-tone='caution'] {
+  color: var(--agent-gate-quiet);
+}
+
+.agent-gate__item[data-reversible='unknown'] .agent-gate__revealed {
+  border-left-color: var(--agent-gate-rule);
 }
 
 .agent-gate__reveal {

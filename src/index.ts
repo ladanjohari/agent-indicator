@@ -8,7 +8,11 @@ export { StatusIndicator } from './components/StatusIndicator/StatusIndicator'
 export type { SessionState, StatusIndicatorProps } from './components/StatusIndicator/types'
 
 export { ApprovalGate } from './components/ApprovalGate/ApprovalGate'
-export type { ApprovalGateProps, ApprovalRequest } from './components/ApprovalGate/types'
+export type {
+  ApprovalGateProps,
+  ApprovalRequest,
+  Reversibility,
+} from './components/ApprovalGate/types'
 
 export { SessionStrip } from './components/SessionStrip/SessionStrip'
 export type { Session, SessionStripProps } from './components/SessionStrip/types'
