@@ -1,0 +1,11 @@
+{
+  "name": "agent-indicator-previews",
+  "private": true,
+  "description": "Capture sources for the README motion clip. Not part of the published package.",
+  "scripts": {
+    "capture": "node capture.js"
+  },
+  "dependencies": {
+    "puppeteer": "^25.7.0"
+  }
+}

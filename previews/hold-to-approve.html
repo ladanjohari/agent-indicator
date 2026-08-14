@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Hold to approve, preview scene</title>
+    <style>
+      /* One shared 7 second timeline. Every animated element uses the same
+         duration and schedules itself with percentages, so the capture script
+         can step currentTime once and have everything stay in sync.
+
+         7s at 20fps is 140 frames.
+
+           0.00s   0%      the gate, with the delete already open
+           0.80s   11.4%   cursor starts moving
+           1.30s   18.6%   a quick click lands
+           1.45s   20.7%   released, the fill snaps back, nothing happens
+           2.20s   31.4%   the hold begins
+           4.20s   60%     two seconds later, it completes
+           4.30s   61.4%   approved
+           6.50s   92.9%   rest
+           7.00s   100%    reset for the loop
+      */
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+
+      body {
+        width: 560px;
+        height: 320px;
+        background: #f7f6f3;
+        color: #111111;
+        font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+        font-size: 14px;
+        line-height: 1.45;
+        -webkit-font-smoothing: antialiased;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .scene {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+      }
+
+      /* The component's own styles, copied exactly from ApprovalGate.css. */
+      .agent-gate {
+        --agent-gate-rule: color-mix(in srgb, currentColor 12%, transparent);
+        --agent-gate-quiet: color-mix(in srgb, currentColor 60%, transparent);
+        --agent-gate-fill: color-mix(in srgb, currentColor 6%, transparent);
+        --agent-gate-danger: #ff3b30;
+        width: 400px;
+        border: 1px solid var(--agent-gate-rule);
+        border-radius: 14px;
+        padding: 16px;
+        background: #f7f6f3;
+      }
+
+      .agent-gate__head {
+        display: flex; align-items: baseline; justify-content: space-between;
+        gap: 16px; margin-bottom: 14px;
+      }
+      .agent-gate__title { font-size: 14px; font-weight: 500; }
+      .agent-gate__dismiss {
+        font-size: 13px; color: var(--agent-gate-quiet);
+        text-decoration: underline; text-underline-offset: 3px;
+      }
+      .agent-gate__list { list-style: none; display: grid; gap: 10px; }
+      .agent-gate__detail {
+        display: block; margin-top: 2px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 12px; color: var(--agent-gate-quiet);
+      }
+      .agent-gate__group--destructive {
+        margin-top: 18px; padding-top: 16px;
+        border-top: 1px solid var(--agent-gate-rule);
+      }
+      .agent-gate__note { margin-bottom: 12px; font-size: 12px; color: var(--agent-gate-danger); }
+      .agent-gate__reveal {
+        display: flex; align-items: baseline; justify-content: space-between;
+        gap: 12px; width: 100%; text-align: left;
+      }
+      .agent-gate__reveal-hint {
+        flex: none; font-size: 12px; color: var(--agent-gate-quiet);
+        text-decoration: underline; text-underline-offset: 3px;
+      }
+      .agent-gate__revealed {
+        position: relative;
+        margin-top: 8px; padding-left: 12px;
+        border-left: 2px solid color-mix(in srgb, var(--agent-gate-danger) 40%, transparent);
+      }
+      /* The panel fades out in place and the result fades in over it, so the
+         card never changes height and never leaves a hole. */
+      .revealed-inner { animation: resolve 7s linear infinite both; }
+      .agent-gate__actions { display: flex; gap: 8px; margin-top: 14px; }
+
+      .agent-gate__hold {
+        position: relative;
+        isolation: isolate;
+        overflow: hidden;
+        font: inherit;
+        font-size: 13px;
+        padding: 7px 15px;
+        border-radius: 999px;
+        border: 1px solid color-mix(in srgb, var(--agent-gate-danger) 55%, transparent);
+        color: var(--agent-gate-danger);
+        animation: press 7s linear infinite both;
+      }
+      .agent-gate__hold-fill {
+        position: absolute; inset: 0; z-index: -1;
+        background: color-mix(in srgb, var(--agent-gate-danger) 18%, transparent);
+        animation: fill 7s linear infinite both;
+      }
+      .agent-gate__hold-label { position: relative; }
+
+      .agent-gate__deny {
+        font-size: 13px; padding: 7px 15px; border-radius: 999px;
+        border: 1px solid var(--agent-gate-rule);
+      }
+
+      /* The buttons and the result share one box, so the card keeps its height
+         and the result lands exactly where the decision was made. */
+      .actions-wrap { position: relative; margin-top: 14px; min-height: 32px; }
+      .actions-wrap .agent-gate__actions { margin-top: 0; }
+
+      .approved {
+        position: absolute; top: 7px; left: 0; right: 0;
+        display: flex; align-items: center; gap: 8px;
+        font-size: 13px; color: #1f9d4d;
+        animation: approved 7s linear infinite both;
+      }
+      .approved-dot {
+        width: 8px; height: 8px; border-radius: 50%; background: #34c759; flex: none;
+      }
+
+      .cursor {
+        position: absolute;
+        width: 18px; height: 18px;
+        pointer-events: none;
+        animation: cursor 7s linear infinite both;
+      }
+      .cursor svg { display: block; }
+
+      /* The fill. This is the only thing in the scene that must be exact: it
+         holds at empty, snaps back from the aborted click, then sweeps across
+         in precisely two of the seven seconds, linearly. */
+      @keyframes fill {
+        0%,     18.6%  { clip-path: inset(0 100% 0 0); animation-timing-function: linear; }
+        /* The aborted click. Wide enough to actually see start, so the retreat
+           reads as "that did nothing" rather than as nothing happening. */
+        20.6%          { clip-path: inset(0 80% 0 0); animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1); }
+        23.5%,  31.4%  { clip-path: inset(0 100% 0 0); animation-timing-function: linear; }
+        /* The hold: two seconds of the seven, linear, no easing, because it
+           maps to real elapsed time. */
+        60.0%,  92.9%  { clip-path: inset(0 0 0 0); }
+        /* Emptied again while the buttons are still faded out, so the loop does
+           not seam with a full red button snapping back to nothing. */
+        95%,    100%   { clip-path: inset(0 100% 0 0); }
+      }
+
+      @keyframes press {
+        0%,     18.5%  { transform: scale(1); }
+        18.6%,  20.6%  { transform: scale(0.97); }
+        20.7%,  31.3%  { transform: scale(1); }
+        31.4%,  60.0%  { transform: scale(0.97); }
+        60.1%,  100%   { transform: scale(1); }
+      }
+
+      /* The two never crossfade. The result leaves, then the controls come
+         back, because two overlapping half transparent labels reads as a
+         mistake rather than as a reset. */
+      @keyframes resolve {
+        0%,     60.0%  { opacity: 1; }
+        61.4%,  95.5%  { opacity: 0; }
+        99%,    100%   { opacity: 1; }
+      }
+
+      @keyframes approved {
+        0%,     60.0%  { opacity: 0; }
+        61.4%,  92.9%  { opacity: 1; }
+        95.5%,  100%   { opacity: 0; }
+      }
+
+      /* The cursor arrives, taps once, waits, then presses and stays down. */
+      @keyframes cursor {
+        0%,   8%    { transform: translate(370px, 262px); opacity: 0; }
+        11.4%       { transform: translate(370px, 262px); opacity: 1; }
+        18.5%       { transform: translate(168px, 212px); opacity: 1; }
+        18.6%, 20.6% { transform: translate(168px, 214px); opacity: 1; }
+        20.7%, 31.3% { transform: translate(168px, 212px); opacity: 1; }
+        31.4%, 60%   { transform: translate(168px, 214px); opacity: 1; }
+        /* The hand relaxes away once it is done, so the result is not read
+           through a cursor sitting on top of it. */
+        62%,  88%    { transform: translate(258px, 246px); opacity: 1; }
+        96%,  100%   { transform: translate(370px, 262px); opacity: 0; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="scene">
+      <section class="agent-gate">
+        <header class="agent-gate__head">
+          <p class="agent-gate__title">Waiting for you</p>
+          <span class="agent-gate__dismiss">Not now</span>
+        </header>
+
+        <div class="agent-gate__group agent-gate__group--destructive" style="margin-top:0;padding-top:0;border-top:0">
+          <p class="agent-gate__note">This cannot be undone. Open it to answer.</p>
+          <ul class="agent-gate__list">
+            <li>
+              <div class="agent-gate__reveal">
+                <span>Deletes the legacy folder and everything in it</span>
+                <span class="agent-gate__reveal-hint">Close</span>
+              </div>
+              <div class="agent-gate__revealed">
+                <code class="agent-gate__detail">rm -rf legacy</code>
+                <div class="actions-wrap">
+                  <div class="revealed-inner agent-gate__actions">
+                    <span class="agent-gate__hold">
+                      <span class="agent-gate__hold-fill"></span>
+                      <span class="agent-gate__hold-label">Hold to approve</span>
+                    </span>
+                    <span class="agent-gate__deny">Deny</span>
+                  </div>
+                  <div class="approved">
+                    <span class="approved-dot"></span>
+                    <span>Approved, deliberately.</span>
+                  </div>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </section>
+    </div>
+
+    <div class="cursor">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+        <path d="M2 1.5 L2 14 L5.4 10.9 L7.7 15.8 L10 14.7 L7.8 10 L12.4 9.7 Z"
+              fill="#111" stroke="#fff" stroke-width="1.1" stroke-linejoin="round"/>
+      </svg>
+    </div>
+  </body>
+</html>

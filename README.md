@@ -4,6 +4,12 @@ React components for the states an AI agent is actually in.
 
 **Compress the ordinary. Never compress the exception.**
 
+<img src="https://raw.githubusercontent.com/ladanjohari/agent-indicator/main/assets/hold-to-approve.gif" alt="An approval request that cannot be undone. A click starts the fill and it snaps straight back, doing nothing. Holding for two seconds fills it and approves." width="560" />
+
+A click is the same motion that just cleared three safe requests, so an action
+that cannot be undone does not accept one. It is held for two seconds instead.
+Let go early and nothing happens.
+
 Every agent product needs the same small set of interface pieces, and every team
 rebuilds them badly. The hard part was never drawing a dot. It is deciding what
 may be summarised away and what must always stand at full size, and getting that

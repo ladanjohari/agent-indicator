@@ -1,0 +1,88 @@
+// Renders previews/hold-to-approve.html to a GIF and an MP4.
+//
+// Adapted from the Session Indicator preview pipeline in the portfolio repo.
+// The trick that makes it work: every animation in the scene shares one 7
+// second timeline, so the script can pause them all, set currentTime by hand,
+// and screenshot each frame. Nothing is captured in real time, which means the
+// two second hold comes out exact rather than however long the machine felt
+// like taking.
+
+const puppeteer = require('puppeteer')
+const { execSync } = require('child_process')
+const path = require('path')
+const fs = require('fs')
+
+const DURATION = 7
+const FPS = 20
+const TOTAL_FRAMES = DURATION * FPS
+const WIDTH = 560
+const HEIGHT = 320
+
+const HTML_PATH = path.resolve(__dirname, 'hold-to-approve.html')
+const FRAMES_DIR = path.resolve(__dirname, 'frames')
+const ASSETS_DIR = path.resolve(__dirname, '..', 'assets')
+const OUT_GIF = path.resolve(ASSETS_DIR, 'hold-to-approve.gif')
+const OUT_MP4 = path.resolve(ASSETS_DIR, 'hold-to-approve.mp4')
+
+if (fs.existsSync(FRAMES_DIR)) fs.rmSync(FRAMES_DIR, { recursive: true })
+fs.mkdirSync(FRAMES_DIR, { recursive: true })
+fs.mkdirSync(ASSETS_DIR, { recursive: true })
+
+;(async () => {
+  console.log('Launching browser...')
+  const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'] })
+  const page = await browser.newPage()
+  await page.setViewport({ width: WIDTH, height: HEIGHT, deviceScaleFactor: 2 })
+  await page.goto(`file://${HTML_PATH}`)
+  await new Promise((r) => setTimeout(r, 400))
+
+  await page.evaluate(() => {
+    document.getAnimations().forEach((a) => {
+      a.pause()
+      a.currentTime = 0
+    })
+  })
+
+  console.log(`Capturing ${TOTAL_FRAMES} frames...`)
+  const frameMs = 1000 / FPS
+
+  for (let i = 0; i < TOTAL_FRAMES; i++) {
+    await page.evaluate((ms) => {
+      document.getAnimations().forEach((a) => {
+        a.currentTime = ms
+      })
+    }, i * frameMs)
+    await page.evaluate(
+      () => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))),
+    )
+    await page.screenshot({
+      path: path.join(FRAMES_DIR, `frame${String(i).padStart(4, '0')}.png`),
+      clip: { x: 0, y: 0, width: WIDTH, height: HEIGHT },
+    })
+    if (i % 20 === 0) process.stdout.write(`  frame ${i}/${TOTAL_FRAMES}\r`)
+  }
+
+  await browser.close()
+  console.log('\nEncoding...')
+
+  execSync(
+    `ffmpeg -y -framerate ${FPS} -i "${FRAMES_DIR}/frame%04d.png" ` +
+      `-vf "fps=${FPS},scale=${WIDTH}:-2:flags=lanczos,format=yuv420p" ` +
+      `-c:v libx264 -crf 20 -preset slow -movflags +faststart "${OUT_MP4}"`,
+    { stdio: 'inherit' },
+  )
+
+  // Flat design with few colours, so a reduced palette stays clean and keeps
+  // the file small enough for a README.
+  execSync(
+    `ffmpeg -y -framerate ${FPS} -i "${FRAMES_DIR}/frame%04d.png" ` +
+      `-vf "fps=${FPS},scale=${WIDTH}:-1:flags=lanczos,split[s0][s1];` +
+      `[s0]palettegen=max_colors=128:stats_mode=diff[p];[s1][p]paletteuse=dither=bayer:bayer_scale=3" ` +
+      `"${OUT_GIF}"`,
+    { stdio: 'inherit' },
+  )
+
+  console.log('\nDone.')
+  console.log('GIF:', OUT_GIF, `${(fs.statSync(OUT_GIF).size / 1024 / 1024).toFixed(2)} MB`)
+  console.log('MP4:', OUT_MP4, `${(fs.statSync(OUT_MP4).size / 1024).toFixed(0)} kB`)
+})()

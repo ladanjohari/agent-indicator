@@ -25,3 +25,7 @@ dist-ssr
 
 # Docs site build output
 dist-docs
+
+# Preview capture workspace
+previews/node_modules
+previews/frames
