@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Docs page, terminal directions</title>
+    <style>
+      @font-face {
+        font-family: 'Geist'; font-style: normal; font-weight: 400 700; font-display: block;
+        src: url('file:///Users/ladanjohari/projects/Portfolio-Website/assets/fonts/geist-latin.woff2') format('woff2');
+      }
+
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      body { background: #888; }
+      .variant { width: 880px; height: 520px; overflow: hidden; position: relative;
+                 font-family: ui-monospace, SFMono-Regular, Menlo, 'SF Mono', monospace; }
+
+      /* Window chrome, shared. */
+      .chrome { display: flex; align-items: center; gap: 7px; padding: 10px 14px; }
+      .light { width: 11px; height: 11px; border-radius: 50%; }
+      .chrome__title { margin-left: 10px; font-size: 12px; }
+
+      .body { padding: 22px 26px 26px; }
+      .prompt { font-size: 13px; margin-bottom: 4px; }
+      .out { font-size: 12.5px; line-height: 1.7; }
+      .caret { display: inline-block; width: 8px; height: 15px; vertical-align: -3px; }
+
+      /* The component, restyled per variant. */
+      .gate { border-radius: 8px; padding: 14px; margin-top: 16px; max-width: 430px; }
+      .gate__head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 12px; }
+      .gate__title { font-size: 13px; font-weight: 500; }
+      .gate__dismiss { font-size: 12px; text-decoration: underline; text-underline-offset: 3px; }
+      .gate__note { font-size: 11.5px; margin-bottom: 10px; }
+      .gate__row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; font-size: 13px; }
+      .gate__hint { font-size: 11.5px; text-decoration: underline; text-underline-offset: 3px; flex: none; }
+      .gate__revealed { margin-top: 8px; padding-left: 12px; border-left: 2px solid; }
+      .gate__detail { display: block; font-size: 11.5px; }
+      .gate__actions { display: flex; gap: 8px; margin-top: 12px; }
+      .hold { position: relative; isolation: isolate; overflow: hidden; font-size: 12px;
+              padding: 6px 13px; border-radius: 6px; border: 1px solid; }
+      .hold__fill { position: absolute; inset: 0; z-index: -1; clip-path: inset(0 42% 0 0); }
+      .hold__label { position: relative; }
+      .deny { font-size: 12px; padding: 6px 13px; border-radius: 6px; border: 1px solid; }
+
+      /* ========== T1  CRT GREEN ========== */
+      #crt { background: #05060A; color: #C8FFD4; }
+      #crt::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+        background: repeating-linear-gradient(0deg, rgba(0,255,65,0.045) 0 1px, transparent 1px 3px); }
+      #crt .chrome { background: #0B0E12; border-bottom: 1px solid #16351F; }
+      #crt .chrome__title { color: #3F7A4E; }
+      #crt .prompt { color: #00FF41; }
+      #crt .out { color: #4E9B60; }
+      #crt .caret { background: #00FF41; }
+      #crt .gate { background: #080D0A; border: 1px solid #1B4527; }
+      #crt .gate__title { color: #C8FFD4; }
+      #crt .gate__dismiss, #crt .gate__hint, #crt .gate__detail { color: #4E9B60; }
+      #crt .gate__note { color: #FFB000; }
+      #crt .gate__revealed { border-left-color: #FFB000; }
+      #crt .hold { border-color: #FFB000; color: #FFB000; }
+      #crt .hold__fill { background: rgba(255,176,0,0.22); }
+      #crt .deny { border-color: #1B4527; color: #4E9B60; }
+
+      /* ========== T2  NAVY ========== */
+      #navy { background: #0B1220; color: #DBE4F3; }
+      #navy .chrome { background: #111A2C; border-bottom: 1px solid #1D2942; }
+      #navy .chrome__title { color: #6B7FA3; }
+      #navy .prompt { color: #7DD3FC; }
+      #navy .out { color: #6B7FA3; }
+      #navy .caret { background: #7DD3FC; }
+      #navy .gate { background: #0E1728; border: 1px solid #1D2942; }
+      #navy .gate__dismiss, #navy .gate__hint, #navy .gate__detail { color: #6B7FA3; }
+      #navy .gate__note { color: #FF6B60; }
+      #navy .gate__revealed { border-left-color: rgba(255,107,96,0.5); }
+      #navy .hold { border-color: rgba(255,107,96,0.55); color: #FF6B60; }
+      #navy .hold__fill { background: rgba(255,107,96,0.2); }
+      #navy .deny { border-color: #1D2942; color: #DBE4F3; }
+
+      /* ========== T3  SESSION INDICATOR, DARK ========== */
+      #sidark { background: #0e0e12; color: #e2e2e8; }
+      #sidark .chrome { background: #17171c; border-bottom: 1px solid #26262c; }
+      #sidark .chrome__title { color: #8a8a93; }
+      #sidark .prompt { color: #e2e2e8; }
+      #sidark .out { color: #8a8a93; }
+      #sidark .caret { background: #e2e2e8; }
+      #sidark .pill { display: inline-flex; align-items: center; gap: 7px; padding: 4px 10px;
+                      border-radius: 999px; background: #2d2d33; border: 1px solid #45454e; margin-left: auto; }
+      #sidark .dot { width: 6px; height: 6px; border-radius: 50%; }
+      #sidark .gate { background: #1d1d23; border: 1px solid #32323a; }
+      #sidark .gate__dismiss, #sidark .gate__hint, #sidark .gate__detail { color: #8a8a93; }
+      #sidark .gate__note { color: #E8952A; }
+      #sidark .gate__revealed { border-left-color: rgba(232,149,42,0.5); }
+      #sidark .hold { border-color: rgba(255,59,48,0.6); color: #FF3B30; }
+      #sidark .hold__fill { background: rgba(255,59,48,0.2); }
+      #sidark .deny { border-color: #32323a; color: #e2e2e8; }
+
+      /* ========== T4  NPM, LIGHT ========== */
+      #npmlight { background: #FFFFFF; color: #1A1A1A; }
+      #npmlight .chrome { background: #F0F0EE; border-bottom: 1px solid #DCDCD8; }
+      #npmlight .chrome__title { color: #6B6B6B; }
+      #npmlight .prompt { color: #1A1A1A; }
+      #npmlight .out { color: #6B6B6B; }
+      #npmlight .cy { color: #0B8C9B; }
+      #npmlight .gr { color: #16794C; }
+      #npmlight .caret { background: #1A1A1A; }
+      #npmlight .gate { background: #FBFBFA; border: 1px solid #DCDCD8; }
+      #npmlight .gate__dismiss, #npmlight .gate__hint, #npmlight .gate__detail { color: #6B6B6B; }
+      #npmlight .gate__note { color: #C4271F; }
+      #npmlight .gate__revealed { border-left-color: rgba(196,39,31,0.45); }
+      #npmlight .hold { border-color: rgba(196,39,31,0.55); color: #C4271F; }
+      #npmlight .hold__fill { background: rgba(196,39,31,0.14); }
+      #npmlight .deny { border-color: #DCDCD8; color: #1A1A1A; }
+
+      /* ========== T5  SESSION INDICATOR, LIGHT ========== */
+      #silight { background: #F7F6F3; color: #111111; }
+      #silight .chrome { background: #EFEEEA; border-bottom: 1px solid #D4D3CF; }
+      #silight .chrome__title { color: #6B6B6B; }
+      #silight .prompt { color: #111111; }
+      #silight .out { color: #6B6B6B; }
+      #silight .caret { background: #111111; }
+      #silight .pill { display: inline-flex; align-items: center; gap: 7px; padding: 4px 10px;
+                       border-radius: 999px; background: #E6E5E1; border: 1px solid #D4D3CF; margin-left: auto; }
+      #silight .dot { width: 6px; height: 6px; border-radius: 50%; }
+      #silight .gate { background: #FFFFFF; border: 1px solid #D4D3CF; }
+      #silight .gate__dismiss, #silight .gate__hint, #silight .gate__detail { color: #6B6B6B; }
+      #silight .gate__note { color: #C4560F; }
+      #silight .gate__revealed { border-left-color: rgba(232,149,42,0.6); }
+      #silight .hold { border-color: rgba(255,59,48,0.5); color: #D9291C; }
+      #silight .hold__fill { background: rgba(255,59,48,0.14); }
+      #silight .deny { border-color: #D4D3CF; color: #111111; }
+
+      /* ========== T6  GREEN ON PAPER ========== */
+      #paper { background: #F4F3EC; color: #14231A; }
+      #paper .chrome { background: #E8E7DE; border-bottom: 1px solid #D2D1C6; }
+      #paper .chrome__title { color: #6E7A70; }
+      #paper .prompt { color: #0B6E4F; }
+      #paper .out { color: #6E7A70; }
+      #paper .caret { background: #0B6E4F; }
+      #paper .gate { background: #FBFAF5; border: 1px solid #D2D1C6; }
+      #paper .gate__dismiss, #paper .gate__hint, #paper .gate__detail { color: #6E7A70; }
+      #paper .gate__note { color: #A8430D; }
+      #paper .gate__revealed { border-left-color: rgba(168,67,13,0.45); }
+      #paper .hold { border-color: rgba(168,67,13,0.55); color: #A8430D; }
+      #paper .hold__fill { background: rgba(168,67,13,0.14); }
+      #paper .deny { border-color: #D2D1C6; color: #14231A; }
+    </style>
+  </head>
+  <body>
+
+    <!-- T1 -->
+    <section class="variant" id="crt">
+      <div class="chrome">
+        <span class="light" style="background:#FF5F57"></span><span class="light" style="background:#FEBC2E"></span><span class="light" style="background:#28C840"></span>
+        <span class="chrome__title">agent-indicator</span>
+      </div>
+      <div class="body">
+        <p class="prompt">$ npm install agent-indicator</p>
+        <p class="out">+ agent-indicator@0.3.0<br />React components for the states an AI agent is actually in.</p>
+        <p class="prompt" style="margin-top:14px">$ agent run refactor-auth <span class="caret"></span></p>
+        <div class="gate">
+          <div class="gate__head"><span class="gate__title">Waiting for you</span><span class="gate__dismiss">Not now</span></div>
+          <p class="gate__note">This cannot be undone. Open it to answer.</p>
+          <div class="gate__row"><span>Deletes the legacy folder and everything in it</span><span class="gate__hint">Close</span></div>
+          <div class="gate__revealed"><code class="gate__detail">rm -rf legacy</code>
+            <div class="gate__actions"><span class="hold"><span class="hold__fill"></span><span class="hold__label">Hold to approve</span></span><span class="deny">Deny</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- T2 -->
+    <section class="variant" id="navy">
+      <div class="chrome">
+        <span class="light" style="background:#FF5F57"></span><span class="light" style="background:#FEBC2E"></span><span class="light" style="background:#28C840"></span>
+        <span class="chrome__title">agent-indicator</span>
+      </div>
+      <div class="body">
+        <p class="prompt">$ npm install agent-indicator</p>
+        <p class="out">+ agent-indicator@0.3.0<br />React components for the states an AI agent is actually in.</p>
+        <p class="prompt" style="margin-top:14px">$ agent run refactor-auth <span class="caret"></span></p>
+        <div class="gate">
+          <div class="gate__head"><span class="gate__title">Waiting for you</span><span class="gate__dismiss">Not now</span></div>
+          <p class="gate__note">This cannot be undone. Open it to answer.</p>
+          <div class="gate__row"><span>Deletes the legacy folder and everything in it</span><span class="gate__hint">Close</span></div>
+          <div class="gate__revealed"><code class="gate__detail">rm -rf legacy</code>
+            <div class="gate__actions"><span class="hold"><span class="hold__fill"></span><span class="hold__label">Hold to approve</span></span><span class="deny">Deny</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- T3 -->
+    <section class="variant" id="sidark">
+      <div class="chrome">
+        <span class="light" style="background:#FF5F57"></span><span class="light" style="background:#FEBC2E"></span><span class="light" style="background:#28C840"></span>
+        <span class="chrome__title">agent-indicator</span>
+        <span class="pill">
+          <span class="dot" style="background:#FF3B30"></span>
+          <span class="dot" style="background:#E8952A"></span>
+          <span class="dot" style="background:#fff"></span>
+          <span class="dot" style="background:#34C759"></span>
+          <span style="font-size:11px;color:#a8a8b0">+2</span>
+        </span>
+      </div>
+      <div class="body">
+        <p class="prompt">$ npm install agent-indicator</p>
+        <p class="out">+ agent-indicator@0.3.0<br />React components for the states an AI agent is actually in.</p>
+        <p class="prompt" style="margin-top:14px">$ agent run refactor-auth <span class="caret"></span></p>
+        <div class="gate">
+          <div class="gate__head"><span class="gate__title">Waiting for you</span><span class="gate__dismiss">Not now</span></div>
+          <p class="gate__note">This cannot be undone. Open it to answer.</p>
+          <div class="gate__row"><span>Deletes the legacy folder and everything in it</span><span class="gate__hint">Close</span></div>
+          <div class="gate__revealed"><code class="gate__detail">rm -rf legacy</code>
+            <div class="gate__actions"><span class="hold"><span class="hold__fill"></span><span class="hold__label">Hold to approve</span></span><span class="deny">Deny</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- T4 -->
+    <section class="variant" id="npmlight">
+      <div class="chrome">
+        <span class="light" style="background:#FF5F57"></span><span class="light" style="background:#FEBC2E"></span><span class="light" style="background:#28C840"></span>
+        <span class="chrome__title">agent-indicator</span>
+      </div>
+      <div class="body">
+        <p class="prompt">$ npm install agent-indicator</p>
+        <p class="out"><span class="cy">notice</span> 24 files, 19.1 kB<br /><span class="gr">+ agent-indicator@0.3.0</span></p>
+        <p class="prompt" style="margin-top:14px">$ agent run refactor-auth <span class="caret"></span></p>
+        <div class="gate">
+          <div class="gate__head"><span class="gate__title">Waiting for you</span><span class="gate__dismiss">Not now</span></div>
+          <p class="gate__note">This cannot be undone. Open it to answer.</p>
+          <div class="gate__row"><span>Deletes the legacy folder and everything in it</span><span class="gate__hint">Close</span></div>
+          <div class="gate__revealed"><code class="gate__detail">rm -rf legacy</code>
+            <div class="gate__actions"><span class="hold"><span class="hold__fill"></span><span class="hold__label">Hold to approve</span></span><span class="deny">Deny</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- T5 -->
+    <section class="variant" id="silight">
+      <div class="chrome">
+        <span class="light" style="background:#FF5F57"></span><span class="light" style="background:#FEBC2E"></span><span class="light" style="background:#28C840"></span>
+        <span class="chrome__title">agent-indicator</span>
+        <span class="pill">
+          <span class="dot" style="background:#FF3B30"></span>
+          <span class="dot" style="background:#E8952A"></span>
+          <span class="dot" style="background:#111"></span>
+          <span class="dot" style="background:#34C759"></span>
+          <span style="font-size:11px;color:#6B6B6B">+2</span>
+        </span>
+      </div>
+      <div class="body">
+        <p class="prompt">$ npm install agent-indicator</p>
+        <p class="out">+ agent-indicator@0.3.0<br />React components for the states an AI agent is actually in.</p>
+        <p class="prompt" style="margin-top:14px">$ agent run refactor-auth <span class="caret"></span></p>
+        <div class="gate">
+          <div class="gate__head"><span class="gate__title">Waiting for you</span><span class="gate__dismiss">Not now</span></div>
+          <p class="gate__note">This cannot be undone. Open it to answer.</p>
+          <div class="gate__row"><span>Deletes the legacy folder and everything in it</span><span class="gate__hint">Close</span></div>
+          <div class="gate__revealed"><code class="gate__detail">rm -rf legacy</code>
+            <div class="gate__actions"><span class="hold"><span class="hold__fill"></span><span class="hold__label">Hold to approve</span></span><span class="deny">Deny</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- T6 -->
+    <section class="variant" id="paper">
+      <div class="chrome">
+        <span class="light" style="background:#FF5F57"></span><span class="light" style="background:#FEBC2E"></span><span class="light" style="background:#28C840"></span>
+        <span class="chrome__title">agent-indicator</span>
+      </div>
+      <div class="body">
+        <p class="prompt">$ npm install agent-indicator</p>
+        <p class="out">+ agent-indicator@0.3.0<br />React components for the states an AI agent is actually in.</p>
+        <p class="prompt" style="margin-top:14px">$ agent run refactor-auth <span class="caret"></span></p>
+        <div class="gate">
+          <div class="gate__head"><span class="gate__title">Waiting for you</span><span class="gate__dismiss">Not now</span></div>
+          <p class="gate__note">This cannot be undone. Open it to answer.</p>
+          <div class="gate__row"><span>Deletes the legacy folder and everything in it</span><span class="gate__hint">Close</span></div>
+          <div class="gate__revealed"><code class="gate__detail">rm -rf legacy</code>
+            <div class="gate__actions"><span class="hold"><span class="hold__fill"></span><span class="hold__label">Hold to approve</span></span><span class="deny">Deny</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </body>
+</html>

@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>The card, Apple platform variants</title>
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      body { background: #888; }
+
+      .variant { width: 880px; height: 520px; overflow: hidden; position: relative;
+                 font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+      /* ---- The terminal environment, unchanged from T3 and T5 ---- */
+      .chrome { display: flex; align-items: center; gap: 7px; padding: 10px 14px; }
+      .light { width: 11px; height: 11px; border-radius: 50%; }
+      .chrome__title { margin-left: 10px; font-size: 12px; }
+      .pill { display: inline-flex; align-items: center; gap: 7px; padding: 4px 10px;
+              border-radius: 999px; margin-left: auto; }
+      .dot { width: 6px; height: 6px; border-radius: 50%; }
+      .body { padding: 20px 26px; }
+      .prompt { font-size: 13px; }
+      .out { font-size: 12.5px; line-height: 1.7; }
+      .caret { display: inline-block; width: 8px; height: 15px; vertical-align: -3px; }
+      .stage { margin-top: 18px; }
+
+      .dark { background: #0e0e12; color: #e2e2e8; }
+      .dark .chrome { background: #17171c; border-bottom: 1px solid #26262c; }
+      .dark .chrome__title { color: #8a8a93; }
+      .dark .pill { background: #2d2d33; border: 1px solid #45454e; }
+      .dark .out { color: #8a8a93; }
+      .dark .caret { background: #e2e2e8; }
+
+      .lightroom { background: #F7F6F3; color: #111111; }
+      .lightroom .chrome { background: #EFEEEA; border-bottom: 1px solid #D4D3CF; }
+      .lightroom .chrome__title { color: #6B6B6B; }
+      .lightroom .pill { background: #E6E5E1; border: 1px solid #D4D3CF; }
+      .lightroom .out { color: #6B6B6B; }
+      .lightroom .caret { background: #111111; }
+
+      /* ================= THE CARD =================
+         Apple platform grammar. System font, not monospace, because this is a
+         designed surface sitting on top of a terminal, not terminal output.
+
+         Concentricity: card radius 16, inner panel inset 8, so inner radius is
+         16 - 8 = 8. Buttons are exact capsules: 28px tall, 14px radius.
+      */
+      .card {
+        width: 420px; padding: 16px; border-radius: 16px;
+        font-family: -apple-system, 'SF Pro Text', system-ui, sans-serif;
+        font-size: 13px; line-height: 1.38; letter-spacing: -0.005em;
+      }
+      .card__head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+      .card__title { font-size: 13px; font-weight: 600; }
+      .card__dismiss { font-size: 12px; }
+      .card__note { font-size: 11px; margin-bottom: 12px; font-weight: 500; }
+      .card__consequence { font-size: 13px; font-weight: 600; display: block; }
+      .card__row { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+      .card__hint { font-size: 12px; flex: none; }
+      .card__panel { margin-top: 10px; padding: 10px 12px; border-radius: 8px; }
+      .card__detail { display: block; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+                      font-size: 11.5px; }
+      .card__actions { display: flex; gap: 8px; margin-top: 12px; }
+      .btn { height: 28px; border-radius: 14px; padding: 0 14px; font-size: 13px; font-weight: 500;
+             display: inline-flex; align-items: center; font-family: inherit; }
+      .btn--hold { position: relative; isolation: isolate; overflow: hidden; }
+      .btn--hold .fill { position: absolute; inset: 0; z-index: -1; clip-path: inset(0 42% 0 0); }
+      .btn--hold span { position: relative; }
+
+      /* ---- A. macOS panel, dark ---- */
+      #macdark .card {
+        background: rgba(38,38,44,0.82); backdrop-filter: blur(30px) saturate(180%);
+        border: 0.5px solid rgba(255,255,255,0.14); color: #F2F2F7;
+        box-shadow: 0 24px 48px rgba(0,0,0,0.55), inset 0 0.5px 0 rgba(255,255,255,0.18);
+      }
+      #macdark .card__dismiss, #macdark .card__hint { color: #0A84FF; }
+      #macdark .card__note { color: #FF9F0A; }
+      #macdark .card__panel { background: rgba(255,255,255,0.06); }
+      #macdark .card__detail { color: #98989F; }
+      #macdark .btn--deny { background: rgba(255,255,255,0.12); color: #F2F2F7; }
+      #macdark .btn--hold { background: transparent; border: 1px solid rgba(255,69,58,0.6); color: #FF453A; }
+      #macdark .btn--hold .fill { background: rgba(255,69,58,0.28); }
+
+      /* ---- B. macOS panel, light ---- */
+      #maclight .card {
+        background: rgba(255,255,255,0.86); backdrop-filter: blur(30px) saturate(180%);
+        border: 0.5px solid rgba(0,0,0,0.1); color: #1D1D1F;
+        box-shadow: 0 20px 44px rgba(0,0,0,0.16), inset 0 0.5px 0 rgba(255,255,255,0.9);
+      }
+      #maclight .card__dismiss, #maclight .card__hint { color: #007AFF; }
+      #maclight .card__note { color: #B25000; }
+      #maclight .card__panel { background: rgba(0,0,0,0.04); }
+      #maclight .card__detail { color: #6E6E73; }
+      #maclight .btn--deny { background: rgba(0,0,0,0.07); color: #1D1D1F; }
+      #maclight .btn--hold { background: transparent; border: 1px solid rgba(255,59,48,0.55); color: #D70015; }
+      #maclight .btn--hold .fill { background: rgba(255,59,48,0.18); }
+
+      /* ---- C. Clear Glass over the terminal, dark room ---- */
+      #glassdark .stage { position: relative; }
+      #glassdark .blob { position: absolute; left: 70px; top: 34px; width: 210px; height: 150px;
+        border-radius: 50%; background: radial-gradient(circle, #FF9F0A 0%, rgba(255,159,10,0.4) 55%, transparent 75%);
+        filter: blur(20px); }
+      #glassdark .card {
+        position: relative;
+        background: linear-gradient(115deg, rgba(255,255,255,0.16), rgba(255,255,255,0.03) 42%, rgba(255,255,255,0.1));
+        backdrop-filter: blur(2px) saturate(150%);
+        box-shadow:
+          inset 0 1.5px 1px rgba(255,255,255,0.55),
+          inset 1.5px 0 1px rgba(255,255,255,0.3),
+          inset 0 -2.5px 4px rgba(0,0,0,0.45),
+          0 0 0 .5px rgba(255,255,255,0.25),
+          0 18px 34px rgba(0,0,0,0.5);
+        color: #F2F2F7;
+      }
+      #glassdark .card:after { content:""; position:absolute; left:12%; top:9%; width:52%; height:26%;
+        border-radius:50%; background:rgba(255,255,255,0.28); filter:blur(6px); transform:rotate(-6deg); }
+      #glassdark .card > * { position: relative; z-index: 1; }
+      #glassdark .card__dismiss, #glassdark .card__hint { color: #7FC0FF; }
+      #glassdark .card__note { color: #FFC46B; }
+      #glassdark .card__panel { background: rgba(0,0,0,0.22); }
+      #glassdark .card__detail { color: #C9CAD2; }
+      #glassdark .btn--deny { background: rgba(255,255,255,0.14); color: #F2F2F7; }
+      #glassdark .btn--hold { border: 1px solid rgba(255,138,128,0.7); color: #FF8A80; }
+      #glassdark .btn--hold .fill { background: rgba(255,69,58,0.3); }
+
+      /* ---- D. iOS sheet ---- */
+      #iossheet .card {
+        width: 380px; padding: 20px; border-radius: 20px;
+        background: rgba(28,28,30,0.92); backdrop-filter: blur(40px) saturate(180%);
+        border: 0.5px solid rgba(255,255,255,0.12); color: #F2F2F7;
+        box-shadow: 0 -2px 40px rgba(0,0,0,0.6);
+        font-size: 17px; line-height: 1.32;
+      }
+      #iossheet .grabber { width: 36px; height: 5px; border-radius: 2.5px; background: rgba(235,235,245,0.3);
+                           margin: -8px auto 14px; }
+      #iossheet .card__title { font-size: 17px; font-weight: 600; }
+      #iossheet .card__dismiss { font-size: 15px; color: #0A84FF; }
+      #iossheet .card__note { font-size: 13px; color: #FF9F0A; }
+      #iossheet .card__consequence { font-size: 17px; font-weight: 600; }
+      #iossheet .card__hint { font-size: 15px; color: #0A84FF; }
+      #iossheet .card__panel { background: rgba(255,255,255,0.07); border-radius: 12px; padding: 12px; }
+      #iossheet .card__detail { font-size: 13px; color: #98989F; }
+      /* iOS stacks full width actions, primary on top. */
+      #iossheet .card__actions { flex-direction: column; gap: 10px; margin-top: 16px; }
+      #iossheet .btn { height: 44px; border-radius: 22px; width: 100%; justify-content: center;
+                       font-size: 17px; font-weight: 600; }
+      #iossheet .btn--deny { background: rgba(255,255,255,0.14); color: #F2F2F7; }
+      #iossheet .btn--hold { background: rgba(255,69,58,0.16); color: #FF453A; }
+      #iossheet .btn--hold .fill { background: rgba(255,69,58,0.42); }
+
+      /* ---- E. Live Activity ---- */
+      #liveactivity .card {
+        width: 400px; padding: 14px 16px; border-radius: 24px;
+        background: #000; border: 0.5px solid rgba(255,255,255,0.1); color: #F2F2F7;
+        box-shadow: 0 16px 40px rgba(0,0,0,0.7);
+      }
+      #liveactivity .la-top { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+      #liveactivity .la-glyph { width: 26px; height: 26px; border-radius: 8px; background: #E8952A;
+                                display: grid; place-items: center; font-size: 13px; color: #000; font-weight: 700; }
+      #liveactivity .la-app { font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; color: #8A8A8E; }
+      #liveactivity .la-when { margin-left: auto; font-size: 12px; color: #8A8A8E; font-variant-numeric: tabular-nums; }
+      #liveactivity .card__consequence { font-size: 15px; font-weight: 600; }
+      #liveactivity .card__note { color: #FF9F0A; font-size: 11px; }
+      #liveactivity .card__panel { background: rgba(255,255,255,0.06); border-radius: 10px; padding: 9px 11px; }
+      #liveactivity .card__detail { color: #98989F; }
+      #liveactivity .card__hint { color: #0A84FF; font-size: 12px; }
+      #liveactivity .btn--deny { background: rgba(255,255,255,0.13); color: #F2F2F7; }
+      #liveactivity .btn--hold { border: 1px solid rgba(255,69,58,0.6); color: #FF453A; }
+      #liveactivity .btn--hold .fill { background: rgba(255,69,58,0.3); }
+
+      /* ---- F. HIG button hierarchy: the safe action is the primary one ---- */
+      #safedefault .card {
+        background: rgba(38,38,44,0.82); backdrop-filter: blur(30px) saturate(180%);
+        border: 0.5px solid rgba(255,255,255,0.14); color: #F2F2F7;
+        box-shadow: 0 24px 48px rgba(0,0,0,0.55), inset 0 0.5px 0 rgba(255,255,255,0.18);
+      }
+      #safedefault .card__dismiss, #safedefault .card__hint { color: #0A84FF; }
+      #safedefault .card__note { color: #FF9F0A; }
+      #safedefault .card__panel { background: rgba(255,255,255,0.06); }
+      #safedefault .card__detail { color: #98989F; }
+      /* The one tinted action is Deny, because it is the safe one. Approving is
+         a plain red text control that has to be held. */
+      #safedefault .btn--deny { background: #0A84FF; color: #fff; font-weight: 600; }
+      #safedefault .btn--hold { background: transparent; color: #FF453A; padding: 0 10px; }
+      #safedefault .btn--hold .fill { background: rgba(255,69,58,0.26); }
+      #safedefault .card__actions { flex-direction: row-reverse; justify-content: flex-end; }
+    </style>
+  </head>
+  <body>
+
+    <!-- A -->
+    <section class="variant dark" id="macdark">
+      <div class="chrome">
+        <span class="light" style="background:#FF5F57"></span><span class="light" style="background:#FEBC2E"></span><span class="light" style="background:#28C840"></span>
+        <span class="chrome__title">agent-indicator</span>
+        <span class="pill"><span class="dot" style="background:#FF3B30"></span><span class="dot" style="background:#E8952A"></span><span class="dot" style="background:#fff"></span><span class="dot" style="background:#34C759"></span><span style="font-size:11px;color:#a8a8b0">+2</span></span>
+      </div>
+      <div class="body">
+        <p class="prompt">$ agent run refactor-auth <span class="caret"></span></p>
+        <p class="out">reading 4 files, editing 2, running the suite</p>
+        <div class="stage">
+          <div class="card">
+            <div class="card__head"><span class="card__title">Waiting for you</span><span class="card__dismiss">Not now</span></div>
+            <p class="card__note">This cannot be undone. Open it to answer.</p>
+            <div class="card__row"><span class="card__consequence">Deletes the legacy folder and everything in it</span><span class="card__hint">Close</span></div>
+            <div class="card__panel">
+              <code class="card__detail">rm -rf legacy</code>
+              <div class="card__actions">
+                <span class="btn btn--hold"><span class="fill"></span><span>Hold to approve</span></span>
+                <span class="btn btn--deny">Deny</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- B -->
+    <section class="variant lightroom" id="maclight">
+      <div class="chrome">
+        <span class="light" style="background:#FF5F57"></span><span class="light" style="background:#FEBC2E"></span><span class="light" style="background:#28C840"></span>
+        <span class="chrome__title">agent-indicator</span>
+        <span class="pill"><span class="dot" style="background:#FF3B30"></span><span class="dot" style="background:#E8952A"></span><span class="dot" style="background:#111"></span><span class="dot" style="background:#34C759"></span><span style="font-size:11px;color:#6B6B6B">+2</span></span>
+      </div>
+      <div class="body">
+        <p class="prompt">$ agent run refactor-auth <span class="caret"></span></p>
+        <p class="out">reading 4 files, editing 2, running the suite</p>
+        <div class="stage">
+          <div class="card">
+            <div class="card__head"><span class="card__title">Waiting for you</span><span class="card__dismiss">Not now</span></div>
+            <p class="card__note">This cannot be undone. Open it to answer.</p>
+            <div class="card__row"><span class="card__consequence">Deletes the legacy folder and everything in it</span><span class="card__hint">Close</span></div>
+            <div class="card__panel">
+              <code class="card__detail">rm -rf legacy</code>
+              <div class="card__actions">
+                <span class="btn btn--hold"><span class="fill"></span><span>Hold to approve</span></span>
+                <span class="btn btn--deny">Deny</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- C -->
+    <section class="variant dark" id="glassdark">
+      <div class="chrome">
+        <span class="light" style="background:#FF5F57"></span><span class="light" style="background:#FEBC2E"></span><span class="light" style="background:#28C840"></span>
+        <span class="chrome__title">agent-indicator</span>
+        <span class="pill"><span class="dot" style="background:#FF3B30"></span><span class="dot" style="background:#E8952A"></span><span class="dot" style="background:#fff"></span><span class="dot" style="background:#34C759"></span><span style="font-size:11px;color:#a8a8b0">+2</span></span>
+      </div>
+      <div class="body">
+        <p class="prompt">$ agent run refactor-auth <span class="caret"></span></p>
+        <p class="out">reading 4 files, editing 2, running the suite</p>
+        <div class="stage">
+          <div class="blob"></div>
+          <div class="card">
+            <div class="card__head"><span class="card__title">Waiting for you</span><span class="card__dismiss">Not now</span></div>
+            <p class="card__note">This cannot be undone. Open it to answer.</p>
+            <div class="card__row"><span class="card__consequence">Deletes the legacy folder and everything in it</span><span class="card__hint">Close</span></div>
+            <div class="card__panel">
+              <code class="card__detail">rm -rf legacy</code>
+              <div class="card__actions">
+                <span class="btn btn--hold"><span class="fill"></span><span>Hold to approve</span></span>
+                <span class="btn btn--deny">Deny</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- D -->
+    <section class="variant dark" id="iossheet">
+      <div class="chrome">
+        <span class="light" style="background:#FF5F57"></span><span class="light" style="background:#FEBC2E"></span><span class="light" style="background:#28C840"></span>
+        <span class="chrome__title">agent-indicator</span>
+      </div>
+      <div class="body">
+        <p class="prompt">$ agent run refactor-auth <span class="caret"></span></p>
+        <div class="stage">
+          <div class="card">
+            <div class="grabber"></div>
+            <div class="card__head"><span class="card__title">Waiting for you</span><span class="card__dismiss">Not now</span></div>
+            <p class="card__note">This cannot be undone.</p>
+            <div class="card__row"><span class="card__consequence">Deletes the legacy folder and everything in it</span></div>
+            <div class="card__panel"><code class="card__detail">rm -rf legacy</code></div>
+            <div class="card__actions">
+              <span class="btn btn--hold"><span class="fill"></span><span>Hold to approve</span></span>
+              <span class="btn btn--deny">Deny</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- E -->
+    <section class="variant dark" id="liveactivity">
+      <div class="chrome">
+        <span class="light" style="background:#FF5F57"></span><span class="light" style="background:#FEBC2E"></span><span class="light" style="background:#28C840"></span>
+        <span class="chrome__title">agent-indicator</span>
+        <span class="pill"><span class="dot" style="background:#FF3B30"></span><span class="dot" style="background:#E8952A"></span><span class="dot" style="background:#fff"></span><span class="dot" style="background:#34C759"></span><span style="font-size:11px;color:#a8a8b0">+2</span></span>
+      </div>
+      <div class="body">
+        <p class="prompt">$ agent run refactor-auth <span class="caret"></span></p>
+        <p class="out">reading 4 files, editing 2, running the suite</p>
+        <div class="stage">
+          <div class="card">
+            <div class="la-top">
+              <span class="la-glyph">A</span>
+              <span class="la-app">refactor-auth</span>
+              <span class="la-when">12m</span>
+            </div>
+            <p class="card__note">This cannot be undone.</p>
+            <div class="card__row"><span class="card__consequence">Deletes the legacy folder and everything in it</span><span class="card__hint">Close</span></div>
+            <div class="card__panel">
+              <code class="card__detail">rm -rf legacy</code>
+              <div class="card__actions">
+                <span class="btn btn--hold"><span class="fill"></span><span>Hold to approve</span></span>
+                <span class="btn btn--deny">Deny</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- F -->
+    <section class="variant dark" id="safedefault">
+      <div class="chrome">
+        <span class="light" style="background:#FF5F57"></span><span class="light" style="background:#FEBC2E"></span><span class="light" style="background:#28C840"></span>
+        <span class="chrome__title">agent-indicator</span>
+        <span class="pill"><span class="dot" style="background:#FF3B30"></span><span class="dot" style="background:#E8952A"></span><span class="dot" style="background:#fff"></span><span class="dot" style="background:#34C759"></span><span style="font-size:11px;color:#a8a8b0">+2</span></span>
+      </div>
+      <div class="body">
+        <p class="prompt">$ agent run refactor-auth <span class="caret"></span></p>
+        <p class="out">reading 4 files, editing 2, running the suite</p>
+        <div class="stage">
+          <div class="card">
+            <div class="card__head"><span class="card__title">Waiting for you</span><span class="card__dismiss">Not now</span></div>
+            <p class="card__note">This cannot be undone. Open it to answer.</p>
+            <div class="card__row"><span class="card__consequence">Deletes the legacy folder and everything in it</span><span class="card__hint">Close</span></div>
+            <div class="card__panel">
+              <code class="card__detail">rm -rf legacy</code>
+              <div class="card__actions">
+                <span class="btn btn--hold"><span class="fill"></span><span>Hold to approve</span></span>
+                <span class="btn btn--deny">Deny</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </body>
+</html>

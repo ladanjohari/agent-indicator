@@ -7,7 +7,7 @@ import {
 } from '../src'
 import type { Activity, ApprovalRequest, Session, SessionState } from '../src'
 import { ApprovalGate as SdkApprovalGate } from '../src/ai-sdk'
-import { Example, Locked, PropsTable } from './Example'
+import { Example } from './Example'
 import { Hero } from './Hero'
 
 const STATES: SessionState[] = ['idle', 'working', 'running', 'needsYou', 'error', 'done']
@@ -158,14 +158,14 @@ export function Docs() {
   return (
     <>
       <header className="head">
+        <p className="head__prompt">
+          <span className="head__sigil">$</span> npm install agent-indicator
+        </p>
         <h1>agent-indicator</h1>
         <p className="head__line">React components for the states an AI agent is actually in.</p>
 
         <Hero />
 
-        <pre className="head__install">
-          <code>npm install agent-indicator</code>
-        </pre>
         <p className="head__status">
           <a href="https://www.npmjs.com/package/agent-indicator">v0.3.0 on npm</a>
           {'. Source on '}
@@ -212,12 +212,6 @@ export function Docs() {
 
         <section id="statusindicator" className="component">
           <h2>StatusIndicator</h2>
-          <p>
-            One session&apos;s state. It reports and it never controls: no click
-            handler and no children, because a status you can click has become an
-            approval.
-          </p>
-
           <Example
             note="Six states. Only Running moves, because only Running is alive without progressing. Error is a ring rather than a fill, so it is told apart by shape and not by hue."
             code={'<StatusIndicator state="needsYou" showLabel />'}
@@ -232,36 +226,6 @@ export function Docs() {
             </ul>
           </Example>
 
-          <Example
-            note="Dot only, which is how a dense list uses it. The label is still in the page for screen readers."
-            code={'<StatusIndicator state="running" size="lg" />'}
-          >
-            <div className="row">
-              <StatusIndicator state="running" size="sm" />
-              <StatusIndicator state="running" size="md" />
-              <StatusIndicator state="running" size="lg" />
-            </div>
-          </Example>
-
-          <PropsTable
-            rows={[
-              { name: 'state', type: 'SessionState', required: true, description: 'Which state to show. Everything else is optional.' },
-              { name: 'label', type: 'string', description: 'Replaces the wording. For other languages, or when your product says Paused where this says Idle.' },
-              { name: 'showLabel', type: 'boolean', description: 'Show the label next to the dot. Defaults to false. This controls whether it is visible, not whether it exists.' },
-              { name: 'size', type: "'sm' | 'md' | 'lg'", description: 'Dot size. Named sizes only, so the error ring stays thick enough to read.' },
-              { name: 'className', type: 'string', description: 'Your own class, for spacing and positioning from outside.' },
-            ]}
-          />
-
-          <Locked
-            items={[
-              'Which state means what.',
-              'The ring rather than a fill on error, and the colourblind safety it exists for.',
-              'Motion signalling state while colour signals only exception.',
-              'Reduce Motion, which is obeyed rather than offered.',
-              'The label being readable by a screen reader even when hidden from view.',
-            ]}
-          />
 
           <p className="restyle">
             Every colour is a token you can retint, and the component writes{' '}
@@ -272,12 +236,6 @@ export function Docs() {
 
         <section id="approvalgate" className="component">
           <h2>ApprovalGate</h2>
-          <p>
-            Asks for a human decision without becoming a toll booth. Try it: the
-            three reversible requests clear in one press, and the two that cannot
-            be undone have no approve control at all until you open them.
-          </p>
-
           <Example
             note="Separating a destructive action by position does not work, because a hand already pressing Approve does not stop at a horizontal rule. Separating it by gesture does. Open one of the two at the bottom and try to approve it: it takes a two second hold, and letting go early does nothing."
             code={`<ApprovalGate
@@ -289,17 +247,6 @@ export function Docs() {
           >
             <GateExample />
           </Example>
-
-          <PropsTable
-            rows={[
-              { name: 'requests', type: 'ApprovalRequest[]', required: true, description: 'Everything waiting on a decision. An empty array renders nothing.' },
-              { name: 'onApprove', type: '(ids: string[]) => void', required: true, description: 'Called with the ids being approved. Reversible ones may arrive together, destructive ones never do.' },
-              { name: 'onDeny', type: '(ids: string[]) => void', required: true, description: 'Called with the ids being refused.' },
-              { name: 'onDismiss', type: '() => void', description: 'Called when it is put away without deciding. Leave it out and the gate cannot be dismissed.' },
-              { name: 'title', type: 'string | false', description: 'Heading. Defaults to "Waiting for you". Pass false to drop the heading when the gate sits inline in a conversation. The landmark keeps its name either way.' },
-              { name: 'className', type: 'string', description: 'Your own class, for spacing and positioning from outside.' },
-            ]}
-          />
 
           <p className="restyle">
             An <code>ApprovalRequest</code> is an <code>id</code>, a{' '}
@@ -318,24 +265,10 @@ export function Docs() {
             held exactly like permanent.
           </p>
 
-          <Locked
-            items={[
-              'An irreversible request is never batched with anything.',
-              'Its approve control is absent from the page until it is opened, not hidden and not disabled.',
-              'Approving it takes a two second hold, not a click, because a click is the same motion that just cleared the reversible ones. Letting go early does nothing.',
-              'The hold is skipped for keyboard and for Reduce Motion, because nobody should have to keep a button pressed for two seconds to use this.',
-              'Anything not explicitly reversible is held back, so an omission fails towards asking.',
-              'Not knowing is never cheaper than knowing. An undeclared request gets the same barrier as a permanent one.',
-              'No timers, no countdowns and no automatic decisions.',
-              'Dismissing is neither approval nor refusal, and the requests survive it.',
-            ]}
-          />
         </section>
 
         <section id="sessionstrip" className="component">
           <h2>SessionStrip</h2>
-          <p>Many parallel sessions, read at a glance. Weather, not telemetry.</p>
-
           <Example
             note="Eight sessions. The two that need a person sort to the top and are the only ones that spell out their state. The rest fold into a line of counts."
             code={`<SessionStrip
@@ -347,40 +280,11 @@ export function Docs() {
             <StripExample />
           </Example>
 
-          <Example
-            note="The same eight with the limit at zero. Every calm session folds. The two that need you never do, whatever the limit is set to."
-            code={'<SessionStrip sessions={sessions} maxQuiet={0} />'}
-          >
-            <SessionStrip sessions={FLEET} maxQuiet={0} />
-          </Example>
 
-          <PropsTable
-            rows={[
-              { name: 'sessions', type: 'Session[]', required: true, description: 'Every session. An empty array renders nothing.' },
-              { name: 'maxQuiet', type: 'number', description: 'How many calm sessions to show as rows before folding the rest into the summary. Defaults to 4.' },
-              { name: 'onSelect', type: '(id: string) => void', description: 'Makes rows selectable. Leave it out and the strip is a read out with nothing to click.' },
-              { name: 'label', type: 'string', description: 'Accessible name for the list. Defaults to "Sessions".' },
-              { name: 'className', type: 'string', description: 'Your own class, for spacing and positioning from outside.' },
-            ]}
-          />
-
-          <Locked
-            items={[
-              'A session that needs a person is never folded away, whatever maxQuiet is set to.',
-              'Only actionable rows spell out their state, because six rows each saying Writing is the telemetry this avoids.',
-              'One StatusIndicator per row, so a screen reader never hears the state twice.',
-              'Rows do not animate when they reorder.',
-            ]}
-          />
         </section>
 
         <section id="activitytrail" className="component">
           <h2>ActivityTrail</h2>
-          <p>
-            What the agent did, compressed and scannable. A log dump is everything
-            that happened at the same volume, which is why nobody reads one.
-          </p>
-
           <Example
             note="Eleven steps, seven rows. Runs of the same ordinary step fold into one row you can open. Questions and failures never fold, and they are the only rows carrying colour."
             code={`<ActivityTrail
@@ -391,24 +295,6 @@ export function Docs() {
             <ActivityTrail activities={TRAIL} />
           </Example>
 
-          <PropsTable
-            rows={[
-              { name: 'activities', type: 'Activity[]', required: true, description: 'Oldest first. The trail reads downwards, the way it happened.' },
-              { name: 'maxVisible', type: 'number', description: 'How many rows before the older ones fold into one line at the top. Defaults to 8.' },
-              { name: 'summarise', type: '(kind, count) => string', description: 'The wording for a folded group. Replace it for other languages.' },
-              { name: 'label', type: 'string', description: 'Accessible name for the list. Defaults to "Activity".' },
-              { name: 'className', type: 'string', description: 'Your own class, for spacing and positioning from outside.' },
-            ]}
-          />
-
-          <Locked
-            items={[
-              'Questions and failures are never folded, however many there are.',
-              'Runs fold only when consecutive, because the order is the story.',
-              'Colour appears on exceptions and nowhere else.',
-              'A failure is a ring rather than a fill, matching StatusIndicator.',
-            ]}
-          />
         </section>
 
         <section id="ai-sdk" className="component">
@@ -427,9 +313,6 @@ export function Docs() {
             <code>useChat</code> and it works.
           </p>
 
-          <pre className="block">
-            <code>{`npm install agent-indicator`}</code>
-          </pre>
           <pre className="block">
             <code>{`import { ApprovalGate } from 'agent-indicator/ai-sdk'
 import 'agent-indicator/styles.css'
@@ -455,16 +338,6 @@ const { messages, addToolApprovalResponse } = useChat()
             <SdkExample />
           </Example>
 
-          <PropsTable
-            rows={[
-              { name: 'messages', type: 'UIMessage[]', required: true, description: 'Straight from useChat. Anything not waiting on a person is ignored, including approvals the SDK settled automatically and ones already answered.' },
-              { name: 'addToolApprovalResponse', type: '({ id, approved }) => void', required: true, description: 'Straight from useChat. Answers are sent back with the approval id, one call per request.' },
-              { name: 'reversible', type: 'Record<string, Reversibility | (input) => Reversibility> | (toolName, input) => Reversibility', description: 'Which tools can be undone. A map covers most cases; the function form is for tools like runCommand where the arguments decide. Anything unlisted stays unknown.' },
-              { name: 'describe', type: 'Record<string, (input) => string> | (toolName, input) => string', description: 'Write the sentence a person reads. Without it the tool name is tidied into a label, which is honest but plain.' },
-              { name: 'title', type: 'string | false', description: 'Passed through. Use false when the gate sits inline in a conversation.' },
-            ]}
-          />
-
           <p className="restyle">
             The SDK carries no notion of whether an action can be undone, so this
             adapter looks in three places in order: what you said in{' '}
@@ -476,16 +349,6 @@ const { messages, addToolApprovalResponse } = useChat()
             who knows.
           </p>
 
-          <Locked
-            items={[
-              'Silence is never read as consent. An undeclared tool is held, not batched.',
-              'Approvals the SDK decided on its own never appear, because there is nothing left for a person to decide.',
-              'Answered and denied requests drop out on their own, so nothing lingers in the gate.',
-              'Tools discovered at runtime, such as anything from an MCP server, are handled the same as tools known up front.',
-              'In development the adapter says so, once, when nothing has declared reversibility. It never throws and never puts its own warning on your screen.',
-              'No AI SDK dependency and no peer dependency. The adapter reads the shape of a message rather than importing the library, so there is no version to keep in step.',
-            ]}
-          />
         </section>
 
         <section className="component">
@@ -503,8 +366,17 @@ export function Row() {
 }`}</code>
           </pre>
           <p>
-            React 18 or 19. TypeScript types are included, so your editor will
-            list the props and refuse the ones that are not allowed.
+            React 18 or 19. Every prop is typed, so your editor lists what each
+            component takes and refuses anything invented. That is why there is no
+            props table on this page: the reference is in your editor when you
+            need it, and in the{' '}
+            <a href="https://github.com/ladanjohari/agent-indicator#readme">readme</a>{' '}
+            when you want to read it.
+          </p>
+          <p>
+            Reduce Motion is obeyed rather than offered, labels stay readable by a
+            screen reader even when hidden from view, and the keyboard never has to
+            hold anything down.
           </p>
         </section>
       </main>

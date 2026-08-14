@@ -29,3 +29,10 @@ dist-docs
 # Preview capture workspace
 previews/node_modules
 previews/frames
+
+# Generated design explorations, regenerate with the shoot scripts
+previews/design-options/
+previews/design-terminal/
+previews/design-si/
+previews/design-card/
+previews/docs-shots/

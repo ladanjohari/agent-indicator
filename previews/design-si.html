@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>The card, built on the Session Indicator system</title>
+    <style>
+      /* Every value below is lifted from ~/projects/session-indicator/index.html
+         rather than approximated: the popover, the terminal window, the pill,
+         the menu bar, the tokens and the two entrance animations. */
+
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      body { background: #888; }
+
+      .variant {
+        width: 880px; height: 520px; overflow: hidden; position: relative;
+        font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+      }
+
+      /* Dark tokens, from :root */
+      .dk {
+        --color-text-primary: rgba(255,255,255,0.82);
+        --color-text-secondary: rgba(255,255,255,0.28);
+        --color-border-tertiary: rgba(255,255,255,0.06);
+        --color-background-secondary: rgba(255,255,255,0.04);
+        --gap-fg: #FF3B30; --gap-bg: rgba(255,59,48,0.08); --gap-bd: rgba(255,59,48,0.25);
+        --ok-fg: #34C759;
+        --amber: #E8952A;
+      }
+      /* Light tokens, from body.lm */
+      .lt {
+        --color-text-primary: rgba(0,0,0,0.82);
+        --color-text-secondary: rgba(0,0,0,0.3);
+        --color-border-tertiary: rgba(0,0,0,0.07);
+        --color-background-secondary: rgba(0,0,0,0.04);
+        --gap-fg: #c0261c; --gap-bg: rgba(255,59,48,0.07); --gap-bd: rgba(255,59,48,0.28);
+        --ok-fg: #1a8c3a;
+        --amber: #B25000;
+      }
+
+      .wallpaper { position: absolute; inset: 0; background-size: cover; background-position: center; }
+      .wp-dark { background-image: url('file:///Users/ladanjohari/projects/session-indicator/helios-dark.jpg'); }
+      .wp-light { background-image: url('file:///Users/ladanjohari/projects/session-indicator/helios-light.jpg'); }
+
+      /* Menu bar, exact */
+      .menubar {
+        position: relative; z-index: 100; height: 24px;
+        background: rgba(22,22,22,0.88);
+        border-bottom: .5px solid rgba(255,255,255,0.07);
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 0 10px; backdrop-filter: blur(40px);
+      }
+      .lt .menubar { background: rgba(246,246,246,0.9); border-bottom: .5px solid rgba(0,0,0,0.09); }
+      .mb-item { font-size: 12px; color: rgba(255,255,255,0.86); padding: 0 6px; display: flex; align-items: center; }
+      .lt .mb-item { color: rgba(0,0,0,0.86); }
+      .mb-bold { font-weight: 500; }
+      .mb-right { display: flex; align-items: center; gap: 2px; }
+
+      .si-pill {
+        background: rgba(70,70,70,0.5);
+        backdrop-filter: blur(14px) saturate(180%);
+        border: .5px solid rgba(255,255,255,0.24);
+        border-radius: 8px; height: 16px;
+        display: flex; align-items: center; padding: 0 6px; gap: 5px;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.16), 0 2px 8px rgba(0,0,0,0.25);
+      }
+      .lt .si-pill {
+        background: rgba(0,0,0,0.12); border: .5px solid rgba(0,0,0,0.18);
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 2px 8px rgba(0,0,0,0.12);
+      }
+      .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+      .pill-count { font-size: 10px; color: rgba(255,255,255,0.55); }
+      .lt .pill-count { color: rgba(0,0,0,0.5); }
+
+      /* Terminal window, exact */
+      .term-win {
+        position: absolute; width: 620px;
+        background: rgba(46,46,46,0.62);
+        backdrop-filter: blur(18px) saturate(180%);
+        border-radius: 12px;
+        border: .5px solid rgba(255,255,255,0.2);
+        box-shadow: 0 24px 70px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.14);
+        overflow: hidden;
+      }
+      .lt .term-win {
+        background: rgba(248,248,252,0.68);
+        border: .5px solid rgba(0,0,0,0.12);
+        box-shadow: 0 24px 70px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.9);
+      }
+      .term-chrome {
+        height: 32px; background: rgba(255,255,255,0.05);
+        display: flex; align-items: center; padding: 0 12px; position: relative;
+        border-bottom: .5px solid rgba(255,255,255,0.09);
+      }
+      .lt .term-chrome { background: rgba(0,0,0,0.03); border-bottom: .5px solid rgba(0,0,0,0.08); }
+      .tl-group { display: flex; gap: 8px; }
+      .tl-btn { width: 12px; height: 12px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+      .tl-symbol { font-size: 7px; line-height: 1; font-weight: 900; color: rgba(0,0,0,0.55); }
+      .term-title {
+        position: absolute; left: 50%; transform: translateX(-50%);
+        font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.55);
+      }
+      .lt .term-title { color: rgba(0,0,0,0.55); }
+      .term-body {
+        padding: 14px 16px; font-family: 'SF Mono', Menlo, Monaco, monospace;
+        font-size: 12px; line-height: 1.75; color: rgba(255,255,255,0.72);
+      }
+      .lt .term-body { color: rgba(0,0,0,0.72); }
+      .term-body .dim { color: var(--color-text-secondary); }
+      .caret { display: inline-block; width: 7px; height: 13px; background: currentColor; vertical-align: -2px; }
+
+      /* The gate, wearing the popover recipe, exact */
+      .pop {
+        width: 300px; border-radius: 10px; overflow: hidden;
+        background: rgba(56,56,56,0.55);
+        backdrop-filter: blur(22px) saturate(180%);
+        border: .5px solid rgba(255,255,255,0.18);
+        box-shadow: 0 20px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.14);
+      }
+      .lt .pop {
+        background: rgba(235,235,240,0.72);
+        border: .5px solid rgba(0,0,0,0.12);
+        box-shadow: 0 16px 50px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.8);
+      }
+      .pop-header {
+        padding: 11px 13px 9px; display: flex; align-items: center; justify-content: space-between;
+        border-bottom: .5px solid var(--color-border-tertiary);
+      }
+      .pop-title { font-size: 12px; font-weight: 500; color: var(--color-text-primary); }
+      .pop-badge {
+        font-size: 10px; color: var(--color-text-secondary);
+        background: var(--color-background-secondary); padding: 1px 7px; border-radius: 20px;
+      }
+      .pop-body { padding: 11px 13px 13px; }
+      .pop-note { font-size: 10px; color: var(--amber); margin-bottom: 9px; font-weight: 500; }
+      .pop-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+      .pop-consequence { font-size: 12.5px; font-weight: 500; color: var(--color-text-primary); line-height: 1.35; }
+      .pop-hint { font-size: 11px; color: var(--color-text-secondary); flex: none; }
+      /* Concentric: popover radius 10, inset 5, so this is 5. */
+      .pop-panel {
+        margin-top: 9px; padding: 9px 10px; border-radius: 5px;
+        background: var(--color-background-secondary);
+        border: .5px solid var(--color-border-tertiary);
+      }
+      .pop-detail { font-family: 'SF Mono', Menlo, Monaco, monospace; font-size: 10.5px; color: var(--color-text-secondary); }
+      .pop-actions { display: flex; gap: 6px; margin-top: 10px; }
+      /* Exact capsules: 24px tall, 12px radius. */
+      .btn { height: 24px; border-radius: 12px; padding: 0 11px; font-size: 11.5px; font-weight: 500;
+             display: inline-flex; align-items: center; font-family: inherit; }
+      .btn--hold { position: relative; isolation: isolate; overflow: hidden;
+                   border: .5px solid var(--gap-bd); color: var(--gap-fg); background: var(--gap-bg); }
+      .btn--hold .fill { position: absolute; inset: 0; z-index: -1; background: rgba(255,59,48,0.3); clip-path: inset(0 42% 0 0); }
+      .btn--hold span { position: relative; }
+      .btn--deny { background: var(--color-background-secondary); color: var(--color-text-primary);
+                   border: .5px solid var(--color-border-tertiary); }
+
+      /* The pointer from the pill to the popover, the springs-from-source rule. */
+      .pop-anchor { position: absolute; }
+      .pop-arrow { position: absolute; top: -5px; left: 24px; width: 10px; height: 10px;
+                   background: rgba(56,56,56,0.75); transform: rotate(45deg);
+                   border-left: .5px solid rgba(255,255,255,0.18); border-top: .5px solid rgba(255,255,255,0.18); }
+      .lt .pop-arrow { background: rgba(235,235,240,0.85); border-left-color: rgba(0,0,0,0.12); border-top-color: rgba(0,0,0,0.12); }
+
+      .dimmed { opacity: 0.5; filter: saturate(0.65); transform: scale(0.96); }
+    </style>
+  </head>
+  <body>
+
+    <!-- S1: dark, popover anchored to the pill, terminal dimmed behind -->
+    <section class="variant dk" id="s1">
+      <div class="wallpaper wp-dark"></div>
+      <div class="menubar">
+        <div class="mb-item mb-bold">Terminal</div>
+        <div class="mb-right">
+          <span class="si-pill">
+            <span class="dot" style="background:#FF3B30"></span>
+            <span class="dot" style="background:#E8952A"></span>
+            <span class="dot" style="background:#fff"></span>
+            <span class="dot" style="background:#34C759"></span>
+            <span class="pill-count">+2</span>
+          </span>
+          <span class="mb-item">100%</span><span class="mb-item">Thu 02:14</span>
+        </div>
+      </div>
+      <div class="term-win dimmed" style="left:40px; top:70px;">
+        <div class="term-chrome">
+          <div class="tl-group">
+            <span class="tl-btn" style="background:#FF5F57"><span class="tl-symbol">&times;</span></span>
+            <span class="tl-btn" style="background:#FEBC2E"><span class="tl-symbol">&minus;</span></span>
+            <span class="tl-btn" style="background:#28C840"><span class="tl-symbol">+</span></span>
+          </div>
+          <span class="term-title">refactor-auth</span>
+        </div>
+        <div class="term-body">
+          $ agent run refactor-auth<br />
+          <span class="dim">read 4 files, edited 2, ran the suite</span><br />
+          <span class="dim">waiting on you before continuing</span> <span class="caret"></span>
+        </div>
+      </div>
+      <div class="pop-anchor" style="right:34px; top:30px;">
+        <div class="pop">
+          <div class="pop-arrow" style="left:auto; right:28px;"></div>
+          <div class="pop-header"><span class="pop-title">Waiting for you</span><span class="pop-badge">1 of 5</span></div>
+          <div class="pop-body">
+            <p class="pop-note">This cannot be undone.</p>
+            <div class="pop-row"><span class="pop-consequence">Deletes the legacy folder and everything in it</span><span class="pop-hint">Close</span></div>
+            <div class="pop-panel">
+              <code class="pop-detail">rm -rf legacy</code>
+              <div class="pop-actions">
+                <span class="btn btn--hold"><span class="fill"></span><span>Hold to approve</span></span>
+                <span class="btn btn--deny">Deny</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- S2: light, same -->
+    <section class="variant lt" id="s2">
+      <div class="wallpaper wp-light"></div>
+      <div class="menubar">
+        <div class="mb-item mb-bold">Terminal</div>
+        <div class="mb-right">
+          <span class="si-pill">
+            <span class="dot" style="background:#FF3B30"></span>
+            <span class="dot" style="background:#E8952A"></span>
+            <span class="dot" style="background:#111"></span>
+            <span class="dot" style="background:#34C759"></span>
+            <span class="pill-count">+2</span>
+          </span>
+          <span class="mb-item">100%</span><span class="mb-item">Thu 02:14</span>
+        </div>
+      </div>
+      <div class="term-win dimmed" style="left:40px; top:70px;">
+        <div class="term-chrome">
+          <div class="tl-group">
+            <span class="tl-btn" style="background:#FF5F57"><span class="tl-symbol">&times;</span></span>
+            <span class="tl-btn" style="background:#FEBC2E"><span class="tl-symbol">&minus;</span></span>
+            <span class="tl-btn" style="background:#28C840"><span class="tl-symbol">+</span></span>
+          </div>
+          <span class="term-title">refactor-auth</span>
+        </div>
+        <div class="term-body">
+          $ agent run refactor-auth<br />
+          <span class="dim">read 4 files, edited 2, ran the suite</span><br />
+          <span class="dim">waiting on you before continuing</span> <span class="caret"></span>
+        </div>
+      </div>
+      <div class="pop-anchor" style="right:34px; top:30px;">
+        <div class="pop">
+          <div class="pop-arrow" style="left:auto; right:28px;"></div>
+          <div class="pop-header"><span class="pop-title">Waiting for you</span><span class="pop-badge">1 of 5</span></div>
+          <div class="pop-body">
+            <p class="pop-note">This cannot be undone.</p>
+            <div class="pop-row"><span class="pop-consequence">Deletes the legacy folder and everything in it</span><span class="pop-hint">Close</span></div>
+            <div class="pop-panel">
+              <code class="pop-detail">rm -rf legacy</code>
+              <div class="pop-actions">
+                <span class="btn btn--hold"><span class="fill"></span><span>Hold to approve</span></span>
+                <span class="btn btn--deny">Deny</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- S3: dark, the gate living inside the terminal window -->
+    <section class="variant dk" id="s3">
+      <div class="wallpaper wp-dark"></div>
+      <div class="menubar">
+        <div class="mb-item mb-bold">Terminal</div>
+        <div class="mb-right">
+          <span class="si-pill">
+            <span class="dot" style="background:#E8952A"></span>
+            <span class="dot" style="background:#fff"></span>
+            <span class="pill-count">+4</span>
+          </span>
+          <span class="mb-item">Thu 02:14</span>
+        </div>
+      </div>
+      <div class="term-win" style="left:130px; top:78px; width:620px;">
+        <div class="term-chrome">
+          <div class="tl-group">
+            <span class="tl-btn" style="background:#FF5F57"><span class="tl-symbol">&times;</span></span>
+            <span class="tl-btn" style="background:#FEBC2E"><span class="tl-symbol">&minus;</span></span>
+            <span class="tl-btn" style="background:#28C840"><span class="tl-symbol">+</span></span>
+          </div>
+          <span class="term-title">refactor-auth</span>
+        </div>
+        <div class="term-body">
+          $ agent run refactor-auth<br />
+          <span class="dim">read 4 files, edited 2, ran the suite</span>
+          <div style="margin-top:12px">
+            <div class="pop" style="width:100%">
+              <div class="pop-header"><span class="pop-title">Waiting for you</span><span class="pop-badge">1 of 5</span></div>
+              <div class="pop-body">
+                <p class="pop-note">This cannot be undone.</p>
+                <div class="pop-row"><span class="pop-consequence">Deletes the legacy folder and everything in it</span><span class="pop-hint">Close</span></div>
+                <div class="pop-panel">
+                  <code class="pop-detail">rm -rf legacy</code>
+                  <div class="pop-actions">
+                    <span class="btn btn--hold"><span class="fill"></span><span>Hold to approve</span></span>
+                    <span class="btn btn--deny">Deny</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- S4: light, gate inside the terminal -->
+    <section class="variant lt" id="s4">
+      <div class="wallpaper wp-light"></div>
+      <div class="menubar">
+        <div class="mb-item mb-bold">Terminal</div>
+        <div class="mb-right">
+          <span class="si-pill">
+            <span class="dot" style="background:#E8952A"></span>
+            <span class="dot" style="background:#111"></span>
+            <span class="pill-count">+4</span>
+          </span>
+          <span class="mb-item">Thu 02:14</span>
+        </div>
+      </div>
+      <div class="term-win" style="left:130px; top:78px; width:620px;">
+        <div class="term-chrome">
+          <div class="tl-group">
+            <span class="tl-btn" style="background:#FF5F57"><span class="tl-symbol">&times;</span></span>
+            <span class="tl-btn" style="background:#FEBC2E"><span class="tl-symbol">&minus;</span></span>
+            <span class="tl-btn" style="background:#28C840"><span class="tl-symbol">+</span></span>
+          </div>
+          <span class="term-title">refactor-auth</span>
+        </div>
+        <div class="term-body">
+          $ agent run refactor-auth<br />
+          <span class="dim">read 4 files, edited 2, ran the suite</span>
+          <div style="margin-top:12px">
+            <div class="pop" style="width:100%">
+              <div class="pop-header"><span class="pop-title">Waiting for you</span><span class="pop-badge">1 of 5</span></div>
+              <div class="pop-body">
+                <p class="pop-note">This cannot be undone.</p>
+                <div class="pop-row"><span class="pop-consequence">Deletes the legacy folder and everything in it</span><span class="pop-hint">Close</span></div>
+                <div class="pop-panel">
+                  <code class="pop-detail">rm -rf legacy</code>
+                  <div class="pop-actions">
+                    <span class="btn btn--hold"><span class="fill"></span><span>Hold to approve</span></span>
+                    <span class="btn btn--deny">Deny</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- S5: dark, the popover alone, large, as a hero -->
+    <section class="variant dk" id="s5">
+      <div class="wallpaper wp-dark"></div>
+      <div style="position:absolute; inset:0; display:grid; place-items:center;">
+        <div class="pop" style="width:360px">
+          <div class="pop-header"><span class="pop-title">Waiting for you</span><span class="pop-badge">1 of 5</span></div>
+          <div class="pop-body">
+            <p class="pop-note">This cannot be undone.</p>
+            <div class="pop-row"><span class="pop-consequence">Deletes the legacy folder and everything in it</span><span class="pop-hint">Close</span></div>
+            <div class="pop-panel">
+              <code class="pop-detail">rm -rf legacy</code>
+              <div class="pop-actions">
+                <span class="btn btn--hold"><span class="fill"></span><span>Hold to approve</span></span>
+                <span class="btn btn--deny">Deny</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- S6: light, popover alone -->
+    <section class="variant lt" id="s6">
+      <div class="wallpaper wp-light"></div>
+      <div style="position:absolute; inset:0; display:grid; place-items:center;">
+        <div class="pop" style="width:360px">
+          <div class="pop-header"><span class="pop-title">Waiting for you</span><span class="pop-badge">1 of 5</span></div>
+          <div class="pop-body">
+            <p class="pop-note">This cannot be undone.</p>
+            <div class="pop-row"><span class="pop-consequence">Deletes the legacy folder and everything in it</span><span class="pop-hint">Close</span></div>
+            <div class="pop-panel">
+              <code class="pop-detail">rm -rf legacy</code>
+              <div class="pop-actions">
+                <span class="btn btn--hold"><span class="fill"></span><span>Hold to approve</span></span>
+                <span class="btn btn--deny">Deny</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </body>
+</html>

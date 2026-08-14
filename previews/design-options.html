@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Docs page, design options</title>
+    <style>
+      @font-face {
+        font-family: 'Geist'; font-style: normal; font-weight: 400 700; font-display: block;
+        src: url('file:///Users/ladanjohari/projects/Portfolio-Website/assets/fonts/geist-latin.woff2') format('woff2');
+      }
+
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      body { background: #888; }
+      .variant { width: 880px; height: 520px; overflow: hidden; position: relative; }
+
+      /* Shared gate skeleton. Each variant restyles it. */
+      .gate { border-radius: 14px; padding: 16px; }
+      .gate__head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 14px; }
+      .gate__title { font-size: 14px; font-weight: 500; }
+      .gate__dismiss { font-size: 13px; text-decoration: underline; text-underline-offset: 3px; }
+      .gate__row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+      .gate__hint { font-size: 12px; text-decoration: underline; text-underline-offset: 3px; }
+      .gate__note { font-size: 12px; margin-bottom: 12px; }
+      .gate__revealed { margin-top: 8px; padding-left: 12px; border-left: 2px solid rgba(255,59,48,0.4); }
+      .gate__detail { display: block; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
+      .gate__actions { display: flex; gap: 8px; margin-top: 14px; }
+      .hold { position: relative; isolation: isolate; overflow: hidden; font-size: 13px;
+              padding: 7px 15px; border-radius: 999px; border: 1px solid rgba(255,59,48,0.55); color: #ff3b30; }
+      .hold__fill { position: absolute; inset: 0; z-index: -1; background: rgba(255,59,48,0.18); clip-path: inset(0 40% 0 0); }
+      .hold__label { position: relative; }
+      .deny { font-size: 13px; padding: 7px 15px; border-radius: 999px; }
+
+      /* ============ 1. CURRENT ============ */
+      #current { background: #f7f6f3; color: #111; font-family: ui-sans-serif, system-ui, -apple-system, sans-serif; padding: 44px 60px; }
+      #current .wordmark { font-size: 26px; font-weight: 500; letter-spacing: -0.02em; }
+      #current .tag { margin: 8px 0 22px; font-size: 17px; color: #6b6b6b; }
+      #current .ask { font-size: 15px; margin-bottom: 16px; }
+      #current .stage { padding: 22px; border: 1px solid rgba(0,0,0,0.1); border-radius: 14px; background: rgba(0,0,0,0.02); }
+      #current .gate { border: 1px solid rgba(0,0,0,0.1); max-width: 420px; }
+      #current .gate__dismiss, #current .gate__hint, #current .gate__detail { color: rgba(17,17,17,0.6); }
+      #current .gate__note { color: #ff3b30; }
+      #current .deny { border: 1px solid rgba(0,0,0,0.1); }
+      #current .install { margin-top: 20px; padding: 12px 14px; border: 1px solid rgba(0,0,0,0.1);
+                          border-radius: 10px; background: rgba(0,0,0,0.02); font-size: 13px;
+                          font-family: ui-monospace, Menlo, monospace; }
+
+      /* ============ 2. PORTFOLIO MATCHED ============ */
+      #portfolio { background: #F7F6F3; color: #111111; font-family: 'Geist', system-ui, sans-serif;
+                   padding: 44px 60px; -webkit-font-smoothing: antialiased; }
+      #portfolio .eyebrow { font-size: 0.68rem; font-weight: 500; letter-spacing: 0.05em;
+                            text-transform: uppercase; color: #6B6B6B; margin-bottom: 14px; }
+      #portfolio .wordmark { font-size: 1.6rem; font-weight: 600; letter-spacing: -0.02em; }
+      #portfolio .tag { margin: 6px 0 24px; font-size: 0.9rem; color: #6B6B6B; line-height: 1.5; }
+      #portfolio .ask { font-size: 0.85rem; color: #6B6B6B; margin-bottom: 14px; }
+      #portfolio .gate { border: 1px solid #D4D3CF; max-width: 420px; background: #fff; }
+      #portfolio .gate__dismiss, #portfolio .gate__hint, #portfolio .gate__detail { color: #6B6B6B; }
+      #portfolio .gate__note { color: #ff3b30; }
+      #portfolio .deny { border: 1px solid #D4D3CF; }
+      #portfolio .install { margin-top: 22px; padding-top: 16px; border-top: 1px solid #D4D3CF;
+                            font-size: 0.82rem; font-family: ui-monospace, Menlo, monospace; color: #6B6B6B; }
+      #portfolio .status { font-size: 0.62rem; font-weight: 600; letter-spacing: 0.04em;
+                           text-transform: uppercase; color: #0066FF; margin-top: 8px; }
+
+      /* ============ 3. CLEAR GLASS ============ */
+      #glass { background: #E9EAED; color: #16181D; font-family: 'Geist', system-ui, sans-serif; padding: 44px 60px;
+               background-image:
+                 repeating-linear-gradient(90deg, rgba(80,90,110,0.05) 0 1px, transparent 1px 120px),
+                 repeating-linear-gradient(0deg,  rgba(80,90,110,0.05) 0 1px, transparent 1px 120px); }
+      #glass .wordmark { font-size: 1.6rem; font-weight: 600; letter-spacing: -0.02em; }
+      #glass .tag { margin: 6px 0 26px; font-size: 0.9rem; color: #5A6070; }
+      #glass .gateWrap { position: relative; max-width: 430px; }
+      #glass .amberBlob { position: absolute; left: 40px; top: 120px; width: 200px; height: 140px; border-radius: 50%;
+        background: radial-gradient(circle, #FFB23E 0%, rgba(255,178,62,0.4) 55%, transparent 75%); filter: blur(18px); }
+      #glass .gate {
+        position: relative;
+        background: linear-gradient(115deg, rgba(255,255,255,0.5), rgba(255,255,255,0.22) 50%, rgba(255,255,255,0.4));
+        backdrop-filter: blur(7px) saturate(140%);
+        box-shadow:
+          inset 0 2px 2px rgba(255,255,255,0.95),
+          inset 2px 0 2px rgba(255,255,255,0.5),
+          inset 0 -3px 4px rgba(70,75,95,0.14),
+          inset -3px 0 4px rgba(70,75,95,0.08),
+          0 16px 32px rgba(70,75,95,0.22);
+        border-radius: 20px; padding: 18px;
+      }
+      #glass .gate:after { content: ""; position: absolute; left: 12%; top: 9%; width: 52%; height: 26%;
+        border-radius: 50%; background: rgba(255,255,255,0.6); filter: blur(5px); transform: rotate(-6deg); }
+      #glass .gate > * { position: relative; z-index: 1; }
+      #glass .gate__dismiss, #glass .gate__hint, #glass .gate__detail { color: #5A6070; }
+      #glass .gate__note { color: #C4560F; }
+      #glass .hold { border-color: rgba(196,86,15,0.6); color: #C4560F; }
+      #glass .hold__fill { background: rgba(242,154,24,0.35); }
+      #glass .deny { border: 1px solid rgba(70,75,95,0.25); }
+      #glass .install { margin-top: 24px; font-size: 0.82rem; font-family: ui-monospace, Menlo, monospace; color: #5A6070; }
+
+      /* ============ 4. EDITORIAL ============ */
+      #editorial { background: #FBFBF9; color: #12130F; font-family: 'Geist', system-ui, sans-serif; padding: 40px 64px; }
+      #editorial .rule-top { border-top: 2px solid #12130F; padding-top: 10px; display: flex;
+                             justify-content: space-between; font-size: 11px; letter-spacing: 0.08em;
+                             text-transform: uppercase; color: #12130F; }
+      #editorial .wordmark { font-size: 2.6rem; font-weight: 500; letter-spacing: -0.035em; margin-top: 26px; line-height: 1; }
+      #editorial .tag { margin: 14px 0 26px; font-size: 1.05rem; line-height: 1.4; max-width: 30ch; color: #3B3D36; }
+      #editorial .cols { display: grid; grid-template-columns: 150px 1fr; gap: 28px; align-items: start; }
+      #editorial .colhead { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #7A7C72; padding-top: 4px; }
+      #editorial .gate { border: 1px solid #D9D9D2; max-width: 400px; border-radius: 4px; }
+      #editorial .gate__dismiss, #editorial .gate__hint, #editorial .gate__detail { color: #7A7C72; }
+      #editorial .gate__note { color: #B3300F; }
+      #editorial .hold { border-radius: 4px; }
+      #editorial .deny { border: 1px solid #D9D9D2; border-radius: 4px; }
+
+      /* ============ 5. TERMINAL ============ */
+      #terminal { background: #0E0F12; color: #E4E6EA; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; padding: 40px 56px; }
+      #terminal .wordmark { font-size: 20px; font-weight: 500; letter-spacing: -0.01em; }
+      #terminal .wordmark span { color: #4D94FF; }
+      #terminal .tag { margin: 10px 0 8px; font-size: 13px; color: #8A8F98; }
+      #terminal .install { margin: 18px 0 24px; font-size: 13px; color: #8A8F98; }
+      #terminal .install b { color: #E4E6EA; font-weight: 400; }
+      #terminal .gate { border: 1px solid #24262C; max-width: 430px; background: #14161A; border-radius: 8px; }
+      #terminal .gate__title { font-family: ui-sans-serif, system-ui, sans-serif; }
+      #terminal .gate__row { font-family: ui-sans-serif, system-ui, sans-serif; }
+      #terminal .gate__dismiss, #terminal .gate__hint, #terminal .gate__detail { color: #8A8F98; }
+      #terminal .gate__note { color: #FF6B60; }
+      #terminal .hold { border-radius: 6px; border-color: rgba(255,107,96,0.5); color: #FF6B60; }
+      #terminal .hold__fill { background: rgba(255,107,96,0.22); }
+      #terminal .deny { border: 1px solid #24262C; border-radius: 6px; }
+      #terminal .gate__revealed { border-left-color: rgba(255,107,96,0.45); }
+
+      /* ============ 6. PRODUCT ============ */
+      #product { background: #fff; color: #0A0A0A; font-family: 'Geist', system-ui, sans-serif; padding: 38px 60px; text-align: center; }
+      #product .wordmark { font-size: 13px; font-weight: 600; letter-spacing: 0.02em; color: #6B6B6B; }
+      #product .headline { font-size: 2.5rem; font-weight: 600; letter-spacing: -0.04em; line-height: 1.05; margin: 18px auto 12px; max-width: 18ch; }
+      #product .tag { font-size: 1rem; color: #5A5A5A; margin-bottom: 22px; }
+      #product .gateWrap { display: flex; justify-content: center; }
+      #product .gate { border: 1px solid #E6E6E6; max-width: 400px; text-align: left; box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
+      #product .gate__dismiss, #product .gate__hint, #product .gate__detail { color: #7A7A7A; }
+      #product .gate__note { color: #E5484D; }
+      #product .deny { border: 1px solid #E6E6E6; }
+      #product .cta { display: inline-block; margin-top: 20px; padding: 10px 20px; border-radius: 999px;
+                      background: #0A0A0A; color: #fff; font-size: 14px; font-weight: 500; }
+    </style>
+  </head>
+  <body>
+    <!-- 1 -->
+    <section class="variant" id="current">
+      <div class="wordmark">agent-indicator</div>
+      <p class="tag">React components for the states an AI agent is actually in.</p>
+      <p class="ask">Your agent wants to do five things. Clear them as fast as you can.</p>
+      <div class="stage">
+        <div class="gate">
+          <div class="gate__head"><span class="gate__title">Waiting for you</span><span class="gate__dismiss">Not now</span></div>
+          <p class="gate__note">This cannot be undone. Open it to answer.</p>
+          <div class="gate__row"><span>Deletes the legacy folder and everything in it</span><span class="gate__hint">Close</span></div>
+          <div class="gate__revealed"><code class="gate__detail">rm -rf legacy</code>
+            <div class="gate__actions"><span class="hold"><span class="hold__fill"></span><span class="hold__label">Hold to approve</span></span><span class="deny">Deny</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="install">npm install agent-indicator</div>
+    </section>
+
+    <!-- 2 -->
+    <section class="variant" id="portfolio">
+      <div class="eyebrow">Open source</div>
+      <div class="wordmark">agent-indicator</div>
+      <p class="tag">React components for the states an AI agent is actually in.</p>
+      <p class="ask">Your agent wants to do five things. Clear them as fast as you can.</p>
+      <div class="gate">
+        <div class="gate__head"><span class="gate__title">Waiting for you</span><span class="gate__dismiss">Not now</span></div>
+        <p class="gate__note">This cannot be undone. Open it to answer.</p>
+        <div class="gate__row"><span>Deletes the legacy folder and everything in it</span><span class="gate__hint">Close</span></div>
+        <div class="gate__revealed"><code class="gate__detail">rm -rf legacy</code>
+          <div class="gate__actions"><span class="hold"><span class="hold__fill"></span><span class="hold__label">Hold to approve</span></span><span class="deny">Deny</span></div>
+        </div>
+      </div>
+      <div class="install">npm install agent-indicator</div>
+      <div class="status">v0.3.0 on npm</div>
+    </section>
+
+    <!-- 3 -->
+    <section class="variant" id="glass">
+      <div class="wordmark">agent-indicator</div>
+      <p class="tag">React components for the states an AI agent is actually in.</p>
+      <div class="gateWrap">
+        <div class="amberBlob"></div>
+        <div class="gate">
+          <div class="gate__head"><span class="gate__title">Waiting for you</span><span class="gate__dismiss">Not now</span></div>
+          <p class="gate__note">This cannot be undone. Open it to answer.</p>
+          <div class="gate__row"><span>Deletes the legacy folder and everything in it</span><span class="gate__hint">Close</span></div>
+          <div class="gate__revealed"><code class="gate__detail">rm -rf legacy</code>
+            <div class="gate__actions"><span class="hold"><span class="hold__fill"></span><span class="hold__label">Hold to approve</span></span><span class="deny">Deny</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="install">npm install agent-indicator</div>
+    </section>
+
+    <!-- 4 -->
+    <section class="variant" id="editorial">
+      <div class="rule-top"><span>agent-indicator</span><span>v0.3.0 &nbsp; MIT</span></div>
+      <div class="wordmark">Compress the ordinary.<br />Never compress the exception.</div>
+      <p class="tag">React components for the states an AI agent is actually in.</p>
+      <div class="cols">
+        <div class="colhead">Approval<br />Gate</div>
+        <div class="gate">
+          <div class="gate__head"><span class="gate__title">Waiting for you</span><span class="gate__dismiss">Not now</span></div>
+          <p class="gate__note">This cannot be undone. Open it to answer.</p>
+          <div class="gate__row"><span>Deletes the legacy folder and everything in it</span><span class="gate__hint">Close</span></div>
+          <div class="gate__revealed"><code class="gate__detail">rm -rf legacy</code>
+            <div class="gate__actions"><span class="hold"><span class="hold__fill"></span><span class="hold__label">Hold to approve</span></span><span class="deny">Deny</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 -->
+    <section class="variant" id="terminal">
+      <div class="wordmark">agent<span>-</span>indicator</div>
+      <p class="tag">React components for the states an AI agent is actually in.</p>
+      <p class="install">$ <b>npm install agent-indicator</b></p>
+      <div class="gate">
+        <div class="gate__head"><span class="gate__title">Waiting for you</span><span class="gate__dismiss">Not now</span></div>
+        <p class="gate__note">This cannot be undone. Open it to answer.</p>
+        <div class="gate__row"><span>Deletes the legacy folder and everything in it</span><span class="gate__hint">Close</span></div>
+        <div class="gate__revealed"><code class="gate__detail">rm -rf legacy</code>
+          <div class="gate__actions"><span class="hold"><span class="hold__fill"></span><span class="hold__label">Hold to approve</span></span><span class="deny">Deny</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6 -->
+    <section class="variant" id="product">
+      <div class="wordmark">agent-indicator</div>
+      <h1 class="headline">The approval your users cannot fat finger</h1>
+      <p class="tag">React components for the states an AI agent is actually in.</p>
+      <div class="gateWrap">
+        <div class="gate">
+          <div class="gate__head"><span class="gate__title">Waiting for you</span><span class="gate__dismiss">Not now</span></div>
+          <p class="gate__note">This cannot be undone. Open it to answer.</p>
+          <div class="gate__row"><span>Deletes the legacy folder and everything in it</span><span class="gate__hint">Close</span></div>
+          <div class="gate__revealed"><code class="gate__detail">rm -rf legacy</code>
+            <div class="gate__actions"><span class="hold"><span class="hold__fill"></span><span class="hold__label">Hold to approve</span></span><span class="deny">Deny</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="cta">npm install agent-indicator</div>
+    </section>
+  </body>
+</html>
