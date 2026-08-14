@@ -80,6 +80,58 @@ code {
   color: var(--mid);
 }
 
+/* The hook. First thing on the page, before any explanation, because the
+   argument is faster to feel than to read. */
+.hero {
+  margin: 30px 0 34px;
+}
+
+.hero__ask {
+  margin: 0 0 16px;
+  font-size: 15px;
+}
+
+.hero__stage {
+  padding: 22px;
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  background: var(--stage);
+}
+
+.hero__empty {
+  margin: 0;
+  font-size: 13px;
+  color: var(--mid);
+}
+
+.hero__result {
+  margin: 16px 0 0;
+  font-size: 14px;
+  color: var(--mid);
+  max-width: 62ch;
+}
+
+.hero__result strong {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.hero__reset {
+  margin-top: 14px;
+  font: inherit;
+  font-size: 13px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--rule);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.hero__reset:hover {
+  background: color-mix(in srgb, currentColor 7%, transparent);
+}
+
 .head__install,
 .block {
   margin: 0;

@@ -7,6 +7,7 @@ import {
 } from '../src'
 import type { Activity, ApprovalRequest, Session, SessionState } from '../src'
 import { Example, Locked, PropsTable } from './Example'
+import { Hero } from './Hero'
 
 const STATES: SessionState[] = ['idle', 'working', 'running', 'needsYou', 'error', 'done']
 
@@ -92,6 +93,9 @@ export function Docs() {
       <header className="head">
         <h1>agent-indicator</h1>
         <p className="head__line">React components for the states an AI agent is actually in.</p>
+
+        <Hero />
+
         <pre className="head__install">
           <code>npm install agent-indicator</code>
         </pre>
