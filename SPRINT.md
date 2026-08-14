@@ -67,6 +67,17 @@ The docs live under the portfolio domain rather than github.io, because
 GitHub Pages serves project sites from whatever custom domain the account
 already has, and hers is ladanjohari.com.
 
+**Done, v0.2.0 on 14 August 2026.** Hold to approve on irreversible requests: a
+two second linear fill drawn with `clip-path`, released in 200ms, keyboard and
+Reduce Motion skipping the hold. Plus the docs hook, a reflex test at the top of
+the page.
+
+**Timing rule worth keeping, because it looks like a contradiction and is not:**
+a 2 second hold and the 300ms ceiling govern different things. A transition is
+the system responding, and stays under 300ms. A dwell is the person deciding,
+and takes as long as the decision deserves. Slow where the user is deciding,
+fast where the system is responding.
+
 **Next, in priority order:**
 
 1. **The AI SDK adapter.** Highest leverage by a distance, and it runs in its own
