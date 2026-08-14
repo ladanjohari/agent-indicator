@@ -1,5 +1,11 @@
 # Worklog
 
+## 2026-08-14, later
+
+- **Did:** rebuilt the docs page as a quiet terminal page carrying macOS cards, on the Session Indicator palette, with the card styling kept in the docs so the package still ships neutral; then cut it from 9,639px to 5,696px by deleting five props tables, every "not configurable" block, and four duplicate component paragraphs.
+- **Broke:** the first version wrapped the page in window chrome and every example in its own bordered container, which was two frames doing one job and a costume competing with the only object on the page that should be rich; a props table on a landing page is reference material nobody reads; and three of five bullets in the consolidated block were captions for demonstrations sitting directly above them.
+- **Decided:** the reference lives in the types and the readme, not on the page, and saying so is better than a table; the page is an introduction; component dressing stays in the docs rather than being baked into the package, which doubles as proof that restyling works.
+
 ## 2026-08-14
 
 - **Did:** built the docs hook, a reflex test at the top of the page where the visitor clears three requests in one press and finds the two irreversible ones were never reachable; then built hold to approve for irreversible requests, a two second linear fill drawn with `clip-path`, released in 200ms, with keyboard and Reduce Motion skipping the hold entirely. 37 tests.
