@@ -1,6 +1,6 @@
 {
   "name": "agent-indicator",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Approval UI and status components for AI agents. Works with Vercel's AI SDK out of the box.",
   "keywords": [
     "ai-sdk",
