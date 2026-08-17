@@ -78,8 +78,8 @@ the system responding, and stays under 300ms. A dwell is the person deciding,
 and takes as long as the decision deserves. Slow where the user is deciding,
 fast where the system is responding.
 
-**Done, 13 August 2026.** The AI SDK adapter, `agent-indicator/ai-sdk`. Built,
-tested, documented, committed, **not yet published**. See
+**Done, 13 August 2026, and published in v0.3.0 on 14 August.** The AI SDK
+adapter, `agent-indicator/ai-sdk`. Built, tested, documented, published. See
 `BRIEF-AI-SDK-ADAPTER.md` for what the verification found, including that
 `needsApproval` on a tool is now deprecated and that Vercel's own cookbook still
 teaches it. The adapter depends on the AI SDK for nothing, not even types: it
@@ -90,16 +90,27 @@ keep in step. `@ai-sdk/react` was installed 7.3 million times in the week to
 **Done, 13 August 2026.** `reversible` gained a third value, `'unknown'`. See
 the commit for the reasoning. Additive, so nothing already written breaks.
 
+**Done, v0.3.0 on 14 August 2026.** Published with the adapter, verified against
+the registry on 16 August: three versions live, `latest` is 0.3.0, and the
+published `exports` map carries `./ai-sdk`. Anyone can install the adapter today.
+
+**Done, 16 August 2026.** The docs page, rebuilt in the shape every good
+single-component page uses: ApprovalGate as the hook, install, the AI SDK gap,
+a glance at the other three, the rule as a closing line. 3,748px, light and dark.
+The explanations moved to `ARTICLE-DRAFT.md`. Committed, not pushed.
+
 **Next, in priority order:**
 
-1. **Publish v0.3.0**, from a real terminal because of the passkey, then verify
-   against the registry.
-2. **The article**, in the shape Emil used: the problem, the insight, the
+1. **Push**, so the docs site rebuilds with the new page. One commit is waiting.
+2. **Regenerate the README clip** so it matches the new design, one command in
+   `previews/`.
+3. **The article**, in the shape Emil used: the problem, the insight, the
    decisions with their reasons, the details nobody sees. The adapter gave it a
    spine it did not have before: a component with an opinion meets a data format
    with no opinion, and the honest answer was a third state rather than a guess.
-3. **Announce**, once, with the clip, leading with the AI SDK line rather than
-   with the library.
+   Draft started, `ARTICLE-DRAFT.md`.
+4. **Announce**, once, with the clip, leading with the AI SDK line rather than
+   with the library. Thread drafted outside this repo.
 
 **Positioning learned from the research on 13 August 2026:** the competitors that
 are actually installed, assistant-ui and CopilotKit, are frameworks that want the
