@@ -69,16 +69,21 @@
         text-decoration: underline; text-underline-offset: 3px;
       }
       .agent-gate__list { list-style: none; display: grid; gap: 10px; }
+      .agent-gate__item { display: grid; gap: 4px; }
+      .agent-gate__consequence { display: block; }
       .agent-gate__detail {
-        display: block; margin-top: 2px;
+        display: block;
         font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
         font-size: 12px; color: var(--agent-gate-quiet);
       }
-      .agent-gate__group--destructive {
+      /* Only when there is a batched group above to separate it from, which
+         matches the component since 16 August 2026. */
+      .agent-gate__group + .agent-gate__group--destructive {
         margin-top: 18px; padding-top: 16px;
         border-top: 1px solid var(--agent-gate-rule);
       }
       .agent-gate__note { margin-bottom: 12px; font-size: 12px; color: var(--agent-gate-danger); }
+      .agent-gate__note[data-tone='caution'] { color: var(--agent-gate-quiet); }
       .agent-gate__reveal {
         display: flex; align-items: baseline; justify-content: space-between;
         gap: 12px; width: 100%; text-align: left;
@@ -92,9 +97,6 @@
         margin-top: 8px; padding-left: 12px;
         border-left: 2px solid color-mix(in srgb, var(--agent-gate-danger) 40%, transparent);
       }
-      /* The panel fades out in place and the result fades in over it, so the
-         card never changes height and never leaves a hole. */
-      
       .agent-gate__actions { display: flex; gap: 8px; margin-top: 14px; }
 
       .agent-gate__hold {
@@ -120,11 +122,6 @@
         font-size: 13px; padding: 7px 15px; border-radius: 999px;
         border: 1px solid var(--agent-gate-rule);
       }
-
-      /* The buttons and the result share one box, so the card keeps its height
-         and the result lands exactly where the decision was made. */
-      .actions-wrap { position: relative; margin-top: 14px; min-height: 32px; }
-      .actions-wrap .agent-gate__actions { margin-top: 0; }
 
       .cursor {
         position: absolute;
@@ -192,24 +189,22 @@
           <span class="agent-gate__dismiss">Not now</span>
         </header>
 
-        <div class="agent-gate__group agent-gate__group--destructive" style="margin-top:0;padding-top:0;border-top:0">
-          <p class="agent-gate__note">This cannot be undone. Open it to answer.</p>
+        <div class="agent-gate__group agent-gate__group--destructive">
+          <p class="agent-gate__note" data-tone="alarm">This cannot be undone. Open it to answer.</p>
           <ul class="agent-gate__list">
-            <li>
+            <li class="agent-gate__item" data-reversible="false">
               <div class="agent-gate__reveal">
-                <span>Deletes the legacy folder and everything in it</span>
+                <span class="agent-gate__consequence">Deletes the legacy folder and everything in it</span>
                 <span class="agent-gate__reveal-hint">Close</span>
               </div>
               <div class="agent-gate__revealed">
                 <code class="agent-gate__detail">rm -rf legacy</code>
-                <div class="actions-wrap">
-                  <div class="revealed-inner agent-gate__actions">
-                    <span class="agent-gate__hold">
-                      <span class="agent-gate__hold-fill"></span>
-                      <span class="agent-gate__hold-label">Hold to approve</span>
-                    </span>
-                    <span class="agent-gate__deny">Deny</span>
-                  </div>
+                <div class="agent-gate__actions">
+                  <span class="agent-gate__hold">
+                    <span class="agent-gate__hold-fill"></span>
+                    <span class="agent-gate__hold-label">Hold to approve</span>
+                  </span>
+                  <span class="agent-gate__deny">Deny</span>
                 </div>
               </div>
             </li>

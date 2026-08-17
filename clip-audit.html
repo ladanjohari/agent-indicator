@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>agent-indicator, clip audit</title>
+    <style>
+      /* Matched to previews/hold-to-approve.html exactly, so the two can be
+         compared pixel for pixel. */
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        width: 560px;
+        height: 320px;
+        background: #f7f6f3;
+        color: #111111;
+        font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+        font-size: 14px;
+        line-height: 1.45;
+        -webkit-font-smoothing: antialiased;
+        overflow: hidden;
+      }
+      .clip-audit {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+      }
+      .clip-audit .agent-gate { width: 400px; }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/dev/audit.tsx"></script>
+  </body>
+</html>

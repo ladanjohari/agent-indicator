@@ -39,20 +39,39 @@ of the HTML lists what happens when. The moments that matter:
 - **18.6 to 23.5 percent**, a quick click that starts the fill and lets go. It
   exists so the clip shows that a click does not work here before it shows what
   does.
-- **31.4 to 60 percent**, the hold. Exactly two of the seven seconds, linear,
+- **35.5 to 54.8 percent**, the hold. Exactly 1.2 of the 6.2 seconds, linear,
   matching the real component.
-- **92.9 to 99 percent**, the reset. The result fades out before the controls
-  fade back in, never together, because two overlapping half transparent labels
-  read as a bug rather than as a loop.
+- **57.5 to 61.5 percent**, the gate leaves, because the request has been
+  answered and the host has taken it away. Nothing announces an outcome.
+- **92 to 98 percent**, the reset, done while the frame is empty so the loop
+  has no visible seam.
 
-If you change the total duration, every percentage moves. Easier to keep 7
+If you change the total duration, every percentage moves. Easier to keep 6.2
 seconds and change what happens inside it.
+
+## Checking it against the real component
+
+`hold-to-approve.html` is **hand-copied markup, not the component.** It can
+drift, and it has. On 16 August 2026 it was found rendering an "Approved,
+deliberately." confirmation that the package has never had, and compensating for
+three missing CSS rules with an invented margin.
+
+`node audit-clip.js` puts the mock and the real component side by side in the
+same scenario, on the same canvas. It needs the workbench running (`npm run dev`,
+port 5173) and writes `docs-shots/audit-real.png` and `docs-shots/audit-mock.png`.
+
+Compare them before shipping any change to the clip:
+
+    magick audit-real.png audit-mock.png -metric AE -compare -format "%[distortion]" info:
+
+Under about 0.002 is text antialiasing between a `<button>` and a `<span>`.
+Anything larger is drift and should be chased down.
 
 ## Specs
 
 - 560x320 at `deviceScaleFactor: 2`, so it captures at 1120x640
-- 20fps, 7s, 140 frames
-- GIF: 128 colours, bayer dithering, about 60kB
+- 20fps, 6.2s, 124 frames
+- GIF: 128 colours, bayer dithering, about 175kB
 - MP4: h264, crf 20, `scale=-2` because h264 needs even dimensions
 
 ## Adapted from

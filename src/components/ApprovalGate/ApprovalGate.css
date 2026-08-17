@@ -193,21 +193,22 @@
   }
 }
 
-/* The irreversible group. */
-.agent-gate__group--destructive {
+/* The irreversible group.
+ *
+ * The rule exists to separate this group from the batched one above it, so it
+ * is drawn only when there is actually a group above it. With nothing batched,
+ * which is the ordinary case inline in a conversation, the line would be a lid
+ * on an empty box.
+ *
+ * This was `:first-child` until 16 August 2026, which only covered the case
+ * where the gate had no header either. With a header and nothing batched, the
+ * group was no longer first, so the orphan rule came back and sat under the
+ * title separating it from nothing. The adjacent sibling selector says what was
+ * actually meant: separate these two groups, and only these two. */
+.agent-gate__group + .agent-gate__group--destructive {
   margin-top: 18px;
   padding-top: 16px;
   border-top: 1px solid var(--agent-gate-rule);
-}
-
-/* The rule exists to separate this group from the batched one above it. With
-   no heading and nothing batched, which is the ordinary case inline in a
-   conversation, there is nothing to separate it from and the line becomes a
-   lid on an empty box. */
-.agent-gate__group--destructive:first-child {
-  margin-top: 0;
-  padding-top: 0;
-  border-top: 0;
 }
 
 .agent-gate__note {
