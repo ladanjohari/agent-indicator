@@ -16,7 +16,9 @@
            1.45s   23.4%   released, the fill snaps back, nothing happens
            2.20s   35.5%   the hold begins
            3.40s   54.8%   1.2 seconds later, it completes
-           3.50s   56.4%   approved
+           3.50s   56.4%   approved, and the request is taken away
+           3.57s   57.5%   the full bar is allowed to land
+           3.81s   61.5%   nothing left waiting, the gate leaves
            5.70s   92.0%   rest
            6.20s   100%    reset for the loop
       */
@@ -45,6 +47,7 @@
 
       /* The component's own styles, copied exactly from ApprovalGate.css. */
       .agent-gate {
+        animation: resolve 6.2s linear infinite both;
         --agent-gate-rule: color-mix(in srgb, currentColor 12%, transparent);
         --agent-gate-quiet: color-mix(in srgb, currentColor 60%, transparent);
         --agent-gate-fill: color-mix(in srgb, currentColor 6%, transparent);
@@ -91,7 +94,7 @@
       }
       /* The panel fades out in place and the result fades in over it, so the
          card never changes height and never leaves a hole. */
-      .revealed-inner { animation: resolve 6.2s linear infinite both; }
+      
       .agent-gate__actions { display: flex; gap: 8px; margin-top: 14px; }
 
       .agent-gate__hold {
@@ -123,16 +126,6 @@
       .actions-wrap { position: relative; margin-top: 14px; min-height: 32px; }
       .actions-wrap .agent-gate__actions { margin-top: 0; }
 
-      .approved {
-        position: absolute; top: 7px; left: 0; right: 0;
-        display: flex; align-items: center; gap: 8px;
-        font-size: 13px; color: #1f9d4d;
-        animation: approved 6.2s linear infinite both;
-      }
-      .approved-dot {
-        width: 8px; height: 8px; border-radius: 50%; background: #34c759; flex: none;
-      }
-
       .cursor {
         position: absolute;
         width: 18px; height: 18px;
@@ -152,10 +145,10 @@
         26.5%,  35.5%  { clip-path: inset(0 100% 0 0); animation-timing-function: linear; }
         /* The hold: 1.2 seconds of the 6.2, linear, no easing, because it
            maps to real elapsed time. */
-        54.8%,  92%  { clip-path: inset(0 0 0 0); }
-        /* Emptied again while the buttons are still faded out, so the loop does
-           not seam with a full red button snapping back to nothing. */
-        94.4%,    100%   { clip-path: inset(0 100% 0 0); }
+        54.8%,  62%    { clip-path: inset(0 0 0 0); }
+        /* Emptied while the gate is gone, so the loop never shows a full red
+           button snapping back to nothing. */
+        64%,    100%   { clip-path: inset(0 100% 0 0); }
       }
 
       @keyframes press {
@@ -166,19 +159,14 @@
         55%,  100%   { transform: scale(1); }
       }
 
-      /* The two never crossfade. The result leaves, then the controls come
-         back, because two overlapping half transparent labels reads as a
-         mistake rather than as a reset. */
+      /* The gate leaves once the request is answered, because that is what
+         actually happens: the host drops the request and nothing is left
+         waiting. The component itself never reports an outcome it does not
+         own. Opacity is 1 at both 0% and 100%, so the loop does not seam. */
       @keyframes resolve {
-        0%,     54.8%  { opacity: 1; }
-        56.4%,  94.9%  { opacity: 0; }
-        98.9%,    100%   { opacity: 1; }
-      }
-
-      @keyframes approved {
-        0%,     54.8%  { opacity: 0; }
-        56.4%,  92%  { opacity: 1; }
-        94.9%,  100%   { opacity: 0; }
+        0%,     57.5%  { opacity: 1; }
+        61.5%,  92%    { opacity: 0; }
+        98%,    100%   { opacity: 1; }
       }
 
       /* The cursor arrives, taps once, waits, then presses and stays down. */
@@ -189,10 +177,10 @@
         21%, 23.3% { transform: translate(168px, 214px); opacity: 1; }
         23.4%, 35.3% { transform: translate(168px, 212px); opacity: 1; }
         35.5%, 54.8%   { transform: translate(168px, 214px); opacity: 1; }
-        /* The hand relaxes away once it is done, so the result is not read
-           through a cursor sitting on top of it. */
-        57.1%,  86.5%    { transform: translate(258px, 246px); opacity: 1; }
-        95.5%,  100%   { transform: translate(370px, 262px); opacity: 0; }
+        /* The hand relaxes away once it is done, then leaves with the gate
+           rather than drifting across an empty frame. */
+        57.1%,  57.5%  { transform: translate(258px, 246px); opacity: 1; }
+        61.5%,  100%   { transform: translate(258px, 246px); opacity: 0; }
       }
     </style>
   </head>
@@ -221,10 +209,6 @@
                       <span class="agent-gate__hold-label">Hold to approve</span>
                     </span>
                     <span class="agent-gate__deny">Deny</span>
-                  </div>
-                  <div class="approved">
-                    <span class="approved-dot"></span>
-                    <span>Approved, deliberately.</span>
                   </div>
                 </div>
               </div>
