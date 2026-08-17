@@ -1,8 +1,12 @@
 # agent-indicator
 
-React components for the states an AI agent is actually in.
+**When an agent needs a person, this is the interface.**
 
-**Compress the ordinary. Never compress the exception.**
+Your agent is about to run a shell command, charge $200 to a card, or email 412
+customers. Somebody has to say yes, and the interface they say it in decides
+whether they actually read it first.
+
+React components for that moment. Works with Vercel's AI SDK out of the box.
 
 <img src="https://raw.githubusercontent.com/ladanjohari/agent-indicator/main/assets/hold-to-approve.gif" alt="An approval request that cannot be undone. A click starts the fill and it snaps straight back, doing nothing. Holding for 1.2 seconds fills it and approves." width="560" />
 
@@ -10,11 +14,11 @@ A click is the same motion that just cleared three safe requests, so an action
 that cannot be undone does not accept one. It is held for 1.2 seconds instead.
 Let go early and nothing happens.
 
-Every agent product needs the same small set of interface pieces, and every team
-rebuilds them badly. The hard part was never drawing a dot. It is deciding what
-may be summarised away and what must always stand at full size, and getting that
-backwards is how a permission prompt turns into something people click without
-reading.
+**Compress the ordinary. Never compress the exception.** Nine routine requests
+can collapse into one row. The one that spends money cannot. The hard part was
+never drawing a dot, it is deciding what may be summarised away and what must
+always stand at full size, and getting that backwards is how a permission prompt
+turns into something people click without reading.
 
 [![npm](https://img.shields.io/npm/v/agent-indicator)](https://www.npmjs.com/package/agent-indicator)
 

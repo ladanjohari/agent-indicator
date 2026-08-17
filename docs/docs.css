@@ -156,11 +156,40 @@ code {
   letter-spacing: -0.02em;
 }
 
+/* The claim. Sized up from 16px because it is the sentence the page is for,
+   and at the old size it read as a subtitle to the package name rather than as
+   the thing being said. */
 .head__line {
-  margin: 8px 0 26px;
+  margin: 10px 0 0;
   font-family: var(--system);
-  font-size: 16px;
+  font-size: 21px;
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+  max-width: 24ch;
+}
+
+.head__sub {
+  margin: 10px 0 0;
+  font-family: var(--system);
+  font-size: 15px;
+  line-height: 1.5;
   color: var(--mid);
+  max-width: 56ch;
+}
+
+/* The scenario, set apart by a rule rather than a box, because a box here would
+   be a second card competing with the one below it. */
+.head__when {
+  margin: 22px 0 26px;
+  padding-left: 14px;
+  border-left: 2px solid var(--term-panel-rule);
+  font-family: var(--system);
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--mid);
+  max-width: 58ch;
 }
 
 .head__install,

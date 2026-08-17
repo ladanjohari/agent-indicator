@@ -1,7 +1,7 @@
 {
   "name": "agent-indicator",
   "version": "0.4.0",
-  "description": "Approval UI and status components for AI agents. Works with Vercel's AI SDK out of the box.",
+  "description": "When an agent needs a person, this is the interface. React approval UI for shell commands, payments and sends. Works with Vercel's AI SDK out of the box.",
   "keywords": [
     "ai-sdk",
     "vercel-ai-sdk",

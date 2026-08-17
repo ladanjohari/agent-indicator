@@ -11,29 +11,32 @@ import { Hero } from './Hero'
 
 const STATES: SessionState[] = ['idle', 'working', 'running', 'needsYou', 'error', 'done']
 
+// Eight agents doing eight different jobs, on purpose. A fleet of build steps
+// would say this is for coding agents, and it is not.
 const FLEET: Session[] = [
-  { id: 'write-docs', name: 'write-docs', state: 'working', elapsed: '1m' },
-  { id: 'deploy-pipeline', name: 'deploy-pipeline', state: 'done', elapsed: '8m' },
+  { id: 'triage-inbox', name: 'triage-inbox', state: 'working', elapsed: '1m' },
+  { id: 'reconcile-invoices', name: 'reconcile-invoices', state: 'done', elapsed: '8m' },
   { id: 'run-tests', name: 'run-tests', state: 'error', elapsed: '2m' },
-  { id: 'build-assets', name: 'build-assets', state: 'running', elapsed: '4m' },
-  { id: 'analyze-code', name: 'analyze-code', state: 'needsYou', elapsed: '5m' },
-  { id: 'refactor-api', name: 'refactor-api', state: 'working', elapsed: '2m' },
-  { id: 'lint-check', name: 'lint-check', state: 'idle', elapsed: '20m' },
-  { id: 'sync-assets', name: 'sync-assets', state: 'done', elapsed: '31m' },
+  { id: 'index-documents', name: 'index-documents', state: 'running', elapsed: '4m' },
+  { id: 'refund-queue', name: 'refund-queue', state: 'needsYou', elapsed: '5m' },
+  { id: 'draft-outreach', name: 'draft-outreach', state: 'working', elapsed: '2m' },
+  { id: 'sync-crm', name: 'sync-crm', state: 'idle', elapsed: '20m' },
+  { id: 'nightly-report', name: 'nightly-report', state: 'done', elapsed: '31m' },
 ]
 
+// A refund agent working a queue, so the trail is not a build log either.
 const TRAIL: Activity[] = [
-  { id: '1', kind: 'read', summary: 'Read src/auth.ts', at: '14:01' },
-  { id: '2', kind: 'read', summary: 'Read src/session.ts', at: '14:01' },
-  { id: '3', kind: 'read', summary: 'Read src/index.ts', at: '14:02' },
-  { id: '4', kind: 'read', summary: 'Read src/tokens.ts', at: '14:02' },
-  { id: '5', kind: 'ask', summary: 'Asked to delete the legacy folder', detail: 'rm -rf legacy', at: '14:03' },
-  { id: '6', kind: 'edit', summary: 'Edited src/auth.ts', at: '14:04' },
-  { id: '7', kind: 'edit', summary: 'Edited src/session.ts', at: '14:04' },
-  { id: '8', kind: 'run', summary: 'Ran the test suite', detail: 'npm test', at: '14:05' },
-  { id: '9', kind: 'error', summary: 'Test suite failed', detail: 'exit code 1, 2 tests failing', at: '14:06' },
-  { id: '10', kind: 'edit', summary: 'Edited src/auth.test.ts', at: '14:08' },
-  { id: '11', kind: 'run', summary: 'Ran the test suite', detail: 'npm test', at: '14:09' },
+  { id: '1', kind: 'read', summary: 'Read order #4471', at: '14:01' },
+  { id: '2', kind: 'read', summary: 'Read order #4472', at: '14:01' },
+  { id: '3', kind: 'read', summary: 'Read order #4473', at: '14:02' },
+  { id: '4', kind: 'read', summary: 'Read order #4474', at: '14:02' },
+  { id: '5', kind: 'ask', summary: 'Asked to refund $240 to order #4473', detail: 'outside the 30 day window', at: '14:03' },
+  { id: '6', kind: 'edit', summary: 'Marked order #4471 resolved', at: '14:04' },
+  { id: '7', kind: 'edit', summary: 'Marked order #4472 resolved', at: '14:04' },
+  { id: '8', kind: 'run', summary: 'Sent the resolution emails', detail: '2 recipients', at: '14:05' },
+  { id: '9', kind: 'error', summary: 'One email bounced', detail: 'mailbox full, order #4472', at: '14:06' },
+  { id: '10', kind: 'edit', summary: 'Flagged order #4472 for a callback', at: '14:08' },
+  { id: '11', kind: 'run', summary: 'Sent the resolution emails', detail: '1 recipient', at: '14:09' },
 ]
 
 // Real AI SDK message parts, in the shape `useChat` hands them over. Nothing is
@@ -42,9 +45,9 @@ const TRAIL: Activity[] = [
 const SDK_MESSAGES = [
   {
     parts: [
-      { type: 'tool-searchWeb', toolCallId: 'c1', state: 'approval-requested', input: { query: 'competitor pricing 2026' }, approval: { id: 'a1' } },
-      { type: 'tool-readFile', toolCallId: 'c2', state: 'approval-requested', input: { path: 'src/pricing.ts' }, approval: { id: 'a2' } },
-      { type: 'tool-deleteFile', toolCallId: 'c3', state: 'approval-requested', input: { path: 'src/legacy' }, approval: { id: 'a3' } },
+      { type: 'tool-searchWeb', toolCallId: 'c1', state: 'approval-requested', input: { query: 'refund policy 2026' }, approval: { id: 'a1' } },
+      { type: 'tool-readOrder', toolCallId: 'c2', state: 'approval-requested', input: { id: '4473' }, approval: { id: 'a2' } },
+      { type: 'tool-refundOrder', toolCallId: 'c3', state: 'approval-requested', input: { id: '4473', amount: 240 }, approval: { id: 'a3' } },
     ],
   },
 ]
@@ -82,7 +85,7 @@ function SdkExample() {
           setAnswered((current) => [...current, id])
           setLog((current) => [...current, (approved ? 'approved' : 'denied') + ': ' + id])
         }}
-        reversible={declared ? { searchWeb: true, readFile: true } : undefined}
+        reversible={declared ? { searchWeb: true, readOrder: true } : undefined}
         title={false}
       />
 
@@ -129,7 +132,21 @@ export function Docs() {
         </p>
         <h1>agent-indicator</h1>
         <p className="head__line">
-          Approval UI for AI agents in React. Works with the AI SDK out of the box.
+          When an agent needs a person, this is the interface.
+        </p>
+        <p className="head__sub">
+          React components for the moment a human has to answer. Works with
+          Vercel&apos;s AI SDK out of the box.
+        </p>
+
+        {/* The scenario before the demo. Somebody landing cold does not know
+            what an approval gate is, because the category is new enough that
+            nobody has one in their head yet. Three moments in three different
+            products, so it does not read as a tool for coding agents. */}
+        <p className="head__when">
+          Your agent is about to run a shell command, charge $200 to a card, or
+          email 412 customers. Somebody has to say yes, and the interface they
+          say it in decides whether they actually read it first.
         </p>
 
         <Hero />
@@ -190,12 +207,12 @@ const { messages, addToolApprovalResponse } = useChat()
 <ApprovalGate
   messages={messages}
   addToolApprovalResponse={addToolApprovalResponse}
-  reversible={{ searchWeb: true, readFile: true }}
+  reversible={{ searchWeb: true, readOrder: true }}
 />`}</code>
           </pre>
 
           <Example
-            note="Three real requests, in the shape useChat hands them over. Add or remove one line of configuration and watch what it does. Undeclared, everything is held one at a time, because nothing in the SDK says what can be undone. Declared, the two safe ones collapse into a single press and the deletion stays exactly where it was."
+            note="Three real requests, in the shape useChat hands them over. Add or remove one line of configuration and watch what it does. Undeclared, everything is held one at a time, because nothing in the SDK says what can be undone. Declared, the two safe ones collapse into a single press and the refund stays exactly where it was."
           >
             <SdkExample />
           </Example>

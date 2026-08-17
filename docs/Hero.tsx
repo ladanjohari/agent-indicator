@@ -4,15 +4,21 @@ import type { ApprovalRequest } from '../src'
 
 // The five requests the design was argued over: three that can be undone, two
 // that cannot.
+//
+// Deliberately from four different products. Every example in this library used
+// to be a git command, which told anyone not building a coding agent that it was
+// not for them. The two that cannot be undone are money and a send, because
+// those are the ones a stranger feels in their stomach without having to know
+// what a force push is.
 const REQUESTS: ApprovalRequest[] = [
-  { id: 'write', consequence: 'Writes 3 files in src', detail: 'src/auth.ts, src/session.ts, src/index.ts', reversible: true },
+  { id: 'draft', consequence: 'Drafts replies to 12 support tickets', detail: 'saved as drafts, nothing sent', reversible: true },
   { id: 'test', consequence: 'Runs the test suite', detail: 'npm test', reversible: true },
-  { id: 'commit', consequence: 'Commits locally. Nothing is pushed.', detail: 'git commit -am "refactor auth"', reversible: true },
-  { id: 'delete', consequence: 'Deletes the legacy folder and everything in it', detail: 'rm -rf legacy', reversible: false },
-  { id: 'push', consequence: 'Force pushes to main, overwriting what is there', detail: 'git push --force origin main', reversible: false },
+  { id: 'label', consequence: 'Tags 40 leads as cold in the CRM', detail: 'last contacted over 90 days ago', reversible: true },
+  { id: 'charge', consequence: 'Charges $200 to the card on file', detail: 'annual plan, renews automatically', reversible: false },
+  { id: 'email', consequence: 'Sends the launch email to 412 customers', detail: 'cannot be recalled once it is sent', reversible: false },
 ]
 
-const SAFE_IDS = ['write', 'test', 'commit']
+const SAFE_IDS = ['draft', 'test', 'label']
 
 type Outcome =
   | { kind: 'none' }
@@ -73,8 +79,8 @@ export function Hero() {
 
       {outcome.kind === 'batch' ? (
         <p className="hero__result">
-          <strong>One click, three approved, nothing deleted.</strong> The two
-          that cannot be undone had no approve button to hit, and they still do
+          <strong>One click, three approved, nothing charged and nothing sent.</strong>{' '}
+          The two that cannot be undone had no approve button to hit, and they still do
           not until you open one and read it. Whatever speed you just used could
           not reach them. Open one now and try: approving it takes a 1.2 second
           hold, and letting go early does nothing.
