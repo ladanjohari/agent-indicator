@@ -1,10 +1,10 @@
 // Renders previews/hold-to-approve.html to a GIF and an MP4.
 //
 // Adapted from the Session Indicator preview pipeline in the portfolio repo.
-// The trick that makes it work: every animation in the scene shares one 7
+// The trick that makes it work: every animation in the scene shares one 6.2
 // second timeline, so the script can pause them all, set currentTime by hand,
 // and screenshot each frame. Nothing is captured in real time, which means the
-// two second hold comes out exact rather than however long the machine felt
+// 1.2 second hold comes out exact rather than however long the machine felt
 // like taking.
 
 const puppeteer = require('puppeteer')
@@ -12,7 +12,7 @@ const { execSync } = require('child_process')
 const path = require('path')
 const fs = require('fs')
 
-const DURATION = 7
+const DURATION = 6.2
 const FPS = 20
 const TOTAL_FRAMES = DURATION * FPS
 const WIDTH = 560

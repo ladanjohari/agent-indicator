@@ -171,12 +171,12 @@ import 'agent-indicator/styles.css'
         <section id="ai-sdk" className="component">
           <h2>Approval UI for the AI SDK</h2>
           <p>
-            Mark a tool as needing approval and the AI SDK pauses, hands your app
-            a tool part in the <code>approval-requested</code> state, and gives you{' '}
-            <code>addToolApprovalResponse</code> to send the answer back. The
-            approve and deny interface is yours to build, as{' '}
+            Mark a tool as needing approval and Vercel&apos;s AI SDK pauses, hands
+            your app a tool part in the <code>approval-requested</code> state, and
+            gives you <code>addToolApprovalResponse</code> to send the answer back.
+            The approve and deny interface is yours to build, as{' '}
             <a href="https://ai-sdk.dev/cookbook/next/human-in-the-loop">
-              their cookbook shows
+              Vercel&apos;s own cookbook shows
             </a>
             . This is one you can install instead.
           </p>

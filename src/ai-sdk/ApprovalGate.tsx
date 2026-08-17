@@ -19,7 +19,7 @@ function inDevelopment() {
 
 const ADVICE = `agent-indicator: every approval is being shown as "might not be possible to undo", because nothing has said which of your tools are reversible.
 
-That is the safe answer, but it means all of them, including harmless ones, need the full two second hold. Ceremony on everything is how people learn to stop reading it.
+That is the safe answer, but it means all of them, including harmless ones, need the full hold. Ceremony on everything is how people learn to stop reading it.
 
 Declare it in either place:
 

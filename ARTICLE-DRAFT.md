@@ -21,9 +21,16 @@ Vercel's AI SDK lets you mark a tool as needing approval. When the model reaches
 for it, the SDK pauses and hands your app a tool part in the `approval-requested`
 state, then gives you `addToolApprovalResponse` to send the answer back.
 
-**[from the docs page]** It ships no interface. The official cookbook tells you to
-build the buttons yourself, which is why most teams end up with two unstyled
-buttons under a raw tool name.
+The approve and deny interface is the developer's to build. [Vercel's own
+cookbook](https://ai-sdk.dev/cookbook/next/human-in-the-loop) demonstrates it that
+way, which is why most teams end up with two unstyled buttons under a raw tool
+name.
+
+**Say it like that, with the link, and not "it ships no interface".** The SDK's
+scope stops at the data, deliberately, and Vercel's own AI SDK 6 announcement says
+human-in-the-loop needs "no custom code", which is true of the control flow. State
+what happens, cite their page, and let the reader draw the conclusion. Describe
+your own thing; make every fact about someone else's a link.
 
 `@ai-sdk/react` was installed 7.3 million times in the week to 9 August 2026,
 checked against npm rather than repeated from memory. The competitors that are
@@ -66,11 +73,11 @@ its screen.
 
 ### Hold, do not click
 
-Two seconds, a linear fill drawn with `clip-path`, released in 200ms. A click
+1.2 seconds, a linear fill drawn with `clip-path`, released in 200ms. A click
 starts the fill and it snaps straight back, doing nothing. Keyboard and Reduce
 Motion skip the hold entirely.
 
-**The timing rule, which looks like a contradiction and is not.** A 2 second hold
+**The timing rule, which looks like a contradiction and is not.** A 1.2 second hold
 and the 300ms ceiling govern different things. A transition is the system
 responding, and stays under 300ms. A dwell is the person deciding, and takes as
 long as the decision deserves. Slow where the person is deciding, fast where the

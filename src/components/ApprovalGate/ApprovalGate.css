@@ -156,7 +156,7 @@
 }
 
 /* The press is acknowledged instantly, so the control feels heard before the
-   two seconds have gone anywhere. */
+   fill has gone anywhere. */
 .agent-gate__hold:active {
   transform: scale(0.97);
 }
@@ -174,8 +174,13 @@
 .agent-gate__hold[data-pressing='true'] .agent-gate__hold-fill {
   clip-path: inset(0 0 0 0);
   /* Holding is the person deciding, so it is slow. Linear because it maps to
-     real elapsed time, and easing would misrepresent how much is left. */
-  transition: clip-path 2000ms linear;
+     real elapsed time, and easing would misrepresent how much is left.
+
+     1200ms, settled 16 August 2026 after holding both. A reflex press is around
+     150ms, so by a second the gesture already cannot happen by accident. The
+     second second bought no further safety and only spent patience, on a control
+     some people will meet several times a day. */
+  transition: clip-path 1200ms linear;
 }
 
 .agent-gate__hold-label {

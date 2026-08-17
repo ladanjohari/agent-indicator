@@ -4,10 +4,10 @@ React components for the states an AI agent is actually in.
 
 **Compress the ordinary. Never compress the exception.**
 
-<img src="https://raw.githubusercontent.com/ladanjohari/agent-indicator/main/assets/hold-to-approve.gif" alt="An approval request that cannot be undone. A click starts the fill and it snaps straight back, doing nothing. Holding for two seconds fills it and approves." width="560" />
+<img src="https://raw.githubusercontent.com/ladanjohari/agent-indicator/main/assets/hold-to-approve.gif" alt="An approval request that cannot be undone. A click starts the fill and it snaps straight back, doing nothing. Holding for 1.2 seconds fills it and approves." width="560" />
 
 A click is the same motion that just cleared three safe requests, so an action
-that cannot be undone does not accept one. It is held for two seconds instead.
+that cannot be undone does not accept one. It is held for 1.2 seconds instead.
 Let go early and nothing happens.
 
 Every agent product needs the same small set of interface pieces, and every team
@@ -94,7 +94,7 @@ Not configurable, on purpose:
   for you" apart for anyone who cannot separate red from amber.
 - Reduce Motion, which is obeyed rather than offered.
 - A destructive approval never being batched, never being pre-approved, and
-  never being accepted by default. It takes a two second hold rather than a
+  never being accepted by default. It takes a 1.2 second hold rather than a
   click, because a click is the same motion that just cleared the safe ones.
   Keyboard and Reduce Motion skip the hold.
 - Not knowing never being cheaper than knowing. `reversible` takes three values:

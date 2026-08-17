@@ -34,9 +34,11 @@ function usePrefersReducedMotion() {
  *
  * Timings are deliberate and come from two different rules:
  *
- * - The fill takes 2 seconds and is **linear**, because it maps to real
+ * - The fill takes 1.2 seconds and is **linear**, because it maps to real
  *   elapsed time and easing would misrepresent how much is left. This is the
- *   person deciding, so it is slow.
+ *   person deciding, so it is slow. A reflex press is around 150ms, so a second
+ *   is already past anything that can happen by accident, and longer than that
+ *   buys no safety and only spends patience.
  * - The release takes 200ms and eases out. This is the system responding, so
  *   it is fast. Everything else in this library stays under 300ms for the same
  *   reason.
@@ -46,7 +48,7 @@ function usePrefersReducedMotion() {
  * - **Keyboard** confirms on Enter or Space, with no hold. Reaching this
  *   control already took a deliberate act, because the request had to be
  *   opened first, so the separation still holds without demanding that someone
- *   keep a key down for two seconds.
+ *   keep a key down at all.
  * - **Reduce Motion** falls back to a plain button for the same reason.
  */
 export function HoldToConfirm({ onConfirm }: { onConfirm: () => void }) {

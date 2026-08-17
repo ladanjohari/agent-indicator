@@ -22,12 +22,12 @@ Requires `node` and `ffmpeg`.
 
 ## Why it captures the way it does
 
-Every animation in the scene shares one 7 second timeline and schedules itself
+Every animation in the scene shares one 6.2 second timeline and schedules itself
 with percentages. The capture script pauses them all, sets `currentTime` by
 hand, and screenshots each frame.
 
-Nothing is recorded in real time, which is the point: the two second hold comes
-out as exactly two seconds rather than however long the machine felt like
+Nothing is recorded in real time, which is the point: the 1.2 second hold comes
+out as exactly 1.2 seconds rather than however long the machine felt like
 taking that afternoon. It also means a slow laptop and a fast one produce
 identical files.
 

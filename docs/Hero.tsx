@@ -26,7 +26,7 @@ type Outcome =
  *
  * The visitor is invited to go fast, goes fast, and discovers afterwards that
  * the speed they just used could not reach the two things that cannot be undone.
- * That is the entire argument for the component, made in about two seconds and
+ * That is the entire argument for the component, made in about a second and
  * without asking anyone to read a paragraph first.
  */
 export function Hero() {
@@ -76,7 +76,7 @@ export function Hero() {
           <strong>One click, three approved, nothing deleted.</strong> The two
           that cannot be undone had no approve button to hit, and they still do
           not until you open one and read it. Whatever speed you just used could
-          not reach them. Open one now and try: approving it takes a two second
+          not reach them. Open one now and try: approving it takes a 1.2 second
           hold, and letting go early does nothing.
         </p>
       ) : null}

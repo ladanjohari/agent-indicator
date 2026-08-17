@@ -124,7 +124,7 @@ describe('ApprovalGate', () => {
     expect(onApprove).not.toHaveBeenCalled()
   })
 
-  // Nobody should have to hold a key down for two seconds to use this.
+  // Nobody should have to hold a key down at all to use this.
   it('lets the keyboard confirm without holding anything', async () => {
     const onApprove = vi.fn()
     render(
