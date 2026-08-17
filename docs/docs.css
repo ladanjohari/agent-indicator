@@ -132,9 +132,12 @@ code {
   }
 }
 
+/* The demo used to live in here, so this carried a lot of bottom padding. Now
+   that the header is only the claim, that padding plus the first section's own
+   56px left a hole. */
 .head {
   padding-top: 48px;
-  padding-bottom: 36px;
+  padding-bottom: 4px;
 }
 
 .head__prompt {
@@ -179,17 +182,52 @@ code {
   max-width: 56ch;
 }
 
-/* The scenario, set apart by a rule rather than a box, because a box here would
-   be a second card competing with the one below it. */
-.head__when {
-  margin: 22px 0 26px;
-  padding-left: 14px;
-  border-left: 2px solid var(--term-panel-rule);
-  font-family: var(--system);
-  font-size: 15px;
-  line-height: 1.55;
+/* ---------- the scenarios ---------- */
+
+.scenarios {
+  margin-top: 22px;
+}
+
+.scenarios__picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Capsules, matching the component's own controls: 28px tall, 14px radius. */
+.scenarios__chip {
+  height: 28px;
+  padding: 0 14px;
+  border-radius: 14px;
+  border: 0.5px solid var(--term-panel-rule);
+  background: transparent;
   color: var(--mid);
-  max-width: 58ch;
+  font: inherit;
+  font-size: 12.5px;
+  cursor: pointer;
+  transition: color 140ms ease, border-color 140ms ease, background 140ms ease;
+}
+
+.scenarios__chip:hover {
+  color: var(--ink);
+  border-color: var(--mid);
+}
+
+.scenarios__chip[aria-pressed='true'] {
+  background: var(--term-panel);
+  border-color: var(--mid);
+  color: var(--ink);
+}
+
+.scenarios__who {
+  margin: 18px 0 0;
+  font-family: var(--system);
+  font-size: 13.5px;
+  color: var(--dim);
+}
+
+.scenarios__stage {
+  padding: 12px 0 4px;
 }
 
 .head__install,

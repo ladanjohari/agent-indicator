@@ -8,6 +8,7 @@ import type { Activity, Session, SessionState } from '../src'
 import { ApprovalGate as SdkApprovalGate } from '../src/ai-sdk'
 import { Example } from './Example'
 import { Hero } from './Hero'
+import { Scenarios } from './Scenarios'
 
 const STATES: SessionState[] = ['idle', 'working', 'running', 'needsYou', 'error', 'done']
 
@@ -135,21 +136,9 @@ export function Docs() {
           When an agent needs a person, this is the interface.
         </p>
         <p className="head__sub">
-          React components for the moment a human has to answer. Works with
+          React components for the moment an agent stops and asks. Works with
           Vercel&apos;s AI SDK out of the box.
         </p>
-
-        {/* The scenario before the demo. Somebody landing cold does not know
-            what an approval gate is, because the category is new enough that
-            nobody has one in their head yet. Three moments in three different
-            products, so it does not read as a tool for coding agents. */}
-        <p className="head__when">
-          Your agent is about to run a shell command, charge $200 to a card, or
-          email 412 customers. Somebody has to say yes, and the interface they
-          say it in decides whether they actually read it first.
-        </p>
-
-        <Hero />
 
         <p className="head__status">
           <a href="https://www.npmjs.com/package/agent-indicator">v0.3.0 on npm</a>
@@ -160,6 +149,28 @@ export function Docs() {
       </header>
 
       <main className="page">
+        {/* Who this is for, before why it is good. Somebody landing cold does
+            not have an approval gate in their head yet, because the category is
+            new enough that nobody does. */}
+        <section id="when" className="component">
+          <h2>When you need this</h2>
+          <p>
+            Vercel&apos;s AI SDK says a tool needs approval when it can{' '}
+            <a href="https://ai-sdk.dev/docs/agents/tool-approvals">
+              modify data, spend money, execute code, send messages or access
+              private data
+            </a>
+            . Here is what three of those look like. Each one pairs something
+            that can be undone with something that cannot.
+          </p>
+          <Scenarios />
+        </section>
+
+        <section id="approvalgate" className="component">
+          <h2>The approval gate</h2>
+          <Hero />
+        </section>
+
         <section id="install" className="component">
           <h2>Install</h2>
           <pre className="block">
