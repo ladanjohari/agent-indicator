@@ -1,24 +1,15 @@
 import { useState } from 'react'
 import {
   ActivityTrail,
-  ApprovalGate,
   SessionStrip,
   StatusIndicator,
 } from '../src'
-import type { Activity, ApprovalRequest, Session, SessionState } from '../src'
+import type { Activity, Session, SessionState } from '../src'
 import { ApprovalGate as SdkApprovalGate } from '../src/ai-sdk'
 import { Example } from './Example'
 import { Hero } from './Hero'
 
 const STATES: SessionState[] = ['idle', 'working', 'running', 'needsYou', 'error', 'done']
-
-const REQUESTS: ApprovalRequest[] = [
-  { id: 'write', consequence: 'Writes 3 files in src', detail: 'src/auth.ts, src/session.ts, src/index.ts', reversible: true },
-  { id: 'test', consequence: 'Runs the test suite', detail: 'npm test', reversible: true },
-  { id: 'commit', consequence: 'Commits locally. Nothing is pushed.', detail: 'git commit -am "refactor auth"', reversible: true },
-  { id: 'delete', consequence: 'Deletes the legacy folder and everything in it', detail: 'rm -rf legacy', reversible: false },
-  { id: 'push', consequence: 'Force pushes to main, overwriting what is there', detail: 'git push --force origin main', reversible: false },
-]
 
 const FLEET: Session[] = [
   { id: 'write-docs', name: 'write-docs', state: 'working', elapsed: '1m' },
@@ -44,39 +35,6 @@ const TRAIL: Activity[] = [
   { id: '10', kind: 'edit', summary: 'Edited src/auth.test.ts', at: '14:08' },
   { id: '11', kind: 'run', summary: 'Ran the test suite', detail: 'npm test', at: '14:09' },
 ]
-
-function GateExample() {
-  const [pending, setPending] = useState(REQUESTS)
-  const [log, setLog] = useState<string[]>([])
-
-  const settle = (verb: string) => (ids: string[]) => {
-    setPending((current) => current.filter((request) => !ids.includes(request.id)))
-    setLog((current) => [...current, verb + ': ' + ids.join(', ')])
-  }
-
-  return (
-    <div className="gate-example">
-      <ApprovalGate
-        requests={pending}
-        onApprove={settle('approved')}
-        onDeny={settle('denied')}
-        onDismiss={() => setLog((current) => [...current, 'dismissed, nothing decided'])}
-      />
-      {log.length > 0 ? (
-        <ul className="gate-example__log">
-          {log.map((line, index) => (
-            <li key={index}>{line}</li>
-          ))}
-        </ul>
-      ) : null}
-      {pending.length === 0 ? (
-        <button type="button" className="gate-example__reset" onClick={() => setPending(REQUESTS)}>
-          Reset
-        </button>
-      ) : null}
-    </div>
-  )
-}
 
 // Real AI SDK message parts, in the shape `useChat` hands them over. Nothing is
 // mocked here beyond the messages themselves: the gate below is doing exactly
@@ -154,6 +112,14 @@ function StripExample() {
   )
 }
 
+/**
+ * The page is an introduction, not a reference.
+ *
+ * The order is deliberate and follows the shape every good single-component page
+ * uses: touch the thing, install it, see the one problem it solves that nobody
+ * else solves, then a glance at the rest. Reasoning belongs in the article, and
+ * the API belongs in the types and the readme.
+ */
 export function Docs() {
   return (
     <>
@@ -162,7 +128,9 @@ export function Docs() {
           <span className="head__sigil">$</span> npm install agent-indicator
         </p>
         <h1>agent-indicator</h1>
-        <p className="head__line">React components for the states an AI agent is actually in.</p>
+        <p className="head__line">
+          Approval UI for AI agents, in React. Works with the AI SDK out of the box.
+        </p>
 
         <Hero />
 
@@ -175,142 +143,39 @@ export function Docs() {
       </header>
 
       <main className="page">
-        <section className="rule">
-          <h2>One rule, four components</h2>
-          <p className="rule__line">Compress the ordinary. Never compress the exception.</p>
-          <p>
-            Every agent product needs the same small set of interface pieces, and
-            every team rebuilds them badly. The hard part is not drawing a dot. It
-            is deciding what may be summarised away and what must always stand at
-            full size, and getting that backwards is how a permission prompt turns
-            into something people click without reading.
-          </p>
-          <ul className="rule__list">
-            <li>
-              <strong>StatusIndicator</strong> gives colour only to the states that
-              are exceptions.
-            </li>
-            <li>
-              <strong>ApprovalGate</strong> batches reversible requests and never
-              batches destructive ones.
-            </li>
-            <li>
-              <strong>SessionStrip</strong> folds calm sessions and never folds the
-              ones that need a person.
-            </li>
-            <li>
-              <strong>ActivityTrail</strong> folds runs of ordinary steps and never
-              folds questions or failures.
-            </li>
-          </ul>
-          <p>
-            The state model is not invented for a component library. It comes from
-            Session Indicator, a macOS app that watches real agent sessions, and
-            these are the states that survived using it every day.
-          </p>
-        </section>
+        <section id="install" className="component">
+          <h2>Install</h2>
+          <pre className="block">
+            <code>{`npm install agent-indicator`}</code>
+          </pre>
+          <pre className="block">
+            <code>{`import { ApprovalGate } from 'agent-indicator'
+import 'agent-indicator/styles.css'
 
-        <section id="statusindicator" className="component">
-          <h2>StatusIndicator</h2>
-          <Example
-            note="Six states. Only Running moves, because only Running is alive without progressing. Error is a ring rather than a fill, so it is told apart by shape and not by hue."
-            code={'<StatusIndicator state="needsYou" showLabel />'}
-          >
-            <ul className="states">
-              {STATES.map((state) => (
-                <li key={state}>
-                  <StatusIndicator state={state} showLabel />
-                  <code>{state}</code>
-                </li>
-              ))}
-            </ul>
-          </Example>
-
-
-          <p className="restyle">
-            Every colour is a token you can retint, and the component writes{' '}
-            <code>data-state</code> into the page so you can style any state from
-            your own CSS. You own the values. The component owns the meaning.
-          </p>
-        </section>
-
-        <section id="approvalgate" className="component">
-          <h2>ApprovalGate</h2>
-          <Example
-            note="Separating a destructive action by position does not work, because a hand already pressing Approve does not stop at a horizontal rule. Separating it by gesture does. Open one of the two at the bottom and try to approve it: it takes a two second hold, and letting go early does nothing."
-            code={`<ApprovalGate
+<ApprovalGate
   requests={requests}
   onApprove={(ids) => ids.forEach(run)}
   onDeny={(ids) => ids.forEach(refuse)}
-  onDismiss={() => setOpen(false)}
-/>`}
-          >
-            <GateExample />
-          </Example>
-
-          <p className="restyle">
-            An <code>ApprovalRequest</code> is an <code>id</code>, a{' '}
-            <code>consequence</code> in plain words, an optional <code>detail</code>{' '}
-            such as the command, and <code>reversible</code>. The consequence leads
-            because people approve commands they have not parsed.
+/>`}</code>
+          </pre>
+          <p>
+            A request is an <code>id</code>, a <code>consequence</code> in plain
+            words, an optional <code>detail</code> such as the command, and{' '}
+            <code>reversible</code>. React 18 or 19. Every prop is typed, so the
+            reference is in your editor when you need it, and in the{' '}
+            <a href="https://github.com/ladanjohari/agent-indicator#readme">readme</a>{' '}
+            when you want to read it.
           </p>
-
-          <p className="restyle">
-            <code>reversible</code> takes three values, not two. <code>true</code>{' '}
-            batches. <code>false</code> means somebody checked and it is permanent.{' '}
-            <code>&apos;unknown&apos;</code> means nobody has said, which is a
-            different claim and gets a quieter sentence, because a gate that prints
-            &ldquo;this cannot be undone&rdquo; over a web search is spending
-            credibility it will need later. The barrier does not move: unknown is
-            held exactly like permanent.
-          </p>
-
-        </section>
-
-        <section id="sessionstrip" className="component">
-          <h2>SessionStrip</h2>
-          <Example
-            note="Eight sessions. The two that need a person sort to the top and are the only ones that spell out their state. The rest fold into a line of counts."
-            code={`<SessionStrip
-  sessions={sessions}
-  maxQuiet={4}
-  onSelect={(id) => open(id)}
-/>`}
-          >
-            <StripExample />
-          </Example>
-
-
-        </section>
-
-        <section id="activitytrail" className="component">
-          <h2>ActivityTrail</h2>
-          <Example
-            note="Eleven steps, seven rows. Runs of the same ordinary step fold into one row you can open. Questions and failures never fold, and they are the only rows carrying colour."
-            code={`<ActivityTrail
-  activities={activities}
-  maxVisible={8}
-/>`}
-          >
-            <ActivityTrail activities={TRAIL} />
-          </Example>
-
         </section>
 
         <section id="ai-sdk" className="component">
           <h2>Approval UI for the AI SDK</h2>
           <p>
-            Vercel&apos;s AI SDK lets you mark a tool as needing approval. When the
-            model reaches for it, the SDK pauses and hands your app a tool part in
-            the <code>approval-requested</code> state, then gives you{' '}
-            <code>addToolApprovalResponse</code> to send the answer back.
-          </p>
-          <p>
-            It ships no interface. The official cookbook tells you to build the
-            buttons yourself, which is why most teams end up with two unstyled
-            buttons under a raw tool name. This is the interface. Hand it{' '}
-            <code>messages</code> and <code>addToolApprovalResponse</code> from{' '}
-            <code>useChat</code> and it works.
+            Vercel&apos;s AI SDK lets you mark a tool as needing approval, pauses
+            when the model reaches for it, and hands your app a tool part in the{' '}
+            <code>approval-requested</code> state. It ships no interface. The
+            official cookbook tells you to build the buttons yourself. This is the
+            interface.
           </p>
 
           <pre className="block">
@@ -327,56 +192,60 @@ const { messages, addToolApprovalResponse } = useChat()
           </pre>
 
           <Example
-            note="Three real approval requests, in the shape useChat hands them over. Press the button to add or remove one line of configuration and watch what it does. Undeclared, everything is held one at a time behind a two second hold, because nothing in the SDK says what can be undone. Declared, the two safe ones collapse into a single press and the deletion stays exactly where it was."
-            code={`<ApprovalGate
-  messages={messages}
-  addToolApprovalResponse={addToolApprovalResponse}
-  reversible={{ searchWeb: true, readFile: true }}
-  title={false}
-/>`}
+            note="Three real requests, in the shape useChat hands them over. Add or remove one line of configuration and watch what it does. Undeclared, everything is held one at a time, because nothing in the SDK says what can be undone. Declared, the two safe ones collapse into a single press and the deletion stays exactly where it was."
           >
             <SdkExample />
           </Example>
-
-          <p className="restyle">
-            The SDK carries no notion of whether an action can be undone, so this
-            adapter looks in three places in order: what you said in{' '}
-            <code>reversible</code>, then what the tool declared about itself with{' '}
-            <code>metadata: {'{ reversible: true }'}</code> on the server, then{' '}
-            <code>&apos;unknown&apos;</code>. There is no fourth step where
-            something becomes reversible by accident. Declaring it on the tool is
-            the better habit, because the person who wrote the tool is the person
-            who knows.
-          </p>
-
         </section>
 
-        <section className="component">
-          <h2>Getting started</h2>
-          <pre className="block">
-            <code>{`npm install agent-indicator`}</code>
-          </pre>
-          <p>Import the component and the stylesheet once, anywhere in your app.</p>
-          <pre className="block">
-            <code>{`import { StatusIndicator } from 'agent-indicator'
-import 'agent-indicator/styles.css'
+        <section id="more" className="component">
+          <h2>Also in the box</h2>
 
-export function Row() {
-  return <StatusIndicator state="needsYou" showLabel />
-}`}</code>
-          </pre>
-          <p>
-            React 18 or 19. Every prop is typed, so your editor lists what each
-            component takes and refuses anything invented. That is why there is no
-            props table on this page: the reference is in your editor when you
-            need it, and in the{' '}
-            <a href="https://github.com/ladanjohari/agent-indicator#readme">readme</a>{' '}
-            when you want to read it.
+          <Example
+            note="StatusIndicator. Six states. Only Running moves, because only Running is alive without progressing. Error is a ring rather than a fill, so it is told apart by shape and not by hue."
+            code={'<StatusIndicator state="needsYou" showLabel />'}
+          >
+            <ul className="states">
+              {STATES.map((state) => (
+                <li key={state}>
+                  <StatusIndicator state={state} showLabel />
+                  <code>{state}</code>
+                </li>
+              ))}
+            </ul>
+          </Example>
+
+          <Example
+            note="SessionStrip. Eight sessions. The two that need a person sort to the top and are the only ones that spell out their state. The rest fold into a line of counts."
+            code={`<SessionStrip sessions={sessions} maxQuiet={4} />`}
+          >
+            <StripExample />
+          </Example>
+
+          <Example
+            note="ActivityTrail. Eleven steps, seven rows. Runs of the same ordinary step fold into one row you can open. Questions and failures never fold, and they are the only rows carrying colour."
+            code={`<ActivityTrail activities={activities} maxVisible={8} />`}
+          >
+            <ActivityTrail activities={TRAIL} />
+          </Example>
+
+          <p className="restyle">
+            Every colour is a token you can retint, and each component writes its
+            state into the page as a <code>data-</code> attribute, so you can style
+            any state from your own CSS. The cards on this page are styled that
+            way. The package itself ships neutral and inherits from whatever it is
+            dropped into.
           </p>
+        </section>
+
+        <section id="rule" className="rule">
+          <h2>One rule</h2>
+          <p className="rule__line">Compress the ordinary. Never compress the exception.</p>
           <p>
-            Reduce Motion is obeyed rather than offered, labels stay readable by a
-            screen reader even when hidden from view, and the keyboard never has to
-            hold anything down.
+            Nine routine requests can collapse into one row. The one that deletes a
+            table cannot. Every decision in the library came from that sentence,
+            and the state model behind it came from Session Indicator, a macOS app
+            that watches real agent sessions.
           </p>
         </section>
       </main>

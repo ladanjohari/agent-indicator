@@ -76,7 +76,8 @@ export function Hero() {
           <strong>One click, three approved, nothing deleted.</strong> The two
           that cannot be undone had no approve button to hit, and they still do
           not until you open one and read it. Whatever speed you just used could
-          not reach them.
+          not reach them. Open one now and try: approving it takes a two second
+          hold, and letting go early does nothing.
         </p>
       ) : null}
 

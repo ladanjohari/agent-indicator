@@ -1,5 +1,11 @@
 # Worklog
 
+## 2026-08-16
+
+- **Did:** researched how the good single-component pages are built (sonner, vaul, react-hot-toast, Apple's SwiftUI framework page, Apple's swift-argument-parser readme), then rebuilt the docs page in that shape: ApprovalGate leads as the hook, install, the AI SDK gap, the other three shown as a gallery, the rule as a closing line. 5,696px down to 3,748px. Restored light mode, which the previous rewrite had dropped, and moved the card dressing onto tokens so both appearances come from one set of values.
+- **Broke:** nothing at runtime, but the old page had the same ApprovalGate demo twice, once as the hook and once as its own section, which is most of where the length was hiding.
+- **Decided:** the page is a hook, an install, a gap and a glance, in that order. Everything that explains why goes to `ARTICLE-DRAFT.md`, which now exists and holds the cut prose verbatim as its spine. No props tables, no philosophy section, no accessibility section, matching what every page in the research does.
+
 ## 2026-08-14, later
 
 - **Did:** rebuilt the docs page as a quiet terminal page carrying macOS cards, on the Session Indicator palette, with the card styling kept in the docs so the package still ships neutral; then cut it from 9,639px to 5,696px by deleting five props tables, every "not configurable" block, and four duplicate component paragraphs.

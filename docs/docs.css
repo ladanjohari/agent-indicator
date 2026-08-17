@@ -34,6 +34,53 @@
 
   --mono: 'SF Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
   --system: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', system-ui, sans-serif;
+
+  /* The macOS card, dark. Overridden wholesale in light. */
+  --card-bg: rgba(38, 38, 44, 0.82);
+  --card-rule: rgba(255, 255, 255, 0.14);
+  --card-ink: #f2f2f7;
+  --card-detail: #98989f;
+  --card-inset: rgba(255, 255, 255, 0.06);
+  --card-fill: rgba(255, 255, 255, 0.16);
+  --card-fill-quiet: rgba(255, 255, 255, 0.12);
+  --card-fill-hover: rgba(255, 255, 255, 0.22);
+  --card-shadow: 0 24px 48px rgba(0, 0, 0, 0.55), inset 0 0.5px 0 rgba(255, 255, 255, 0.18);
+  --card-caution: rgba(235, 235, 245, 0.45);
+  --card-alarm: #ff9f0a;
+}
+
+/* Light appearance. The Session Indicator prototype has both, and the page it
+   sits on is a terminal in either one. Same structure, same hierarchy, only the
+   values move. */
+@media (prefers-color-scheme: light) {
+  :root {
+    --term-bg: #f7f7f5;
+    --term-chrome: #efefec;
+    --term-rule: rgba(0, 0, 0, 0.10);
+    --term-panel: rgba(0, 0, 0, 0.035);
+    --term-panel-rule: rgba(0, 0, 0, 0.11);
+
+    --ink: rgba(0, 0, 0, 0.86);
+    --mid: #5f5f68;
+    --dim: #96969e;
+
+    --blue: #0066cc;
+    --amber: #a5610a;
+    --red: #d70015;
+    --green: #1a8c3a;
+
+    --card-bg: rgba(252, 252, 253, 0.86);
+    --card-rule: rgba(0, 0, 0, 0.12);
+    --card-ink: #1c1c1e;
+    --card-detail: #6c6c72;
+    --card-inset: rgba(0, 0, 0, 0.045);
+    --card-fill: rgba(0, 0, 0, 0.09);
+    --card-fill-quiet: rgba(0, 0, 0, 0.06);
+    --card-fill-hover: rgba(0, 0, 0, 0.14);
+    --card-shadow: 0 18px 40px rgba(0, 0, 0, 0.14), inset 0 0.5px 0 rgba(255, 255, 255, 0.9);
+    --card-caution: rgba(60, 60, 67, 0.5);
+    --card-alarm: #b25000;
+  }
 }
 
 * {
@@ -141,9 +188,9 @@ code {
 /* ---------- the rule ---------- */
 
 .rule {
-  padding: 28px 0 10px;
+  margin-top: 56px;
+  padding: 30px 0 6px;
   border-top: 0.5px solid var(--term-rule);
-  border-bottom: 0.5px solid var(--term-rule);
 }
 
 .rule h2 {
@@ -164,27 +211,12 @@ code {
   letter-spacing: -0.02em;
 }
 
-.rule p,
-.rule__list {
+.rule p {
   font-family: var(--system);
   font-size: 15px;
   line-height: 1.55;
   color: var(--mid);
   max-width: 62ch;
-}
-
-.rule__list {
-  margin: 18px 0;
-  padding-left: 20px;
-}
-
-.rule__list li {
-  margin-bottom: 6px;
-}
-
-.rule__list strong {
-  color: var(--ink);
-  font-weight: 500;
 }
 
 /* ---------- component sections ---------- */
@@ -357,90 +389,6 @@ code {
   font-weight: 600;
 }
 
-/* ---------- props tables ---------- */
-
-.props {
-  margin: 26px 0;
-  overflow-x: auto;
-}
-
-.props__table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 12.5px;
-  min-width: 520px;
-}
-
-.props__table th {
-  text-align: left;
-  font-weight: 400;
-  font-size: 11px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--dim);
-  padding: 0 14px 8px 0;
-  border-bottom: 0.5px solid var(--term-rule);
-}
-
-.props__table td {
-  padding: 11px 14px 11px 0;
-  border-bottom: 0.5px solid var(--term-rule);
-  vertical-align: top;
-  font-family: var(--system);
-  font-size: 13.5px;
-  color: var(--mid);
-}
-
-.props__table td:first-child {
-  font-family: var(--mono);
-  font-size: 12.5px;
-  color: var(--ink);
-  white-space: nowrap;
-}
-
-.props__type {
-  font-size: 11.5px;
-  color: var(--amber);
-}
-
-.props__required {
-  display: inline-block;
-  margin-left: 8px;
-  font-size: 10px;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--red);
-}
-
-.locked {
-  margin: 26px 0;
-  padding: 16px 18px;
-  border: 0.5px solid var(--term-panel-rule);
-  border-radius: 12px;
-  background: var(--term-panel);
-}
-
-.locked__title {
-  margin: 0 0 8px;
-  font-size: 11px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--dim);
-}
-
-.locked__list {
-  margin: 0;
-  padding-left: 18px;
-  font-family: var(--system);
-  font-size: 13.5px;
-  line-height: 1.5;
-  color: var(--mid);
-}
-
-.locked__list li {
-  margin-bottom: 5px;
-}
-
 .restyle {
   font-family: var(--system);
   font-size: 13.5px;
@@ -478,11 +426,11 @@ code {
   max-width: 420px;
   padding: 16px;
   border-radius: 16px;
-  border: 0.5px solid rgba(255, 255, 255, 0.14);
-  background: rgba(38, 38, 44, 0.82);
+  border: 0.5px solid var(--card-rule);
+  background: var(--card-bg);
   backdrop-filter: blur(30px) saturate(180%);
-  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.55), inset 0 0.5px 0 rgba(255, 255, 255, 0.18);
-  color: #f2f2f7;
+  box-shadow: var(--card-shadow);
+  color: var(--card-ink);
 }
 
 .agent-gate__title {
@@ -498,13 +446,13 @@ code {
 }
 
 .agent-gate__note[data-tone='alarm'] {
-  color: #ff9f0a;
+  color: var(--card-alarm);
   font-size: 11px;
   font-weight: 500;
 }
 
 .agent-gate__note[data-tone='caution'] {
-  color: rgba(235, 235, 245, 0.45);
+  color: var(--card-caution);
   font-size: 11px;
   font-weight: 500;
 }
@@ -521,11 +469,11 @@ code {
   padding: 10px 12px;
   border-left: 0;
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--card-inset);
 }
 
 .agent-gate__detail {
-  color: #98989f;
+  color: var(--card-detail);
   font-size: 11.5px;
 }
 
@@ -544,21 +492,21 @@ code {
 }
 
 .agent-gate__approve {
-  background: rgba(255, 255, 255, 0.16);
+  background: var(--card-fill);
   border: 0;
-  color: #f2f2f7;
+  color: var(--card-ink);
   font-weight: 600;
 }
 
 .agent-gate__deny {
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--card-fill-quiet);
   border: 0;
-  color: #f2f2f7;
+  color: var(--card-ink);
 }
 
 .agent-gate__approve:hover,
 .agent-gate__deny:hover {
-  background: rgba(255, 255, 255, 0.22);
+  background: var(--card-fill-hover);
 }
 
 .agent-gate__hold,

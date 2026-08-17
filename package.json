@@ -1,15 +1,25 @@
 {
   "name": "agent-indicator",
   "version": "0.3.0",
-  "description": "React components for AI agent state: status, approval, sessions, and activity.",
+  "description": "Approval UI and status components for AI agents. Works with Vercel's AI SDK out of the box.",
   "keywords": [
-    "react",
+    "ai-sdk",
+    "vercel-ai-sdk",
+    "approval",
+    "human-in-the-loop",
+    "hitl",
+    "tool-approval",
+    "agent-ui",
+    "agentic",
     "agent",
-    "ai",
     "agent-state",
+    "ai",
+    "llm",
+    "react",
+    "react-components",
+    "components",
     "status-indicator",
     "ui",
-    "components",
     "typescript"
   ],
   "license": "MIT",
@@ -21,7 +31,7 @@
   "bugs": {
     "url": "https://github.com/ladanjohari/agent-indicator/issues"
   },
-  "homepage": "https://github.com/ladanjohari/agent-indicator#readme",
+  "homepage": "https://ladanjohari.com/agent-indicator/",
   "type": "module",
   "sideEffects": [
     "**/*.css"
