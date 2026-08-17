@@ -33,12 +33,15 @@ identical files.
 
 ## Editing the scene
 
-The timeline is written as percentages of 7 seconds, and the comment at the top
+The timeline is written as percentages of 6.2 seconds, and the comment at the top
 of the HTML lists what happens when. The moments that matter:
 
-- **18.6 to 23.5 percent**, a quick click that starts the fill and lets go. It
-  exists so the clip shows that a click does not work here before it shows what
-  does.
+- **21 to 30.7 percent**, a press that climbs for 400ms and is let go early. It
+  exists so the clip shows that pressing does not work here before it shows what
+  does, and 400ms rather than a twitch so it reads as someone genuinely trying
+  and giving up. At the component's real rate, 1200ms for the whole bar, 400ms
+  is exactly a third of the way across, so the clip cannot show a speed the
+  component could not produce.
 - **35.5 to 54.8 percent**, the hold. Exactly 1.2 of the 6.2 seconds, linear,
   matching the real component.
 - **57.5 to 61.5 percent**, the gate leaves, because the request has been

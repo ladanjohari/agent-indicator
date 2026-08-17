@@ -12,8 +12,9 @@
 
            0.00s   0%      the gate, with the delete already open
            0.80s   12.9%   cursor starts moving
-           1.30s   21.0%   a quick click lands
-           1.45s   23.4%   released, the fill snaps back, nothing happens
+           1.30s   21.0%   a press lands and the bar starts climbing
+           1.70s   27.5%   a third of the way, and the finger comes off early
+           1.90s   30.7%   the fill snaps back, nothing happens
            2.20s   35.5%   the hold begins
            3.40s   54.8%   1.2 seconds later, it completes
            3.50s   56.4%   approved, and the request is taken away
@@ -135,11 +136,14 @@
          holds at empty, snaps back from the aborted click, then sweeps across
          in precisely 1.2 of the 6.2 seconds, linearly. */
       @keyframes fill {
-        0%,     21%  { clip-path: inset(0 100% 0 0); animation-timing-function: linear; }
-        /* The aborted click. Wide enough to actually see start, so the retreat
-           reads as "that did nothing" rather than as nothing happening. */
-        23.3%          { clip-path: inset(0 80% 0 0); animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1); }
-        26.5%,  35.5%  { clip-path: inset(0 100% 0 0); animation-timing-function: linear; }
+        0%,     21%    { clip-path: inset(0 100% 0 0); animation-timing-function: linear; }
+        /* The aborted press. 400ms of holding, which at the component's real
+           rate of 1200ms for the whole bar is exactly a third of the way, then
+           an early release. Long enough to read as someone genuinely trying and
+           giving up, rather than as a twitch. The retreat eases out over 200ms,
+           the same as the component. */
+        27.5%          { clip-path: inset(0 66.7% 0 0); animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1); }
+        30.7%,  35.5%  { clip-path: inset(0 100% 0 0); animation-timing-function: linear; }
         /* The hold: 1.2 seconds of the 6.2, linear, no easing, because it
            maps to real elapsed time. */
         54.8%,  62%    { clip-path: inset(0 0 0 0); }
@@ -150,8 +154,8 @@
 
       @keyframes press {
         0%,     20.9%  { transform: scale(1); }
-        21%,  23.3%  { transform: scale(0.97); }
-        23.4%,  35.3%  { transform: scale(1); }
+        21%,    27.5%  { transform: scale(0.97); }
+        27.6%,  35.3%  { transform: scale(1); }
         35.5%,  54.8%  { transform: scale(0.97); }
         55%,  100%   { transform: scale(1); }
       }
@@ -171,8 +175,8 @@
         0%,   9%    { transform: translate(370px, 262px); opacity: 0; }
         12.9%       { transform: translate(370px, 262px); opacity: 1; }
         20.9%       { transform: translate(168px, 212px); opacity: 1; }
-        21%, 23.3% { transform: translate(168px, 214px); opacity: 1; }
-        23.4%, 35.3% { transform: translate(168px, 212px); opacity: 1; }
+        21%, 27.5% { transform: translate(168px, 214px); opacity: 1; }
+        27.6%, 35.3% { transform: translate(168px, 212px); opacity: 1; }
         35.5%, 54.8%   { transform: translate(168px, 214px); opacity: 1; }
         /* The hand relaxes away once it is done, then leaves with the gate
            rather than drifting across an empty frame. */
