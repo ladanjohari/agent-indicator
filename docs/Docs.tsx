@@ -128,6 +128,17 @@ function StripExample() {
 export function Docs() {
   return (
     <>
+      {/* This page is served from ladanjohari.com/agent-indicator/, which means
+          anyone landing here from npm or a link has no way back into the site.
+          Same two controls the project pages use: the wordmark at the top, the
+          way back to Selected work at the bottom. Root relative, because both
+          are on the same domain. */}
+      <nav className="sitenav" aria-label="Site">
+        <a className="sitenav__mark" href="/">
+          Ladan Johari
+        </a>
+      </nav>
+
       <header className="head">
         <p className="head__prompt">
           <span className="head__sigil">$</span> npm install agent-indicator
@@ -286,6 +297,13 @@ const { messages, addToolApprovalResponse } = useChat()
           </p>
         </section>
       </main>
+
+      <div className="backwork">
+        <a href="/#work">
+          <span className="backwork__arrow" aria-hidden="true">&larr;</span>
+          <span>Works</span>
+        </a>
+      </div>
 
       <footer className="foot">
         <span>MIT licensed</span>

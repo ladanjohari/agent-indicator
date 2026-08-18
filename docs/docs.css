@@ -116,8 +116,10 @@ code {
  * around the page weakens exactly that.
  */
 
+.sitenav,
 .head,
 .page,
+.backwork,
 .foot {
   max-width: 760px;
   margin: 0 auto;
@@ -125,20 +127,87 @@ code {
   padding-right: 28px;
 }
 
+/* ---------- site navigation ----------
+ *
+ * The same two controls the project pages carry, in this page's own system
+ * rather than copied out of the portfolio's stylesheet. The wordmark is the way
+ * home, the arrow is the way back to Selected work.
+ */
+
+.sitenav {
+  padding-top: 40px;
+}
+
+.sitenav__mark {
+  font-family: var(--system);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .sitenav__mark:hover {
+    color: var(--blue);
+  }
+}
+
+.backwork {
+  margin-top: 64px;
+}
+
+.backwork a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--system);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink);
+  text-decoration: none;
+  transition: color 0.15s ease-out;
+}
+
+.backwork__arrow {
+  color: var(--blue);
+  transition: transform 0.2s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .backwork a:hover {
+    color: var(--blue);
+  }
+  .backwork a:hover .backwork__arrow {
+    transform: translateX(-3px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .backwork__arrow {
+    transition: none;
+  }
+}
+
 @media (max-width: 540px) {
+  .sitenav,
   .head,
   .page,
+  .backwork,
   .foot {
     padding-left: 20px;
     padding-right: 20px;
+  }
+  .sitenav {
+    padding-top: 28px;
   }
 }
 
 /* The demo used to live in here, so this carried a lot of bottom padding. Now
    that the header is only the claim, that padding plus the first section's own
-   56px left a hole. */
+   56px left a hole. The top padding moved to the nav above it. */
 .head {
-  padding-top: 48px;
+  padding-top: 30px;
   padding-bottom: 4px;
 }
 
@@ -550,7 +619,7 @@ code {
   display: flex;
   justify-content: space-between;
   gap: 16px;
-  margin-top: 72px;
+  margin-top: 40px;
   padding-top: 18px;
   padding-bottom: 64px;
   border-top: 0.5px solid var(--term-rule);
