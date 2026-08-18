@@ -7,6 +7,7 @@ import {
 import type { Activity, Session, SessionState } from '../src'
 import { ApprovalGate as SdkApprovalGate } from '../src/ai-sdk'
 import { Example } from './Example'
+import { Filmstrip } from './Filmstrip'
 import { Hero } from './Hero'
 import { Scenarios } from './Scenarios'
 
@@ -168,6 +169,11 @@ export function Docs() {
 
         <section id="approvalgate" className="component">
           <h2>The approval gate</h2>
+          <p>
+            One request that cannot be undone, at four moments. Reading it takes
+            no clicks. The live one is underneath.
+          </p>
+          <Filmstrip />
           <Hero />
         </section>
 

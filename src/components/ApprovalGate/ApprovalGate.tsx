@@ -29,22 +29,33 @@ function reversibility(request: ApprovalRequest) {
  * search in alarm red is exactly how a gate teaches people to stop seeing alarm
  * red.
  */
+/**
+ * The line above the group that cannot be batched.
+ *
+ * It exists because the reason those rows have no approve control is an
+ * absence, and nobody notices a button that is not there. Its only job is to
+ * say why these are separated from the ones above.
+ *
+ * "Review to answer" rather than "Review to approve": denying is meant to cost
+ * exactly what approving costs, and naming one outcome and not the other puts a
+ * thumb on the scale in the one place this component exists to keep level.
+ */
 function note(requests: ApprovalRequest[]) {
   const anyConfirmed = requests.some(isDeclaredPermanent)
 
   if (requests.length === 1) {
     return anyConfirmed
-      ? 'This cannot be undone. Open it to answer.'
-      : 'This might not be possible to undo. Open it to answer.'
+      ? 'Cannot be undone. Review to answer.'
+      : 'Might not be possible to undo. Review to answer.'
   }
 
   if (requests.every(isDeclaredPermanent)) {
-    return 'These cannot be undone. Each one is answered on its own.'
+    return 'Cannot be undone. Review each to answer.'
   }
   if (!anyConfirmed) {
-    return 'These might not be possible to undo. Each one is answered on its own.'
+    return 'Might not be possible to undo. Review each to answer.'
   }
-  return 'Some of these cannot be undone. Each one is answered on its own.'
+  return 'Some cannot be undone. Review each to answer.'
 }
 
 /**
@@ -77,12 +88,14 @@ export function ApprovalGate({
   className,
 }: ApprovalGateProps) {
   const [openIds, setOpenIds] = useState<string[]>([])
+  const [collapsed, setCollapsed] = useState(false)
 
   if (requests.length === 0) return null
 
   const safe = requests.filter(isReversible)
   const held = requests.filter((request) => !isReversible(request))
   const safeIds = safe.map((request) => request.id)
+  const total = requests.length
 
   const toggle = (id: string) =>
     setOpenIds((open) =>
@@ -105,14 +118,58 @@ export function ApprovalGate({
               still announces it. */}
           {title === false ? null : <p className="agent-gate__title">{title}</p>}
           {onDismiss ? (
-            <button type="button" className="agent-gate__dismiss" onClick={onDismiss}>
-              Not now
+            /* A disclosure, not a verb.
+             *
+             * "Not now" removed the card, and a card that vanishes is easy to
+             * forget. This collapses to a line that keeps saying what is still
+             * waiting, including how many of them are permanent, because the
+             * state someone is least likely to look at is exactly the state
+             * where the exception most needs naming.
+             *
+             * onDismiss still fires, so a host that wants to know the person put
+             * it away still finds out. What changed is that putting it away no
+             * longer makes it silent. */
+            <button
+              type="button"
+              className="agent-gate__disclose"
+              aria-expanded={!collapsed}
+              aria-label={collapsed ? 'Show the requests' : 'Collapse'}
+              onClick={() => {
+                setCollapsed((was) => !was)
+                if (!collapsed) onDismiss()
+              }}
+            >
+              <svg viewBox="0 0 14 14" width="14" height="14" aria-hidden="true">
+                <path
+                  d="M3.5 8.75 L7 5.25 L10.5 8.75"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
             </button>
           ) : null}
         </header>
       )}
 
-      {safe.length > 0 ? (
+      {collapsed ? (
+        /* Collapsed, and still saying so. The count is ordinary and may be
+           summarised. How many cannot be undone is the exception, and it is
+           named here for the same reason it is never batched. */
+        <p className="agent-gate__waiting" data-tone={held.length > 0 ? 'alarm' : undefined}>
+          {total} {total === 1 ? 'request needs' : 'requests need'} your approval.
+          {held.length > 0 ? (
+            <span className="agent-gate__waiting-held">
+              {' '}
+              {held.length} cannot be undone.
+            </span>
+          ) : null}
+        </p>
+      ) : null}
+
+      {!collapsed && safe.length > 0 ? (
         <div className="agent-gate__group">
           <ul className="agent-gate__list">
             {safe.map((request) => (
@@ -147,11 +204,16 @@ export function ApprovalGate({
         </div>
       ) : null}
 
-      {held.length > 0 ? (
+      {!collapsed && held.length > 0 ? (
         <div className="agent-gate__group agent-gate__group--destructive">
           <p
             className="agent-gate__note"
             data-tone={held.some(isDeclaredPermanent) ? 'alarm' : 'caution'}
+            /* Nothing has been opened yet, so nothing is being decided yet. The
+               colour arrives with the hold, at the moment the risk is actually
+               being taken. A warning that shouts while the page is at rest is
+               one people stop seeing. */
+            data-resting={held.every((r) => !openIds.includes(r.id)) ? 'true' : undefined}
           >
             {note(held)}
           </p>

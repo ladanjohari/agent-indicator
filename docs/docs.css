@@ -426,8 +426,88 @@ code {
 
 .hero__ask {
   margin: 0 0 16px;
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
   font-family: var(--system);
   font-size: 15px;
+  color: var(--ink);
+}
+
+.hero__arrow {
+  flex: none;
+  color: var(--green);
+  font-size: 10px;
+  position: relative;
+  top: -1px;
+}
+
+/* ---------- the filmstrip ---------- */
+
+.strip {
+  list-style: none;
+  margin: 26px 0 40px;
+  padding: 0;
+  display: grid;
+  /* Two by two, not four across. The page column is 760px, so four frames give
+     each card about 170px, and a 400px card squeezed into 170 wraps its own
+     consequence onto five lines and clips the control the frame exists to show.
+     Two by two gives each one about 360px, which is close to the card's natural
+     width, and it still reads in order. */
+  grid-template-columns: 1fr 1fr;
+  gap: 20px 22px;
+  align-items: start;
+}
+
+/* One fixed box per frame, so the four captions sit on one line instead of
+   stepping. Inside it the card keeps its own height: the two closed states
+   match each other and the two open ones match each other, which is the real
+   grouping. Padding all four to the tallest left two of them mostly empty. */
+.strip__stage {
+  height: 232px;
+  padding: 14px 12px;
+  border: 0.5px solid var(--term-rule);
+  border-radius: 12px;
+  background: var(--term-chrome);
+  overflow: hidden;
+}
+
+.strip__stage .agent-gate {
+  width: 100%;
+  max-width: none;
+  min-height: 148px;
+}
+
+/* Frame 4 has no card, on purpose. The gate returns null when nothing is
+   waiting, so an empty box would be a fiction. */
+.strip__empty {
+  margin: 0;
+  font-family: var(--system);
+  font-size: 13px;
+  color: var(--card-detail);
+}
+
+.strip__caption {
+  margin: 12px 0 0;
+  font-family: var(--system);
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--mid);
+}
+
+.strip__caption b {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+@media (max-width: 540px) {
+  .strip {
+    grid-template-columns: 1fr;
+  }
+  .strip__stage {
+    height: auto;
+    min-height: 0;
+  }
 }
 
 .hero__stage {
@@ -507,16 +587,42 @@ code {
   font-weight: 600;
 }
 
-/* Blue is for the two navigational controls, and nothing else. */
-.agent-gate__dismiss,
+/* Blue is for the one navigational control, and nothing else. The disclosure is
+   a chevron rather than a link now, so it takes the quiet ink instead. */
 .agent-gate__reveal-hint {
   color: var(--blue);
   text-decoration: none;
 }
 
+.agent-gate__disclose {
+  color: var(--card-detail);
+}
+
+.agent-gate__disclose:hover {
+  background: var(--card-fill-quiet);
+  color: var(--card-ink);
+}
+
+/* The line the collapsed card leaves behind. */
+.agent-gate__waiting {
+  font-size: 13px;
+  color: var(--card-ink);
+}
+
+.agent-gate__waiting-held {
+  color: var(--card-alarm);
+}
+
 .agent-gate__note[data-tone='alarm'] {
   color: var(--card-alarm);
   font-size: 11px;
+  font-weight: 500;
+}
+
+/* Quiet until something is opened. The package does this too; the dressing only
+   restates it in the card's own ink. */
+.agent-gate__note[data-resting] {
+  color: var(--card-detail);
   font-weight: 500;
 }
 
@@ -589,9 +695,6 @@ code {
   background: rgba(255, 69, 58, 0.28);
 }
 
-.agent-gate__dismiss {
-  font-size: 12px;
-}
 
 /* The strip and the trail, same surface treatment. */
 .agent-strip,

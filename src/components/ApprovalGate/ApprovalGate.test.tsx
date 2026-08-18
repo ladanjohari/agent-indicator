@@ -143,7 +143,7 @@ describe('ApprovalGate', () => {
 
     expect(screen.queryByRole('button', { name: /Approve all/ })).not.toBeInTheDocument()
     expect(
-      screen.getByText('This might not be possible to undo. Open it to answer.'),
+      screen.getByText('Might not be possible to undo. Review to answer.'),
     ).toBeInTheDocument()
   })
 
@@ -169,12 +169,12 @@ describe('ApprovalGate', () => {
     const { unmount } = render(
       <ApprovalGate requests={[DESTRUCTIVE[0]]} onApprove={vi.fn()} onDeny={vi.fn()} />,
     )
-    expect(screen.getByText('This cannot be undone. Open it to answer.')).toBeInTheDocument()
+    expect(screen.getByText('Cannot be undone. Review to answer.')).toBeInTheDocument()
     unmount()
 
     render(<ApprovalGate requests={UNKNOWN} onApprove={vi.fn()} onDeny={vi.fn()} />)
     expect(
-      screen.getByText('This might not be possible to undo. Open it to answer.'),
+      screen.getByText('Might not be possible to undo. Review to answer.'),
     ).toBeInTheDocument()
   })
 
@@ -206,7 +206,7 @@ describe('ApprovalGate', () => {
       />,
     )
     expect(
-      screen.getByText('Some of these cannot be undone. Each one is answered on its own.'),
+      screen.getByText('Some cannot be undone. Review each to answer.'),
     ).toBeInTheDocument()
   })
 
@@ -234,7 +234,7 @@ describe('ApprovalGate', () => {
     expect(screen.getByRole('region', { name: 'Waiting for you' })).toBeInTheDocument()
   })
 
-  it('dismisses without deciding anything', async () => {
+  it('collapses without deciding anything', async () => {
     const onApprove = vi.fn()
     const onDeny = vi.fn()
     const onDismiss = vi.fn()
@@ -247,15 +247,46 @@ describe('ApprovalGate', () => {
       />,
     )
 
-    await userEvent.click(screen.getByRole('button', { name: 'Not now' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Collapse' }))
     expect(onDismiss).toHaveBeenCalled()
     expect(onApprove).not.toHaveBeenCalled()
     expect(onDeny).not.toHaveBeenCalled()
   })
 
-  it('cannot be dismissed when the host gives no way to', () => {
+  // Putting it away must not make it quiet. The count is ordinary and may be
+  // summarised; how many cannot be undone is the exception and is named.
+  it('keeps saying what is waiting once it is collapsed', async () => {
+    render(
+      <ApprovalGate
+        requests={[...SAFE, ...DESTRUCTIVE]}
+        onApprove={vi.fn()}
+        onDeny={vi.fn()}
+        onDismiss={vi.fn()}
+      />,
+    )
+
+    await userEvent.click(screen.getByRole('button', { name: 'Collapse' }))
+    const total = SAFE.length + DESTRUCTIVE.length
+    expect(screen.getByText(new RegExp(total + ' requests need your approval'))).toBeInTheDocument()
+    expect(
+      screen.getByText(new RegExp(DESTRUCTIVE.length + ' cannot be undone')),
+    ).toBeInTheDocument()
+  })
+
+  it('opens again from collapsed', async () => {
+    render(
+      <ApprovalGate requests={SAFE} onApprove={vi.fn()} onDeny={vi.fn()} onDismiss={vi.fn()} />,
+    )
+    await userEvent.click(screen.getByRole('button', { name: 'Collapse' }))
+    expect(screen.queryByRole('button', { name: /Approve/ })).not.toBeInTheDocument()
+
+    await userEvent.click(screen.getByRole('button', { name: 'Show the requests' }))
+    expect(screen.getByRole('button', { name: /Approve/ })).toBeInTheDocument()
+  })
+
+  it('cannot be collapsed when the host gives no way to', () => {
     render(<ApprovalGate requests={SAFE} onApprove={vi.fn()} onDeny={vi.fn()} />)
-    expect(screen.queryByRole('button', { name: 'Not now' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Collapse' })).not.toBeInTheDocument()
   })
 
   // A library cannot know whether it sits under an h1 or an h3, so it injects

@@ -57,7 +57,11 @@ export function Hero() {
 
   return (
     <section className="hero">
+      {/* Set as an invitation rather than as prose. It was the same size and
+          colour as every other paragraph on the page, so it read as a
+          description of the demo rather than as a thing to do. */}
       <p className="hero__ask">
+        <span className="hero__arrow" aria-hidden="true">&#9654;</span>
         Your agent wants to do five things. Clear them as fast as you can.
       </p>
 

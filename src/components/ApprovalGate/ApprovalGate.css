@@ -72,8 +72,7 @@
 /* Buttons. Capsules, 1px rules, no shadows and no gradients. */
 .agent-gate__approve,
 .agent-gate__approve-one,
-.agent-gate__deny,
-.agent-gate__dismiss {
+.agent-gate__deny {
   font: inherit;
   border-radius: 999px;
   border: 1px solid var(--agent-gate-rule);
@@ -102,14 +101,6 @@
   color: var(--agent-gate-danger);
 }
 
-.agent-gate__dismiss {
-  border: 0;
-  padding: 0;
-  font-size: 13px;
-  color: var(--agent-gate-quiet);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
 
 .agent-gate__approve:hover,
 .agent-gate__deny:hover {
@@ -123,7 +114,7 @@
 .agent-gate__approve:focus-visible,
 .agent-gate__approve-one:focus-visible,
 .agent-gate__deny:focus-visible,
-.agent-gate__dismiss:focus-visible,
+.agent-gate__disclose:focus-visible,
 .agent-gate__hold:focus-visible,
 .agent-gate__reveal:focus-visible {
   outline: 2px solid currentColor;
@@ -226,6 +217,54 @@
   color: var(--agent-gate-quiet);
 }
 
+/* Nothing has been opened, so nothing is being decided. The line still says why
+   these rows are separated, which is its whole job, but it says it quietly. The
+   colour arrives when a request is opened, next to the control that takes the
+   risk. Same rule as the hold: loud where the decision happens, quiet
+   everywhere else. */
+.agent-gate__note[data-resting] {
+  color: var(--agent-gate-quiet);
+  font-weight: 400;
+}
+
+/* The disclosure control, and the line it leaves behind. */
+.agent-gate__disclose {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  margin: -4px -6px -4px 0;
+  border: 0;
+  border-radius: 14px;
+  background: transparent;
+  color: var(--agent-gate-quiet);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.15s ease-out, color 0.15s ease-out;
+}
+
+.agent-gate__disclose:hover {
+  background: var(--agent-gate-fill);
+  color: inherit;
+}
+
+.agent-gate__disclose svg {
+  transition: transform 0.2s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.agent-gate__disclose[aria-expanded='false'] svg {
+  transform: rotate(180deg);
+}
+
+.agent-gate__waiting {
+  margin: 0;
+}
+
+.agent-gate__waiting-held {
+  color: var(--agent-gate-danger);
+}
+
 .agent-gate__item[data-reversible='unknown'] .agent-gate__revealed {
   border-left-color: var(--agent-gate-rule);
 }
@@ -263,7 +302,8 @@
   .agent-gate__approve,
   .agent-gate__approve-one,
   .agent-gate__deny,
-  .agent-gate__dismiss {
+  .agent-gate__disclose,
+  .agent-gate__disclose svg {
     transition: none;
   }
 }

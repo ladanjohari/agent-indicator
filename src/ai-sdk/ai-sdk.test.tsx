@@ -255,7 +255,7 @@ describe('ApprovalGate wired to the AI SDK', () => {
       approved: true,
     })
     expect(
-      screen.getByText('This might not be possible to undo. Open it to answer.'),
+      screen.getByText('Might not be possible to undo. Review to answer.'),
     ).toBeInTheDocument()
   })
 
