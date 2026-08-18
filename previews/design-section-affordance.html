@@ -1,0 +1,1170 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>agent-indicator, example section options</title>
+    <!-- EXPLORATION. Not shipped. Everything inlined, so the styles work on load.
+         Component and dressing stylesheets pasted verbatim from source. -->
+    <style>
+/* The docs site.
+ *
+ * Two systems on one page, on purpose.
+ *
+ * The PAGE is a terminal window, in the Session Indicator palette, monospace.
+ * That is where agents actually run, and it is the environment the components
+ * exist to improve.
+ *
+ * The COMPONENTS are not terminal. They are macOS surfaces: system font,
+ * vibrancy material, exact capsules, concentric radii. They are the designed
+ * thing the terminal cannot give you, and the contrast is the argument.
+ *
+ * Everything under "component dressing" is docs-only. The published package
+ * ships neutral and inherits from whatever it is dropped into. This section is
+ * a demonstration that it restyles, not a default it forces on anyone.
+ */
+
+:root {
+  /* Session Indicator, dark. Lifted from the prototype. */
+  --term-bg: #0e0e12;
+  --term-chrome: #17171c;
+  --term-rule: #26262c;
+  --term-panel: #1d1d23;
+  --term-panel-rule: #32323a;
+
+  --ink: rgba(255, 255, 255, 0.86);
+  --mid: #8a8a93;
+  --dim: #55555e;
+
+  --blue: #0a84ff;
+  --amber: #e8952a;
+  --red: #ff453a;
+  --green: #34c759;
+
+  --mono: 'SF Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
+  --system: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', system-ui, sans-serif;
+
+  /* The macOS card, dark. Overridden wholesale in light. */
+  --card-bg: rgba(38, 38, 44, 0.82);
+  --card-rule: rgba(255, 255, 255, 0.14);
+  --card-ink: #f2f2f7;
+  --card-detail: #98989f;
+  --card-inset: rgba(255, 255, 255, 0.06);
+  --card-fill: rgba(255, 255, 255, 0.16);
+  --card-fill-quiet: rgba(255, 255, 255, 0.12);
+  --card-fill-hover: rgba(255, 255, 255, 0.22);
+  --card-shadow: 0 24px 48px rgba(0, 0, 0, 0.55), inset 0 0.5px 0 rgba(255, 255, 255, 0.18);
+  --card-caution: rgba(235, 235, 245, 0.45);
+  /* Same red as the hold control. They are making the same claim, so a second
+     colour here read as a second severity that does not exist. */
+  --card-alarm: #ff453a;
+}
+
+/* Light appearance. The Session Indicator prototype has both, and the page it
+   sits on is a terminal in either one. Same structure, same hierarchy, only the
+   values move. */
+@media (prefers-color-scheme: light) {
+  :root {
+    --term-bg: #f7f7f5;
+    --term-chrome: #efefec;
+    --term-rule: rgba(0, 0, 0, 0.10);
+    --term-panel: rgba(0, 0, 0, 0.035);
+    --term-panel-rule: rgba(0, 0, 0, 0.11);
+
+    --ink: rgba(0, 0, 0, 0.86);
+    --mid: #5f5f68;
+    --dim: #96969e;
+
+    --blue: #0066cc;
+    --amber: #a5610a;
+    --red: #d70015;
+    --green: #1a8c3a;
+
+    --card-bg: rgba(252, 252, 253, 0.86);
+    --card-rule: rgba(0, 0, 0, 0.12);
+    --card-ink: #1c1c1e;
+    --card-detail: #6c6c72;
+    --card-inset: rgba(0, 0, 0, 0.045);
+    --card-fill: rgba(0, 0, 0, 0.09);
+    --card-fill-quiet: rgba(0, 0, 0, 0.06);
+    --card-fill-hover: rgba(0, 0, 0, 0.14);
+    --card-shadow: 0 18px 40px rgba(0, 0, 0, 0.14), inset 0 0.5px 0 rgba(255, 255, 255, 0.9);
+    --card-caution: rgba(60, 60, 67, 0.5);
+    --card-alarm: #d70015;
+  }
+}
+
+
+* { box-sizing: border-box; }
+/* ApprovalGate
+ *
+ * Colours are tokens you can retint. What you cannot change is that
+ * irreversible requests never batch and have no approve control until opened.
+ *
+ * Neutrals are mixed from currentColor, so the gate is correct in light and
+ * dark without being configured.
+ */
+
+.agent-gate {
+  --agent-gate-rule: color-mix(in srgb, currentColor 12%, transparent);
+  --agent-gate-quiet: color-mix(in srgb, currentColor 60%, transparent);
+  --agent-gate-fill: color-mix(in srgb, currentColor 6%, transparent);
+  --agent-gate-danger: #ff3b30;
+
+  display: block;
+  max-width: 480px;
+  border: 1px solid var(--agent-gate-rule);
+  border-radius: 14px;
+  padding: 16px;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.agent-gate__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.agent-gate__title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: inherit;
+}
+
+.agent-gate__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.agent-gate__item {
+  display: grid;
+  gap: 4px;
+}
+
+.agent-gate__consequence {
+  display: block;
+}
+
+.agent-gate__detail {
+  display: block;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  color: var(--agent-gate-quiet);
+  overflow-wrap: anywhere;
+}
+
+.agent-gate__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+/* Buttons. Capsules, 1px rules, no shadows and no gradients. */
+.agent-gate__approve,
+.agent-gate__approve-one,
+.agent-gate__deny {
+  font: inherit;
+  border-radius: 999px;
+  border: 1px solid var(--agent-gate-rule);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  transition: background-color 0.15s ease-out;
+}
+
+.agent-gate__approve,
+.agent-gate__approve-one,
+.agent-gate__deny {
+  padding: 7px 15px;
+  font-size: 13px;
+}
+
+.agent-gate__approve {
+  background: var(--agent-gate-fill);
+  font-weight: 500;
+}
+
+/* The single destructive approval is deliberately not a primary button. It
+   should not look like the thing you were already pressing. */
+.agent-gate__approve-one {
+  border-color: color-mix(in srgb, var(--agent-gate-danger) 55%, transparent);
+  color: var(--agent-gate-danger);
+}
+
+
+.agent-gate__approve:hover,
+.agent-gate__deny:hover {
+  background: color-mix(in srgb, currentColor 9%, transparent);
+}
+
+.agent-gate__approve-one:hover {
+  background: color-mix(in srgb, var(--agent-gate-danger) 10%, transparent);
+}
+
+.agent-gate__approve:focus-visible,
+.agent-gate__approve-one:focus-visible,
+.agent-gate__deny:focus-visible,
+.agent-gate__disclose:focus-visible,
+.agent-gate__hold:focus-visible,
+.agent-gate__reveal:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* Hold to approve.
+ *
+ * The fill is a clipped overlay rather than a width or a JavaScript timer, so
+ * it runs on the GPU, cannot drift, and retargets cleanly when interrupted.
+ */
+.agent-gate__hold {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  font: inherit;
+  font-size: 13px;
+  padding: 7px 15px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--agent-gate-danger) 55%, transparent);
+  background: transparent;
+  color: var(--agent-gate-danger);
+  cursor: pointer;
+  transition: transform 160ms ease-out;
+  /* A hold must not start a scroll, a text selection, or a callout. */
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* The press is acknowledged instantly, so the control feels heard before the
+   fill has gone anywhere. */
+.agent-gate__hold:active {
+  transform: scale(0.97);
+}
+
+.agent-gate__hold-fill {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: color-mix(in srgb, var(--agent-gate-danger) 18%, transparent);
+  clip-path: inset(0 100% 0 0);
+  /* Letting go is the system responding, so it is fast and eases out. */
+  transition: clip-path 200ms ease-out;
+}
+
+.agent-gate__hold[data-pressing='true'] .agent-gate__hold-fill {
+  clip-path: inset(0 0 0 0);
+  /* Holding is the person deciding, so it is slow. Linear because it maps to
+     real elapsed time, and easing would misrepresent how much is left.
+
+     1200ms, settled 16 August 2026 after holding both. A reflex press is around
+     150ms, so by a second the gesture already cannot happen by accident. The
+     second second bought no further safety and only spent patience, on a control
+     some people will meet several times a day. */
+  transition: clip-path 1200ms linear;
+}
+
+.agent-gate__hold-label {
+  position: relative;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .agent-gate__hold:hover {
+    background: color-mix(in srgb, var(--agent-gate-danger) 8%, transparent);
+  }
+}
+
+/* The irreversible group.
+ *
+ * The rule exists to separate this group from the batched one above it, so it
+ * is drawn only when there is actually a group above it. With nothing batched,
+ * which is the ordinary case inline in a conversation, the line would be a lid
+ * on an empty box.
+ *
+ * This was `:first-child` until 16 August 2026, which only covered the case
+ * where the gate had no header either. With a header and nothing batched, the
+ * group was no longer first, so the orphan rule came back and sat under the
+ * title separating it from nothing. The adjacent sibling selector says what was
+ * actually meant: separate these two groups, and only these two. */
+.agent-gate__group + .agent-gate__group--destructive {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--agent-gate-rule);
+}
+
+.agent-gate__note {
+  margin: 0 0 12px;
+  font-size: 12px;
+  color: var(--agent-gate-danger);
+}
+
+/* When nobody has declared whether these can be undone, the sentence is a
+   caution rather than a fact, so it is not painted in alarm red. The barrier
+   does not move: the hold stays exactly as it is. Only the claim gets quieter,
+   because alarm colour spent on things that turn out to be harmless is how a
+   reader learns to stop seeing alarm colour. */
+.agent-gate__note[data-tone='caution'] {
+  color: var(--agent-gate-quiet);
+}
+
+/* Nothing has been opened, so nothing is being decided. The line still says why
+   these rows are separated, which is its whole job, but it says it quietly. The
+   colour arrives when a request is opened, next to the control that takes the
+   risk. Same rule as the hold: loud where the decision happens, quiet
+   everywhere else. */
+.agent-gate__note[data-resting] {
+  color: var(--agent-gate-quiet);
+  font-weight: 400;
+}
+
+/* The disclosure control, and the line it leaves behind. */
+.agent-gate__disclose {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  margin: -4px -6px -4px 0;
+  border: 0;
+  border-radius: 14px;
+  background: transparent;
+  color: var(--agent-gate-quiet);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.15s ease-out, color 0.15s ease-out;
+}
+
+.agent-gate__disclose:hover {
+  background: var(--agent-gate-fill);
+  color: inherit;
+}
+
+.agent-gate__disclose svg {
+  transition: transform 0.2s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.agent-gate__disclose[aria-expanded='false'] svg {
+  transform: rotate(180deg);
+}
+
+.agent-gate__waiting {
+  margin: 0;
+}
+
+.agent-gate__waiting-held {
+  color: var(--agent-gate-danger);
+}
+
+.agent-gate__item[data-reversible='unknown'] .agent-gate__revealed {
+  border-left-color: var(--agent-gate-rule);
+}
+
+.agent-gate__reveal {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  font: inherit;
+  text-align: left;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.agent-gate__reveal-hint {
+  flex: none;
+  font-size: 12px;
+  color: var(--agent-gate-quiet);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.agent-gate__revealed {
+  margin-top: 8px;
+  padding-left: 12px;
+  border-left: 2px solid color-mix(in srgb, var(--agent-gate-danger) 40%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .agent-gate__approve,
+  .agent-gate__approve-one,
+  .agent-gate__deny,
+  .agent-gate__disclose,
+  .agent-gate__disclose svg {
+    transition: none;
+  }
+}
+
+/* =====================================================================
+   COMPONENT DRESSING, DOCS ONLY
+
+   The package ships neutral. Everything below restyles it into a macOS
+   surface, using only the class names and data attributes the component
+   already exposes. Nothing here is required to use it, and every rule is
+   something a team could copy into their own stylesheet.
+   ===================================================================== */
+
+.agent-gate {
+  font-family: var(--system);
+  font-size: 13px;
+  line-height: 1.38;
+  letter-spacing: -0.005em;
+  max-width: 420px;
+  padding: 16px;
+  border-radius: 16px;
+  border: 0.5px solid var(--card-rule);
+  background: var(--card-bg);
+  backdrop-filter: blur(30px) saturate(180%);
+  box-shadow: var(--card-shadow);
+  color: var(--card-ink);
+}
+
+.agent-gate__title {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Blue is for the one navigational control, and nothing else. The disclosure is
+   a chevron rather than a link now, so it takes the quiet ink instead. */
+.agent-gate__reveal-hint {
+  color: var(--blue);
+  text-decoration: none;
+}
+
+.agent-gate__disclose {
+  color: var(--card-detail);
+}
+
+.agent-gate__disclose:hover {
+  background: var(--card-fill-quiet);
+  color: var(--card-ink);
+}
+
+/* The line the collapsed card leaves behind. */
+.agent-gate__waiting {
+  font-size: 13px;
+  color: var(--card-ink);
+}
+
+.agent-gate__waiting-held {
+  color: var(--card-alarm);
+}
+
+.agent-gate__note[data-tone='alarm'] {
+  color: var(--card-alarm);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+/* Quiet until something is opened. The package does this too; the dressing only
+   restates it in the card's own ink. */
+.agent-gate__note[data-resting] {
+  color: var(--card-detail);
+  font-weight: 500;
+}
+
+.agent-gate__note[data-tone='caution'] {
+  color: var(--card-caution);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+/* Bold and left aligned at the decision moment. */
+.agent-gate__consequence {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Concentric: the card is 16, this sits 8 in, so it is 8. */
+.agent-gate__revealed {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-left: 0;
+  border-radius: 8px;
+  background: var(--card-inset);
+}
+
+.agent-gate__detail {
+  color: var(--card-detail);
+  font-size: 11.5px;
+}
+
+/* Exact capsules: 28px tall, 14px radius. */
+.agent-gate__approve,
+.agent-gate__approve-one,
+.agent-gate__deny,
+.agent-gate__hold {
+  height: 28px;
+  padding: 0 14px;
+  border-radius: 14px;
+  font-size: 13px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+}
+
+.agent-gate__approve {
+  background: var(--card-fill);
+  border: 0;
+  color: var(--card-ink);
+  font-weight: 600;
+}
+
+.agent-gate__deny {
+  background: var(--card-fill-quiet);
+  border: 0;
+  color: var(--card-ink);
+}
+
+.agent-gate__approve:hover,
+.agent-gate__deny:hover {
+  background: var(--card-fill-hover);
+}
+
+.agent-gate__hold,
+.agent-gate__approve-one {
+  background: transparent;
+  border: 1px solid rgba(255, 69, 58, 0.6);
+  color: var(--red);
+}
+
+.agent-gate__hold-fill {
+  background: rgba(255, 69, 58, 0.28);
+}
+
+
+/* The strip and the trail, same surface treatment. */
+.agent-strip,
+.agent-trail {
+  font-family: var(--system);
+  font-size: 13px;
+}
+
+.agent-strip__name {
+  font-family: var(--mono);
+  font-size: 12px;
+}
+
+.agent-trail__detail,
+.agent-strip__elapsed,
+.agent-trail__at {
+  font-family: var(--mono);
+}
+
+body { margin: 0; background: var(--term-bg); color: var(--ink); font-family: var(--mono); }
+.wrap { max-width: 1180px; margin: 0 auto; padding: 48px 28px 100px; }
+
+.ex-head { padding-bottom: 8px; }
+.ex-kicker { margin: 0 0 20px; font-size: 11px; letter-spacing: .09em; text-transform: uppercase; color: var(--dim); }
+.ex-head h1 { margin: 0; font-family: var(--system); font-size: 27px; font-weight: 600; letter-spacing: -.02em; }
+.ex-lede { margin: 12px 0 0; font-family: var(--system); font-size: 15px; line-height: 1.55; color: var(--mid); max-width: 62ch; }
+
+.ex { margin-top: 64px; padding-top: 30px; border-top: .5px solid var(--term-rule); }
+.ex-num { margin: 0 0 8px; font-size: 11px; letter-spacing: .09em; text-transform: uppercase; color: var(--green); }
+.ex h2 { margin: 0; font-family: var(--system); font-size: 21px; font-weight: 600; letter-spacing: -.015em; }
+.ex-note { margin: 10px 0 0; font-family: var(--system); font-size: 14.5px; line-height: 1.55; color: var(--mid); max-width: 66ch; }
+.ex-stage { margin-top: 28px; }
+
+/* Shared bits */
+.eyebrow { margin: 0 0 12px; font-size: 11px; letter-spacing: .09em; text-transform: uppercase; color: var(--dim); }
+.invite { margin: 0 0 16px; display: flex; align-items: baseline; gap: 9px; font-family: var(--system); font-size: 14.5px; color: var(--ink); }
+.invite__arrow { flex: none; color: var(--green); font-size: 10px; position: relative; top: -1px; }
+.who { margin: 16px 0 12px; font-family: var(--system); font-size: 13.5px; color: var(--dim); }
+
+/* S1, loose chips */
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  height: 28px; padding: 0 14px; border-radius: 14px;
+  border: .5px solid var(--term-panel-rule); background: transparent;
+  color: var(--mid); font: inherit; font-size: 12.5px; cursor: pointer;
+  transition: color 140ms ease, border-color 140ms ease, background 140ms ease;
+}
+.chip:hover { color: var(--ink); border-color: var(--mid); }
+.chip[aria-pressed='true'] { background: var(--term-panel); border-color: var(--mid); color: var(--ink); }
+.chip--wide { padding: 0 16px; margin-bottom: 4px; }
+
+/* S2, all three */
+.trio { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; margin-top: 4px; }
+.trio__name { margin: 0 0 4px; font-size: 12px; color: var(--ink); }
+.trio__who { margin: 0 0 14px; font-family: var(--system); font-size: 12.5px; color: var(--dim); min-height: 2.6em; }
+
+/* S3, a segmented control */
+.seg {
+  display: inline-flex; padding: 3px; gap: 2px;
+  border: .5px solid var(--term-panel-rule); border-radius: 16px; background: var(--term-panel);
+}
+.seg__btn {
+  height: 26px; padding: 0 13px; border-radius: 13px; border: 0; background: transparent;
+  color: var(--mid); font: inherit; font-size: 12.5px; cursor: pointer;
+  transition: color 140ms ease, background 140ms ease;
+}
+.seg__btn:hover { color: var(--ink); }
+.seg__btn[aria-pressed='true'] { background: var(--term-bg); color: var(--ink); }
+
+/* The tag from the earlier study */
+.tagwrap { position: relative; display: inline-block; }
+.livetag {
+  position: absolute; top: -11px; left: 14px; z-index: 3;
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 22px; padding: 0 10px; border-radius: 11px;
+  background: var(--term-bg); border: .5px solid var(--term-panel-rule);
+  font-size: 11px; color: var(--mid);
+}
+.livedot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: breathe 2s ease-in-out infinite; }
+@keyframes breathe { 0%, 100% { opacity: 1 } 50% { opacity: .35 } }
+@media (prefers-reduced-motion: reduce) { .livedot { animation: none } }
+
+/* T2, a switch */
+.switch { display: inline-flex; align-items: center; gap: 10px; cursor: pointer; margin-bottom: 18px; }
+.switch input { position: absolute; opacity: 0; width: 0; height: 0; }
+.switch__track {
+  width: 42px; height: 25px; border-radius: 13px; background: var(--term-panel);
+  border: .5px solid var(--term-panel-rule); position: relative; flex: none;
+  transition: background 200ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+.switch__knob {
+  position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; border-radius: 50%;
+  background: var(--mid);
+  transition: transform 200ms cubic-bezier(0.23, 1, 0.32, 1), background 200ms ease;
+}
+.switch input:checked + .switch__track { background: var(--green); border-color: transparent; }
+.switch input:checked + .switch__track .switch__knob { transform: translateX(17px); background: #fff; }
+.switch input:focus-visible + .switch__track { outline: 2px solid var(--ink); outline-offset: 2px; }
+.switch__label { font-family: var(--system); font-size: 14px; color: var(--ink); }
+.switch__label code { font-size: 12.5px; color: var(--mid); }
+@media (prefers-reduced-motion: reduce) { .switch__track, .switch__knob { transition: none } }
+
+.ex-collapsed { margin: 0; font-family: var(--system); font-size: 13px; color: var(--card-ink); }
+.ex-collapsed__warn { color: var(--card-alarm); }
+.ex-note-quiet { color: var(--card-detail) !important; font-weight: 500; }
+.ex-chev { width: 28px; height: 28px; padding: 0; border-radius: 14px; display: inline-flex; align-items: center; justify-content: center; border: 0; background: transparent; color: var(--card-detail); transition: background-color 150ms ease-out; }
+.ex-chev:hover { background: var(--card-fill-quiet); color: var(--card-ink); }
+.ex-chev svg { transition: transform 200ms cubic-bezier(0.23, 1, 0.32, 1); }
+.ex-chev[data-collapsed='true'] svg { transform: rotate(180deg); }
+.ex-said { margin: 14px 0 0; font-family: var(--system); font-size: 12.5px; color: var(--card-detail); }
+.ex-empty { margin: 10px 0 0; font-family: var(--system); font-size: 13px; color: var(--card-detail); }
+.ex-again { margin-top: 12px; font: inherit; font-size: 12px; padding: 5px 13px; border-radius: 999px; border: .5px solid var(--term-panel-rule); background: transparent; color: var(--mid); cursor: pointer; }
+.ex-foot { margin-top: 70px; padding-top: 20px; border-top: .5px solid var(--term-rule); }
+.ex-foot p { margin: 0; font-family: var(--system); font-size: 13.5px; color: var(--dim); }
+
+@media (max-width: 900px) { .trio { grid-template-columns: 1fr; } }
+
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+<header class="ex-head">
+  <p class="ex-kicker">process, not shipped</p>
+  <h1>Making the two example sections look interactive</h1>
+  <p class="ex-lede">
+    Both sections on the live page are live already, and neither says so. Every
+    gate below is real. Click things.
+  </p>
+</header>
+
+<!-- ============ S: the scenarios ============ -->
+<section class="ex">
+  <p class="ex-num">Scenarios, option S1</p>
+  <h2>Chips, with a label and an invitation</h2>
+  <p class="ex-note">
+    The smallest change. An eyebrow that names what this block is, and the same
+    arrow line the approval gate uses, so the page has one way of saying "do
+    something here".
+  </p>
+  <div class="ex-stage">
+    <p class="eyebrow">Examples</p>
+    <p class="invite"><span class="invite__arrow">&#9654;</span>Pick a situation, then answer the two requests in it.</p>
+    <div class="chips">
+      <button type="button" class="chip" data-pick="s1" data-set="refund" aria-pressed="true">Spends money</button>
+      <button type="button" class="chip" data-pick="s1" data-set="send">Sends messages</button>
+      <button type="button" class="chip" data-pick="s1" data-set="private">Reads private data</button>
+    </div>
+    <p class="who" data-who="s1">A support agent working a refund queue.</p>
+    <div data-gate="s1" data-set="refund"></div>
+  </div>
+</section>
+
+<section class="ex">
+  <p class="ex-num">Scenarios, option S2</p>
+  <h2>All three at once, named, no tabs</h2>
+  <p class="ex-note">
+    Nothing to discover and nothing to click before you understand the block.
+    Three products side by side, each labelled, all live. Costs vertical space and
+    gains the whole picture in one look.
+  </p>
+  <div class="ex-stage">
+    <p class="eyebrow">Examples</p>
+    <p class="invite"><span class="invite__arrow">&#9654;</span>All three are live. Answer any of them.</p>
+    <div class="trio">
+      <div class="trio__cell">
+        <p class="trio__name">Spends money</p>
+        <p class="trio__who">A support agent working a refund queue.</p>
+        <div data-gate="s2a" data-set="refund"></div>
+      </div>
+      <div class="trio__cell">
+        <p class="trio__name">Sends messages</p>
+        <p class="trio__who">A lifecycle agent preparing a launch.</p>
+        <div data-gate="s2b" data-set="send"></div>
+      </div>
+      <div class="trio__cell">
+        <p class="trio__name">Reads private data</p>
+        <p class="trio__who">An analytics agent answering a churn question.</p>
+        <div data-gate="s2c" data-set="private"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="ex">
+  <p class="ex-num">Scenarios, option S3</p>
+  <h2>Chips that look like a control, and a live tag on the card</h2>
+  <p class="ex-note">
+    Same tabs, but the group reads as a segmented control rather than three loose
+    pills, and the card carries the tag from the earlier study.
+  </p>
+  <div class="ex-stage">
+    <p class="eyebrow">Examples</p>
+    <div class="seg">
+      <button type="button" class="seg__btn" data-pick="s3" data-set="refund" aria-pressed="true">Spends money</button>
+      <button type="button" class="seg__btn" data-pick="s3" data-set="send">Sends messages</button>
+      <button type="button" class="seg__btn" data-pick="s3" data-set="private">Reads private data</button>
+    </div>
+    <p class="who" data-who="s3">A support agent working a refund queue.</p>
+    <div class="tagwrap">
+      <span class="livetag"><span class="livedot"></span>Try me</span>
+      <div data-gate="s3" data-set="refund"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ T: the AI SDK demo ============ -->
+<section class="ex">
+  <p class="ex-num">AI SDK demo, option T1</p>
+  <h2>Say what the button does before it is pressed</h2>
+  <p class="ex-note">
+    The control on the live page is a bare pill that reads as a label. Here it
+    keeps its shape but gains the arrow line above it, so the instruction and the
+    control are one thought.
+  </p>
+  <div class="ex-stage">
+    <p class="invite"><span class="invite__arrow">&#9654;</span>Press this and watch the two safe requests join up.</p>
+    <button type="button" class="chip chip--wide" data-declare="t1">Declare which tools are reversible</button>
+    <div data-gate="t1" data-set="sdk"></div>
+  </div>
+</section>
+
+<section class="ex">
+  <p class="ex-num">AI SDK demo, option T2</p>
+  <h2>A switch, because it is a setting rather than an action</h2>
+  <p class="ex-note">
+    Declaring reversibility is a state you turn on and off, not a thing you do
+    once. A switch says that, and it makes the before and after comparable
+    without reading the label twice.
+  </p>
+  <div class="ex-stage">
+    <label class="switch">
+      <input type="checkbox" data-declare="t2" />
+      <span class="switch__track"><span class="switch__knob"></span></span>
+      <span class="switch__label">Declare <code>searchWeb</code> and <code>readOrder</code> as reversible</span>
+    </label>
+    <div data-gate="t2" data-set="sdk"></div>
+  </div>
+</section>
+
+<footer class="ex-foot">
+  <p>S and T are independent. Pick one of each.</p>
+</footer>
+
+    </div>
+    <script>
+/* A working ApprovalGate in plain JS, built from the component's real markup
+   and driven by the component's real stylesheet, which is inlined above. This
+   file exists so the options can be clicked without a build step. It is an
+   exploration, not the component. */
+
+const SETS = {
+  standard: {
+    safe: [
+      ['draft', 'Drafts replies to 12 support tickets', 'saved as drafts, nothing sent'],
+      ['test', 'Runs the test suite', 'npm test'],
+      ['label', 'Tags 40 leads as cold in the CRM', 'last contacted over 90 days ago'],
+    ],
+    held: [
+      ['charge', 'Charges $200 to the card on file', 'annual plan, renews automatically'],
+      ['email', 'Sends the launch email to 412 customers', 'cannot be recalled once it is sent'],
+    ],
+  },
+  refund: {
+    safe: [['read', 'Reads the order and the refund policy', 'GET /orders/4473']],
+    held: [['refund', 'Refunds $240 to the customer', 'outside the 30 day window']],
+  },
+  send: {
+    safe: [['draft', 'Drafts the announcement', 'saved as a draft, nothing sent']],
+    held: [['send', 'Sends it to 412 customers', 'cannot be recalled once it is sent']],
+  },
+  private: {
+    safe: [['lookup', "Looks up one customer's plan", 'GET /customers/8812']],
+    held: [['export', 'Exports 2,400 customer records to CSV', 'includes email and billing address']],
+  },
+  // The adapter demo. Undeclared, all three are held one at a time. Declared,
+  // the two safe ones join up and the refund stays where it was.
+  sdk: {
+    safe: [],
+    held: [
+      ['searchWeb', 'Search web', 'query: refund policy 2026'],
+      ['readOrder', 'Read order', 'id: 4473'],
+      ['refundOrder', 'Refund order', 'id: 4473, amount: 240'],
+    ],
+  },
+  sdkDeclared: {
+    safe: [
+      ['searchWeb', 'Search web', 'query: refund policy 2026'],
+      ['readOrder', 'Read order', 'id: 4473'],
+    ],
+    held: [['refundOrder', 'Refund order', 'id: 4473, amount: 240']],
+  },
+}
+
+const el = (tag, cls, text) => {
+  const n = document.createElement(tag)
+  if (cls) n.className = cls
+  if (text != null) n.textContent = text
+  return n
+}
+
+function render(host, opts) {
+  const set = SETS[opts.set]
+  const state = opts.state
+  host.textContent = ''
+
+  const gate = el('section', 'agent-gate')
+  gate.setAttribute('aria-label', 'Waiting for you')
+
+  const head = el('header', 'agent-gate__head')
+  head.append(el('p', 'agent-gate__title', 'Waiting for you'))
+  if (opts.dismiss === 'collapse') {
+    // A chevron rather than a verb. Collapsing is not an answer either, but it
+    // leaves a line behind that keeps saying so, which "Not now" does not.
+    const chev = el('button', 'agent-gate__dismiss ex-chev')
+    chev.type = 'button'
+    chev.innerHTML = '<svg viewBox="0 0 14 14" width="14" height="14" aria-hidden="true">'
+      + '<path d="M3.5 8.75 L7 5.25 L10.5 8.75" fill="none" stroke="currentColor" '
+      + 'stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+    if (state.collapsed) chev.dataset.collapsed = 'true'
+    chev.setAttribute('aria-expanded', state.collapsed ? 'false' : 'true')
+    chev.setAttribute('aria-label', state.collapsed ? 'Show the requests' : 'Collapse')
+    chev.onclick = () => { state.collapsed = !state.collapsed; render(host, opts) }
+    head.append(chev)
+  } else {
+    const dismiss = el('button', 'agent-gate__dismiss', 'Not now')
+    dismiss.type = 'button'
+    dismiss.onclick = () => {
+      if (opts.frozen) return
+      // Dismissing is not an answer. Everything stays exactly where it was, and
+      // saying so out loud is the only way anyone notices.
+      state.said = 'Put away. Nothing was decided, everything is still waiting.'
+      render(host, opts)
+    }
+    head.append(dismiss)
+  }
+  gate.append(head)
+
+  const safe = set.safe.filter((r) => !state.gone.includes(r[0]))
+  const held = set.held.filter((r) => !state.gone.includes(r[0]))
+
+  if (state.collapsed && (safe.length || held.length)) {
+    const total = safe.length + held.length
+    const bar = el('p', 'ex-collapsed')
+    const ask = total + (total === 1 ? ' request needs' : ' requests need') + ' your approval.'
+    if (opts.collapsedCopy === 'ask') {
+      bar.textContent = ask
+    } else {
+      // The exception is never compressed, including into a summary line. How
+      // many is ordinary. How many are permanent is not.
+      bar.textContent = ask
+      if (held.length) {
+        const TAIL = {
+          undone: held.length + ' cannot be undone.',
+          action: held.length + ' need your action.',
+          permanent: held.length + ' of them are permanent.',
+        }
+        const warn = el('span', 'ex-collapsed__warn',
+          ' ' + TAIL[opts.collapsedTail || 'undone'])
+        bar.append(warn)
+      }
+    }
+    gate.append(bar)
+    host.append(gate)
+    return
+  }
+
+  if (safe.length) {
+    const group = el('div', 'agent-gate__group')
+    const list = el('ul', 'agent-gate__list')
+    safe.forEach(([id, consequence, detail]) => {
+      const li = el('li', 'agent-gate__item')
+      li.dataset.reversible = 'true'
+      li.append(el('span', 'agent-gate__consequence', consequence))
+      li.append(el('code', 'agent-gate__detail', detail))
+      list.append(li)
+    })
+    group.append(list)
+    const actions = el('div', 'agent-gate__actions')
+    const approve = el('button', 'agent-gate__approve',
+      safe.length === 1 ? 'Approve' : 'Approve all ' + safe.length)
+    approve.type = 'button'
+    approve.onclick = () => {
+      if (opts.frozen) return
+      state.gone.push(...safe.map((r) => r[0]))
+      state.said = null
+      render(host, opts)
+    }
+    const deny = el('button', 'agent-gate__deny', 'Deny')
+    deny.type = 'button'
+    deny.onclick = () => {
+      if (opts.frozen) return
+      state.gone.push(...safe.map((r) => r[0]))
+      render(host, opts)
+    }
+    actions.append(approve, deny)
+    group.append(actions)
+    gate.append(group)
+  }
+
+  if (held.length) {
+    const group = el('div', 'agent-gate__group agent-gate__group--destructive')
+    const style = opts.note || 'alarm'
+    const anyOpen = held.some((r) => state.open === r[0])
+    const loud = held.length === 1
+      ? 'This cannot be undone. Open it to answer.'
+      : 'These cannot be undone. Each one is answered on its own.'
+    const verb = opts.quietVerb || 'answer'
+    const LEAD = {
+      undone: 'Cannot be undone',
+      action: 'Need your action',
+      permanent: 'Permanent',
+      look: 'Need a closer look',
+    }
+    const quiet = (LEAD[opts.quietLead || 'undone']) + '. Review to ' + verb + '.'
+
+    if (style === 'alarm') {
+      const note = el('p', 'agent-gate__note', loud)
+      note.dataset.tone = 'alarm'
+      group.append(note)
+    } else if (style === 'quiet') {
+      // The absence of an approve button is invisible, so something has to say
+      // why these are separate. It does not have to shout while nothing is
+      // happening: the red arrives with the hold, at the moment of the decision.
+      const note = el('p', 'agent-gate__note ex-note-quiet', quiet)
+      group.append(note)
+    } else if (style === 'onopen' && anyOpen) {
+      const note = el('p', 'agent-gate__note', loud)
+      note.dataset.tone = 'alarm'
+      group.append(note)
+    }
+
+    const list = el('ul', 'agent-gate__list')
+    held.forEach(([id, consequence, detail]) => {
+      const li = el('li', 'agent-gate__item')
+      li.dataset.reversible = 'false'
+      const open = state.open === id
+
+      const reveal = el('button', 'agent-gate__reveal')
+      reveal.type = 'button'
+      reveal.setAttribute('aria-expanded', open ? 'true' : 'false')
+      reveal.append(el('span', 'agent-gate__consequence', consequence))
+      reveal.append(el('span', 'agent-gate__reveal-hint', open ? 'Close' : 'Review'))
+      reveal.onclick = () => {
+        if (opts.frozen) return
+        state.open = open ? null : id
+        render(host, opts)
+      }
+      li.append(reveal)
+
+      if (open) {
+        const revealed = el('div', 'agent-gate__revealed')
+        revealed.append(el('code', 'agent-gate__detail', detail))
+        const actions = el('div', 'agent-gate__actions')
+
+        const hold = el('button', 'agent-gate__hold')
+        hold.type = 'button'
+        const fill = el('span', 'agent-gate__hold-fill')
+        fill.setAttribute('aria-hidden', 'true')
+        hold.append(fill, el('span', 'agent-gate__hold-label', 'Hold to approve'))
+
+        if (opts.fill != null) {
+          // Frozen mid hold. The transition is switched off so the bar simply
+          // sits where it was put.
+          fill.style.transition = 'none'
+          fill.style.clipPath = 'inset(0 ' + Math.round((1 - opts.fill) * 100) + '% 0 0)'
+        } else if (!opts.frozen) {
+          let pressing = false
+          const release = () => { pressing = false; hold.removeAttribute('data-pressing') }
+          hold.onpointerdown = (e) => {
+            if (e.button !== 0) return
+            try { hold.setPointerCapture(e.pointerId) } catch (_) {}
+            pressing = true
+            hold.dataset.pressing = 'true'
+          }
+          hold.onpointerup = release
+          hold.onpointercancel = release
+          hold.oncontextmenu = (e) => e.preventDefault()
+          hold.onkeydown = (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault()
+              state.gone.push(id); state.open = null; render(host, opts)
+            }
+          }
+          fill.ontransitionend = (e) => {
+            if (e.propertyName === 'clip-path' && pressing) {
+              release()
+              state.gone.push(id); state.open = null; render(host, opts)
+            }
+          }
+        }
+
+        const deny = el('button', 'agent-gate__deny', 'Deny')
+        deny.type = 'button'
+        deny.onclick = () => {
+          if (opts.frozen) return
+          state.gone.push(id); state.open = null; render(host, opts)
+        }
+        actions.append(hold, deny)
+        revealed.append(actions)
+        li.append(revealed)
+      }
+      list.append(li)
+    })
+    group.append(list)
+    gate.append(group)
+  }
+
+  if (!safe.length && !held.length) {
+    const done = el('p', 'ex-empty', 'Nothing left waiting.')
+    gate.append(done)
+    if (!opts.frozen) {
+      const again = el('button', 'ex-again', 'Reset')
+      again.type = 'button'
+      again.onclick = () => { state.gone = []; state.open = null; render(host, opts) }
+      gate.append(again)
+    }
+  }
+
+  if (state.said) {
+    const said = el('p', 'ex-said', state.said)
+    gate.append(said)
+  }
+
+  host.append(gate)
+}
+
+const SETFOR = {}
+
+const WHO = {
+  refund: 'A support agent working a refund queue.',
+  send: 'A lifecycle agent preparing a launch.',
+  private: 'An analytics agent answering a churn question.',
+}
+
+const mounted = new Map()
+
+function mount(host) {
+  const key = host.dataset.gate
+  const opts = {
+    set: host.dataset.set || 'standard',
+    frozen: false,
+    note: 'quiet',
+    dismiss: 'collapse',
+    collapsedCopy: 'both',
+    collapsedTail: 'undone',
+    quietVerb: 'answer',
+    quietLead: 'undone',
+    fill: null,
+    state: { gone: [], open: null, said: null, collapsed: false },
+  }
+  mounted.set(key, { host, opts })
+  render(host, opts)
+}
+
+// Chip and segmented pickers swap the scenario in place.
+document.querySelectorAll('[data-pick]').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    const group = btn.dataset.pick
+    document.querySelectorAll(`[data-pick="${group}"]`).forEach((b) => {
+      b.setAttribute('aria-pressed', b === btn ? 'true' : 'false')
+    })
+    const who = document.querySelector(`[data-who="${group}"]`)
+    if (who) who.textContent = WHO[btn.dataset.set]
+    const entry = mounted.get(group)
+    if (!entry) return
+    entry.opts.set = btn.dataset.set
+    entry.opts.state = { gone: [], open: null, said: null, collapsed: false }
+    render(entry.host, entry.opts)
+  })
+})
+
+// The declare control, as a button and as a switch.
+document.querySelectorAll('[data-declare]').forEach((el) => {
+  const key = el.dataset.declare
+  const apply = (on) => {
+    const entry = mounted.get(key)
+    if (!entry) return
+    entry.opts.set = on ? 'sdkDeclared' : 'sdk'
+    entry.opts.state = { gone: [], open: null, said: null, collapsed: false }
+    render(entry.host, entry.opts)
+  }
+  if (el.tagName === 'INPUT') {
+    el.addEventListener('change', () => apply(el.checked))
+  } else {
+    let on = false
+    el.addEventListener('click', () => {
+      on = !on
+      el.setAttribute('aria-pressed', on ? 'true' : 'false')
+      el.textContent = on ? 'Take the declaration away' : 'Declare which tools are reversible'
+      apply(on)
+    })
+  }
+})
+
+document.querySelectorAll('[data-gate]').forEach(mount)
+
+function unusedOldMount() {
+document.querySelectorAll('[data-gate-old]').forEach((host) => {
+  const key = host.dataset.gate
+  const frozen = host.dataset.frozen === '1'
+  const opts = {
+    set: host.dataset.set || SETFOR[key] || 'standard',
+    note: host.dataset.note || 'alarm',
+    dismiss: host.dataset.dismiss || 'notnow',
+    collapsedCopy: host.dataset.copy || 'both',
+    collapsedTail: host.dataset.tail || 'undone',
+    quietVerb: host.dataset.verb || 'answer',
+    quietLead: host.dataset.lead || 'undone',
+    frozen,
+    fill: host.dataset.fill ? parseFloat(host.dataset.fill) : null,
+    state: {
+      gone: host.dataset.answered === '1' ? ['charge'] : [],
+      open: host.dataset.open || null,
+      said: null,
+      collapsed: host.dataset.collapsed === '1',
+    },
+  }
+  render(host, opts)
+})
+
+}
+
+    </script>
+  </body>
+</html>

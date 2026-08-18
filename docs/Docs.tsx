@@ -194,7 +194,11 @@ export function Docs() {
           <h2>When you need this</h2>
           <p>
             Vercel&apos;s AI SDK says a tool needs approval when it can{' '}
-            <a href="https://ai-sdk.dev/docs/agents/tool-approvals">
+            <a
+              href="https://ai-sdk.dev/docs/agents/tool-approvals"
+              target="_blank"
+              rel="noopener"
+            >
               modify data, spend money, execute code, send messages or access
               private data
             </a>
@@ -246,10 +250,15 @@ import 'agent-indicator/styles.css'
             your app a tool part in the <code>approval-requested</code> state, and
             gives you <code>addToolApprovalResponse</code> to send the answer back.
             The approve and deny interface is yours to build, as{' '}
-            <a href="https://ai-sdk.dev/cookbook/next/human-in-the-loop">
+            <a
+              href="https://ai-sdk.dev/cookbook/next/human-in-the-loop"
+              target="_blank"
+              rel="noopener"
+            >
               Vercel&apos;s own cookbook shows
             </a>
-            . This is one you can install instead.
+            . This is that interface, built. Install it as it is, or take
+            it as a starting point and restyle it.
           </p>
 
           <pre className="block">
