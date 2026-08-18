@@ -46,7 +46,9 @@
   --card-fill-hover: rgba(255, 255, 255, 0.22);
   --card-shadow: 0 24px 48px rgba(0, 0, 0, 0.55), inset 0 0.5px 0 rgba(255, 255, 255, 0.18);
   --card-caution: rgba(235, 235, 245, 0.45);
-  --card-alarm: #ff9f0a;
+  /* Same red as the hold control. They are making the same claim, so a second
+     colour here read as a second severity that does not exist. */
+  --card-alarm: #ff453a;
 }
 
 /* Light appearance. The Session Indicator prototype has both, and the page it
@@ -79,7 +81,7 @@
     --card-fill-hover: rgba(0, 0, 0, 0.14);
     --card-shadow: 0 18px 40px rgba(0, 0, 0, 0.14), inset 0 0.5px 0 rgba(255, 255, 255, 0.9);
     --card-caution: rgba(60, 60, 67, 0.5);
-    --card-alarm: #b25000;
+    --card-alarm: #d70015;
   }
 }
 

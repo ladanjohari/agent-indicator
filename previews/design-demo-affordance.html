@@ -66,7 +66,9 @@
   --card-fill-hover: rgba(255, 255, 255, 0.22);
   --card-shadow: 0 24px 48px rgba(0, 0, 0, 0.55), inset 0 0.5px 0 rgba(255, 255, 255, 0.18);
   --card-caution: rgba(235, 235, 245, 0.45);
-  --card-alarm: #ff9f0a;
+  /* Same red as the hold control. They are making the same claim, so a second
+     colour here read as a second severity that does not exist. */
+  --card-alarm: #ff453a;
 }
 
 /* Light appearance. The Session Indicator prototype has both, and the page it
@@ -99,7 +101,7 @@
     --card-fill-hover: rgba(0, 0, 0, 0.14);
     --card-shadow: 0 18px 40px rgba(0, 0, 0, 0.14), inset 0 0.5px 0 rgba(255, 255, 255, 0.9);
     --card-caution: rgba(60, 60, 67, 0.5);
-    --card-alarm: #b25000;
+    --card-alarm: #d70015;
   }
 }
 
@@ -565,10 +567,17 @@ body { margin: 0; background: var(--term-bg); color: var(--ink); font-family: va
   background: var(--term-chrome); overflow: hidden;
 }
 /* One request per frame, so nothing needs scaling and the part that differs
-   between the four is never the part that gets cut off. */
-.strip__stage { display: flex; align-items: flex-start; flex: 1; }
-.strip__stage .agent-gate { width: 100%; max-width: none; }
-.strip__frame figcaption { margin-top: 12px; font-family: var(--system); font-size: 12.5px; line-height: 1.5; color: var(--mid); }
+   between the four is never the part that gets cut off.
+
+   The card is pinned to one height across all four frames. In a real app it
+   grows when you open a request; here the four are being compared, and a card
+   that changes size between frames reads as four different components. */
+.strip__stage { display: block; flex: 1; }
+.strip__stage .agent-gate {
+  width: 100%; max-width: none; min-height: 288px;
+  display: flex; flex-direction: column;
+}
+.strip__frame figcaption { margin-top: 12px; min-height: 3.1em; font-family: var(--system); font-size: 12.5px; line-height: 1.5; color: var(--mid); }
 .strip__frame figcaption b { color: var(--ink); font-weight: 600; }
 
 /* C, in context */
@@ -586,6 +595,10 @@ body { margin: 0; background: var(--term-bg); color: var(--ink); font-family: va
 .ctx__main { padding: 20px 22px 24px; flex: 1; }
 .ctx__msg { margin: 0 0 18px; font-family: var(--system); font-size: 14px; line-height: 1.55; color: var(--mid); max-width: 54ch; }
 
+.ex-said { margin: 14px 0 0; font-family: var(--system); font-size: 12.5px; color: var(--card-detail); }
+.ex-foot-note { margin-top: 12px !important; max-width: 74ch; line-height: 1.6; }
+.ex-foot-note b { color: var(--ink); }
+.ex-foot-note code { font-size: 12px; color: var(--mid); }
 .ex-empty { margin: 10px 0 0; font-family: var(--system); font-size: 13px; color: var(--card-detail); }
 .ex-again {
   margin-top: 12px; font: inherit; font-size: 12px; padding: 5px 13px;
@@ -671,24 +684,27 @@ body { margin: 0; background: var(--term-bg); color: var(--ink); font-family: va
   <div class="strip">
     <figure class="strip__frame">
       <div class="strip__stage"><div data-gate="b1" data-set="single" data-frozen="1"></div></div>
-      <figcaption><b>1. Waiting.</b> No approve button exists in the page at all. Only a way to open it.</figcaption>
+      <figcaption><b>1. Waiting.</b> There is no approve control in the page yet. Only a way to open it and read it.</figcaption>
     </figure>
     <figure class="strip__frame">
       <div class="strip__stage"><div data-gate="b2" data-set="single" data-frozen="1" data-open="charge"></div></div>
-      <figcaption><b>2. Opened.</b> The approve control only exists once you have opened it and read what it does.</figcaption>
+      <figcaption><b>2. Opened.</b> The approve control appears only now, once the consequence has been read.</figcaption>
     </figure>
     <figure class="strip__frame">
       <div class="strip__stage"><div data-gate="b3" data-set="single" data-frozen="1" data-open="charge" data-fill="0.55"></div></div>
-      <figcaption><b>3. Holding.</b> 1.2 seconds. Let go early and it snaps back and nothing happens.</figcaption>
+      <figcaption><b>3. Holding.</b> One and a bit seconds. Let go early and it snaps back and nothing happens.</figcaption>
     </figure>
     <figure class="strip__frame">
       <div class="strip__stage"><div data-gate="b4" data-set="single" data-frozen="1" data-answered="1"></div></div>
-      <figcaption><b>4. Answered.</b> Gone, because your app took it away. The gate never reports an outcome it does not own.</figcaption>
+      <figcaption><b>4. Answered.</b> Gone, because your app removed it. The gate never claims an outcome it did not see.</figcaption>
     </figure>
   </div>
 
-  <p class="ex-cap ex-cap--sep">And the live one underneath</p>
-  <div class="ex-stage"><div data-gate="b5"></div></div>
+  <p class="ex-cap ex-cap--sep">And the live one underneath, carrying the A2 instruction</p>
+  <div class="ex-stage">
+    <p class="invite"><span class="invite__arrow">&#9654;</span>Clear all three in one press, then try the two below it.</p>
+    <div data-gate="b5"></div>
+  </div>
 </section>
 
 <!-- ============ OPTION C ============ -->
@@ -734,6 +750,7 @@ body { margin: 0; background: var(--term-bg); color: var(--ink); font-family: va
 
 <footer class="ex-foot">
   <p>Mix and match. A1 or A3 can sit on top of B or C. B and C are the ones that actually compete.</p>
+  <p class="ex-foot-note"><b>Not now</b> is the dismiss control. It is optional: pass <code>onDismiss</code> and it appears, leave it out and there is no header control at all. Pressing it here logs what it did, which is nothing. That is the point of it.</p>
 </footer>
 
     </div>
@@ -790,6 +807,13 @@ function render(host, opts) {
   head.append(el('p', 'agent-gate__title', 'Waiting for you'))
   const dismiss = el('button', 'agent-gate__dismiss', 'Not now')
   dismiss.type = 'button'
+  dismiss.onclick = () => {
+    if (opts.frozen) return
+    // Dismissing is not an answer. Everything stays exactly where it was, and
+    // saying so out loud is the only way anyone notices.
+    state.said = 'Put away. Nothing was decided, everything is still waiting.'
+    render(host, opts)
+  }
   head.append(dismiss)
   gate.append(head)
 
@@ -814,6 +838,7 @@ function render(host, opts) {
     approve.onclick = () => {
       if (opts.frozen) return
       state.gone.push(...safe.map((r) => r[0]))
+      state.said = null
       render(host, opts)
     }
     const deny = el('button', 'agent-gate__deny', 'Deny')
@@ -924,6 +949,11 @@ function render(host, opts) {
     }
   }
 
+  if (state.said) {
+    const said = el('p', 'ex-said', state.said)
+    gate.append(said)
+  }
+
   host.append(gate)
 }
 
@@ -939,6 +969,7 @@ document.querySelectorAll('[data-gate]').forEach((host) => {
     state: {
       gone: host.dataset.answered === '1' ? ['charge'] : [],
       open: host.dataset.open || null,
+      said: null,
     },
   }
   render(host, opts)
