@@ -170,32 +170,19 @@ export function Docs() {
           <dl className="contents">
             <div className="contents__row">
               <dt>ApprovalGate</dt>
-              <dd>
-                Asks for a decision. Routine requests clear in one press, the
-                permanent ones are answered one at a time.
-              </dd>
+              <dd>Asks for a decision without asking five times.</dd>
             </div>
             <div className="contents__row">
               <dt>StatusIndicator</dt>
-              <dd>
-                What one agent is doing right now, in six states. Only the
-                exceptions get colour.
-              </dd>
+              <dd>Shows what one agent is doing right now.</dd>
             </div>
             <div className="contents__row">
               <dt>SessionStrip</dt>
-              <dd>
-                Many agents at once. The ones that need a person sit at the top
-                and are never folded away, and the calm ones collapse into a line
-                of counts.
-              </dd>
+              <dd>Shows many at once, with the stuck ones on top.</dd>
             </div>
             <div className="contents__row">
               <dt>ActivityTrail</dt>
-              <dd>
-                What an agent did, for review. Repeated steps fold into one row,
-                questions and failures never do.
-              </dd>
+              <dd>Shows what it did, for review.</dd>
             </div>
           </dl>
         </section>

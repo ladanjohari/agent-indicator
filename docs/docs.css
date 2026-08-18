@@ -258,7 +258,7 @@ code {
 .contents {
   margin: 22px 0 0;
   display: grid;
-  gap: 14px;
+  gap: 10px;
 }
 
 .contents__row {
