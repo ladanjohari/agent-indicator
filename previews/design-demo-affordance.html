@@ -6,18 +6,12 @@
     <title>agent-indicator, demo affordance options</title>
     <!--
       EXPLORATION. Not shipped, not linked from the site.
-
       Open it by double clicking the file. Everything is inlined, so there is no
       server and no build step, and the styles work on load.
-
-      The two stylesheets below are pasted verbatim from the real source:
-        src/components/ApprovalGate/ApprovalGate.css   the component
-        docs/docs.css                                  the page tokens and dressing
-      If either changes, regenerate rather than hand editing, or this drifts the
-      way previews/hold-to-approve.html did.
+      The stylesheets below are pasted verbatim from source. Regenerate rather
+      than hand edit, or this drifts the way previews/hold-to-approve.html did.
     -->
     <style>
-/* ===== docs.css, tokens and appearances ===== */
 /* The docs site.
  *
  * Two systems on one page, on purpose.
@@ -107,8 +101,6 @@
 
 
 * { box-sizing: border-box; }
-
-/* ===== ApprovalGate.css, the component ===== */
 /* ApprovalGate
  *
  * Colours are tokens you can retint. What you cannot change is that
@@ -379,8 +371,6 @@
   }
 }
 
-
-/* ===== docs.css, the macOS dressing the page puts on it ===== */
 /* =====================================================================
    COMPONENT DRESSING, DOCS ONLY
 
@@ -514,8 +504,6 @@
   font-family: var(--mono);
 }
 
-
-/* ===== this exploration only ===== */
 /* Chrome for the exploration itself. Nothing here goes near the component. */
 body { margin: 0; background: var(--term-bg); color: var(--ink); font-family: var(--mono); }
 .wrap { max-width: 1180px; margin: 0 auto; padding: 48px 28px 100px; }
@@ -618,11 +606,25 @@ body { margin: 0; background: var(--term-bg); color: var(--ink); font-family: va
 
 /* D and E */
 .ex-note-quiet { color: var(--card-detail) !important; font-weight: 500; }
-.ex-chev { font-size: 11px; line-height: 1; padding: 2px 6px; }
-.ex-collapsed {
-  margin: 0; font-family: var(--system); font-size: 12.5px; color: var(--card-detail);
+/* Disclosure button, HIG shaped. 28px capsule so the hit target matches every
+   other control in the card, a stroked chevron rather than a glyph so it is
+   crisp at any size, and 200ms to turn because a rotation is the system
+   responding rather than the person deciding. */
+.ex-chev {
+  width: 28px; height: 28px; padding: 0; border-radius: 14px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 0; background: transparent; color: var(--card-detail);
+  transition: background-color 150ms ease-out, color 150ms ease-out;
 }
-.ex-collapsed[data-tone='alarm'] { color: var(--card-alarm); }
+.ex-chev:hover { background: var(--card-fill-quiet); color: var(--card-ink); }
+.ex-chev svg { transition: transform 200ms cubic-bezier(0.23, 1, 0.32, 1); }
+.ex-chev[data-collapsed='true'] svg { transform: rotate(180deg); }
+@media (prefers-reduced-motion: reduce) { .ex-chev svg { transition: none; } }
+
+.ex-collapsed {
+  margin: 0; font-family: var(--system); font-size: 13px; color: var(--card-ink);
+}
+.ex-collapsed__warn { color: var(--card-alarm); }
 
     </style>
   </head>
@@ -797,18 +799,27 @@ body { margin: 0; background: var(--term-bg); color: var(--ink); font-family: va
   <h2>Not now, or a chevron</h2>
   <p class="ex-note">
     Press the control in each header. E1 puts the gate away and tells you it
-    decided nothing. E2 collapses to a line that keeps saying so, and can be
-    opened again.
+    decided nothing. E2 and E3 collapse to a line that keeps saying so, and open
+    again. They start collapsed so you can see the line first. The only
+    difference between them is whether the collapsed line still says how many
+    cannot be undone.
   </p>
 
   <div class="ex-row">
     <div class="ex-cell">
       <p class="ex-cap">E1. Not now</p>
-      <div class="ex-stage"><div data-gate="e1"></div></div>
+      <div class="ex-stage"><div data-gate="e1" data-note="quiet"></div></div>
     </div>
     <div class="ex-cell">
-      <p class="ex-cap">E2. A chevron that collapses to a waiting line</p>
-      <div class="ex-stage"><div data-gate="e2" data-dismiss="collapse"></div></div>
+      <p class="ex-cap">E2. A chevron, collapsed line naming both facts</p>
+      <div class="ex-stage"><div data-gate="e2" data-note="quiet" data-dismiss="collapse" data-collapsed="1"></div></div>
+    </div>
+  </div>
+
+  <div class="ex-row ex-row--one">
+    <div class="ex-cell">
+      <p class="ex-cap">E3. Same chevron, collapsed line names the ask only</p>
+      <div class="ex-stage"><div data-gate="e3" data-note="quiet" data-dismiss="collapse" data-copy="ask" data-collapsed="1"></div></div>
     </div>
   </div>
 </section>
@@ -873,8 +884,12 @@ function render(host, opts) {
   if (opts.dismiss === 'collapse') {
     // A chevron rather than a verb. Collapsing is not an answer either, but it
     // leaves a line behind that keeps saying so, which "Not now" does not.
-    const chev = el('button', 'agent-gate__dismiss ex-chev', state.collapsed ? '\u25BE' : '\u25B4')
+    const chev = el('button', 'agent-gate__dismiss ex-chev')
     chev.type = 'button'
+    chev.innerHTML = '<svg viewBox="0 0 14 14" width="14" height="14" aria-hidden="true">'
+      + '<path d="M3.5 8.75 L7 5.25 L10.5 8.75" fill="none" stroke="currentColor" '
+      + 'stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+    if (state.collapsed) chev.dataset.collapsed = 'true'
     chev.setAttribute('aria-expanded', state.collapsed ? 'false' : 'true')
     chev.setAttribute('aria-label', state.collapsed ? 'Show the requests' : 'Collapse')
     chev.onclick = () => { state.collapsed = !state.collapsed; render(host, opts) }
@@ -897,12 +912,21 @@ function render(host, opts) {
   const held = set.held.filter((r) => !state.gone.includes(r[0]))
 
   if (state.collapsed && (safe.length || held.length)) {
+    const total = safe.length + held.length
     const bar = el('p', 'ex-collapsed')
-    const bits = []
-    if (safe.length) bits.push(safe.length + (safe.length === 1 ? ' request' : ' requests'))
-    if (held.length) bits.push(held.length + ' that cannot be undone')
-    bar.textContent = 'Still waiting: ' + bits.join(', ') + '.'
-    if (held.length) bar.dataset.tone = 'alarm'
+    const ask = total + (total === 1 ? ' request needs' : ' requests need') + ' your approval.'
+    if (opts.collapsedCopy === 'ask') {
+      bar.textContent = ask
+    } else {
+      // The exception is never compressed, including into a summary line. How
+      // many is ordinary. How many are permanent is not.
+      bar.textContent = ask
+      if (held.length) {
+        const warn = el('span', 'ex-collapsed__warn',
+          ' ' + held.length + (held.length === 1 ? ' cannot' : ' cannot') + ' be undone.')
+        bar.append(warn)
+      }
+    }
     gate.append(bar)
     host.append(gate)
     return
@@ -949,8 +973,8 @@ function render(host, opts) {
       ? 'This cannot be undone. Open it to answer.'
       : 'These cannot be undone. Each one is answered on its own.'
     const quiet = held.length === 1
-      ? 'Cannot be undone'
-      : 'Cannot be undone. Answered one at a time.'
+      ? 'Cannot be undone. Open it to answer.'
+      : 'Cannot be undone. Open each to answer.'
 
     if (style === 'alarm') {
       const note = el('p', 'agent-gate__note', loud)
@@ -1072,6 +1096,7 @@ document.querySelectorAll('[data-gate]').forEach((host) => {
     set: host.dataset.set || SETFOR[key] || 'standard',
     note: host.dataset.note || 'alarm',
     dismiss: host.dataset.dismiss || 'notnow',
+    collapsedCopy: host.dataset.copy || 'both',
     frozen,
     fill: host.dataset.fill ? parseFloat(host.dataset.fill) : null,
     state: {
