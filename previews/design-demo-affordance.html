@@ -1,0 +1,949 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>agent-indicator, demo affordance options</title>
+    <!--
+      EXPLORATION. Not shipped, not linked from the site.
+
+      Open it by double clicking the file. Everything is inlined, so there is no
+      server and no build step, and the styles work on load.
+
+      The two stylesheets below are pasted verbatim from the real source:
+        src/components/ApprovalGate/ApprovalGate.css   the component
+        docs/docs.css                                  the page tokens and dressing
+      If either changes, regenerate rather than hand editing, or this drifts the
+      way previews/hold-to-approve.html did.
+    -->
+    <style>
+/* ===== docs.css, tokens and appearances ===== */
+/* The docs site.
+ *
+ * Two systems on one page, on purpose.
+ *
+ * The PAGE is a terminal window, in the Session Indicator palette, monospace.
+ * That is where agents actually run, and it is the environment the components
+ * exist to improve.
+ *
+ * The COMPONENTS are not terminal. They are macOS surfaces: system font,
+ * vibrancy material, exact capsules, concentric radii. They are the designed
+ * thing the terminal cannot give you, and the contrast is the argument.
+ *
+ * Everything under "component dressing" is docs-only. The published package
+ * ships neutral and inherits from whatever it is dropped into. This section is
+ * a demonstration that it restyles, not a default it forces on anyone.
+ */
+
+:root {
+  /* Session Indicator, dark. Lifted from the prototype. */
+  --term-bg: #0e0e12;
+  --term-chrome: #17171c;
+  --term-rule: #26262c;
+  --term-panel: #1d1d23;
+  --term-panel-rule: #32323a;
+
+  --ink: rgba(255, 255, 255, 0.86);
+  --mid: #8a8a93;
+  --dim: #55555e;
+
+  --blue: #0a84ff;
+  --amber: #e8952a;
+  --red: #ff453a;
+  --green: #34c759;
+
+  --mono: 'SF Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
+  --system: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', system-ui, sans-serif;
+
+  /* The macOS card, dark. Overridden wholesale in light. */
+  --card-bg: rgba(38, 38, 44, 0.82);
+  --card-rule: rgba(255, 255, 255, 0.14);
+  --card-ink: #f2f2f7;
+  --card-detail: #98989f;
+  --card-inset: rgba(255, 255, 255, 0.06);
+  --card-fill: rgba(255, 255, 255, 0.16);
+  --card-fill-quiet: rgba(255, 255, 255, 0.12);
+  --card-fill-hover: rgba(255, 255, 255, 0.22);
+  --card-shadow: 0 24px 48px rgba(0, 0, 0, 0.55), inset 0 0.5px 0 rgba(255, 255, 255, 0.18);
+  --card-caution: rgba(235, 235, 245, 0.45);
+  --card-alarm: #ff9f0a;
+}
+
+/* Light appearance. The Session Indicator prototype has both, and the page it
+   sits on is a terminal in either one. Same structure, same hierarchy, only the
+   values move. */
+@media (prefers-color-scheme: light) {
+  :root {
+    --term-bg: #f7f7f5;
+    --term-chrome: #efefec;
+    --term-rule: rgba(0, 0, 0, 0.10);
+    --term-panel: rgba(0, 0, 0, 0.035);
+    --term-panel-rule: rgba(0, 0, 0, 0.11);
+
+    --ink: rgba(0, 0, 0, 0.86);
+    --mid: #5f5f68;
+    --dim: #96969e;
+
+    --blue: #0066cc;
+    --amber: #a5610a;
+    --red: #d70015;
+    --green: #1a8c3a;
+
+    --card-bg: rgba(252, 252, 253, 0.86);
+    --card-rule: rgba(0, 0, 0, 0.12);
+    --card-ink: #1c1c1e;
+    --card-detail: #6c6c72;
+    --card-inset: rgba(0, 0, 0, 0.045);
+    --card-fill: rgba(0, 0, 0, 0.09);
+    --card-fill-quiet: rgba(0, 0, 0, 0.06);
+    --card-fill-hover: rgba(0, 0, 0, 0.14);
+    --card-shadow: 0 18px 40px rgba(0, 0, 0, 0.14), inset 0 0.5px 0 rgba(255, 255, 255, 0.9);
+    --card-caution: rgba(60, 60, 67, 0.5);
+    --card-alarm: #b25000;
+  }
+}
+
+
+* { box-sizing: border-box; }
+
+/* ===== ApprovalGate.css, the component ===== */
+/* ApprovalGate
+ *
+ * Colours are tokens you can retint. What you cannot change is that
+ * irreversible requests never batch and have no approve control until opened.
+ *
+ * Neutrals are mixed from currentColor, so the gate is correct in light and
+ * dark without being configured.
+ */
+
+.agent-gate {
+  --agent-gate-rule: color-mix(in srgb, currentColor 12%, transparent);
+  --agent-gate-quiet: color-mix(in srgb, currentColor 60%, transparent);
+  --agent-gate-fill: color-mix(in srgb, currentColor 6%, transparent);
+  --agent-gate-danger: #ff3b30;
+
+  display: block;
+  max-width: 480px;
+  border: 1px solid var(--agent-gate-rule);
+  border-radius: 14px;
+  padding: 16px;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.agent-gate__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.agent-gate__title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: inherit;
+}
+
+.agent-gate__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.agent-gate__item {
+  display: grid;
+  gap: 4px;
+}
+
+.agent-gate__consequence {
+  display: block;
+}
+
+.agent-gate__detail {
+  display: block;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  color: var(--agent-gate-quiet);
+  overflow-wrap: anywhere;
+}
+
+.agent-gate__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+/* Buttons. Capsules, 1px rules, no shadows and no gradients. */
+.agent-gate__approve,
+.agent-gate__approve-one,
+.agent-gate__deny,
+.agent-gate__dismiss {
+  font: inherit;
+  border-radius: 999px;
+  border: 1px solid var(--agent-gate-rule);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  transition: background-color 0.15s ease-out;
+}
+
+.agent-gate__approve,
+.agent-gate__approve-one,
+.agent-gate__deny {
+  padding: 7px 15px;
+  font-size: 13px;
+}
+
+.agent-gate__approve {
+  background: var(--agent-gate-fill);
+  font-weight: 500;
+}
+
+/* The single destructive approval is deliberately not a primary button. It
+   should not look like the thing you were already pressing. */
+.agent-gate__approve-one {
+  border-color: color-mix(in srgb, var(--agent-gate-danger) 55%, transparent);
+  color: var(--agent-gate-danger);
+}
+
+.agent-gate__dismiss {
+  border: 0;
+  padding: 0;
+  font-size: 13px;
+  color: var(--agent-gate-quiet);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.agent-gate__approve:hover,
+.agent-gate__deny:hover {
+  background: color-mix(in srgb, currentColor 9%, transparent);
+}
+
+.agent-gate__approve-one:hover {
+  background: color-mix(in srgb, var(--agent-gate-danger) 10%, transparent);
+}
+
+.agent-gate__approve:focus-visible,
+.agent-gate__approve-one:focus-visible,
+.agent-gate__deny:focus-visible,
+.agent-gate__dismiss:focus-visible,
+.agent-gate__hold:focus-visible,
+.agent-gate__reveal:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* Hold to approve.
+ *
+ * The fill is a clipped overlay rather than a width or a JavaScript timer, so
+ * it runs on the GPU, cannot drift, and retargets cleanly when interrupted.
+ */
+.agent-gate__hold {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  font: inherit;
+  font-size: 13px;
+  padding: 7px 15px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--agent-gate-danger) 55%, transparent);
+  background: transparent;
+  color: var(--agent-gate-danger);
+  cursor: pointer;
+  transition: transform 160ms ease-out;
+  /* A hold must not start a scroll, a text selection, or a callout. */
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* The press is acknowledged instantly, so the control feels heard before the
+   fill has gone anywhere. */
+.agent-gate__hold:active {
+  transform: scale(0.97);
+}
+
+.agent-gate__hold-fill {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: color-mix(in srgb, var(--agent-gate-danger) 18%, transparent);
+  clip-path: inset(0 100% 0 0);
+  /* Letting go is the system responding, so it is fast and eases out. */
+  transition: clip-path 200ms ease-out;
+}
+
+.agent-gate__hold[data-pressing='true'] .agent-gate__hold-fill {
+  clip-path: inset(0 0 0 0);
+  /* Holding is the person deciding, so it is slow. Linear because it maps to
+     real elapsed time, and easing would misrepresent how much is left.
+
+     1200ms, settled 16 August 2026 after holding both. A reflex press is around
+     150ms, so by a second the gesture already cannot happen by accident. The
+     second second bought no further safety and only spent patience, on a control
+     some people will meet several times a day. */
+  transition: clip-path 1200ms linear;
+}
+
+.agent-gate__hold-label {
+  position: relative;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .agent-gate__hold:hover {
+    background: color-mix(in srgb, var(--agent-gate-danger) 8%, transparent);
+  }
+}
+
+/* The irreversible group.
+ *
+ * The rule exists to separate this group from the batched one above it, so it
+ * is drawn only when there is actually a group above it. With nothing batched,
+ * which is the ordinary case inline in a conversation, the line would be a lid
+ * on an empty box.
+ *
+ * This was `:first-child` until 16 August 2026, which only covered the case
+ * where the gate had no header either. With a header and nothing batched, the
+ * group was no longer first, so the orphan rule came back and sat under the
+ * title separating it from nothing. The adjacent sibling selector says what was
+ * actually meant: separate these two groups, and only these two. */
+.agent-gate__group + .agent-gate__group--destructive {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--agent-gate-rule);
+}
+
+.agent-gate__note {
+  margin: 0 0 12px;
+  font-size: 12px;
+  color: var(--agent-gate-danger);
+}
+
+/* When nobody has declared whether these can be undone, the sentence is a
+   caution rather than a fact, so it is not painted in alarm red. The barrier
+   does not move: the hold stays exactly as it is. Only the claim gets quieter,
+   because alarm colour spent on things that turn out to be harmless is how a
+   reader learns to stop seeing alarm colour. */
+.agent-gate__note[data-tone='caution'] {
+  color: var(--agent-gate-quiet);
+}
+
+.agent-gate__item[data-reversible='unknown'] .agent-gate__revealed {
+  border-left-color: var(--agent-gate-rule);
+}
+
+.agent-gate__reveal {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  font: inherit;
+  text-align: left;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.agent-gate__reveal-hint {
+  flex: none;
+  font-size: 12px;
+  color: var(--agent-gate-quiet);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.agent-gate__revealed {
+  margin-top: 8px;
+  padding-left: 12px;
+  border-left: 2px solid color-mix(in srgb, var(--agent-gate-danger) 40%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .agent-gate__approve,
+  .agent-gate__approve-one,
+  .agent-gate__deny,
+  .agent-gate__dismiss {
+    transition: none;
+  }
+}
+
+
+/* ===== docs.css, the macOS dressing the page puts on it ===== */
+/* =====================================================================
+   COMPONENT DRESSING, DOCS ONLY
+
+   The package ships neutral. Everything below restyles it into a macOS
+   surface, using only the class names and data attributes the component
+   already exposes. Nothing here is required to use it, and every rule is
+   something a team could copy into their own stylesheet.
+   ===================================================================== */
+
+.agent-gate {
+  font-family: var(--system);
+  font-size: 13px;
+  line-height: 1.38;
+  letter-spacing: -0.005em;
+  max-width: 420px;
+  padding: 16px;
+  border-radius: 16px;
+  border: 0.5px solid var(--card-rule);
+  background: var(--card-bg);
+  backdrop-filter: blur(30px) saturate(180%);
+  box-shadow: var(--card-shadow);
+  color: var(--card-ink);
+}
+
+.agent-gate__title {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Blue is for the two navigational controls, and nothing else. */
+.agent-gate__dismiss,
+.agent-gate__reveal-hint {
+  color: var(--blue);
+  text-decoration: none;
+}
+
+.agent-gate__note[data-tone='alarm'] {
+  color: var(--card-alarm);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.agent-gate__note[data-tone='caution'] {
+  color: var(--card-caution);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+/* Bold and left aligned at the decision moment. */
+.agent-gate__consequence {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Concentric: the card is 16, this sits 8 in, so it is 8. */
+.agent-gate__revealed {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-left: 0;
+  border-radius: 8px;
+  background: var(--card-inset);
+}
+
+.agent-gate__detail {
+  color: var(--card-detail);
+  font-size: 11.5px;
+}
+
+/* Exact capsules: 28px tall, 14px radius. */
+.agent-gate__approve,
+.agent-gate__approve-one,
+.agent-gate__deny,
+.agent-gate__hold {
+  height: 28px;
+  padding: 0 14px;
+  border-radius: 14px;
+  font-size: 13px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+}
+
+.agent-gate__approve {
+  background: var(--card-fill);
+  border: 0;
+  color: var(--card-ink);
+  font-weight: 600;
+}
+
+.agent-gate__deny {
+  background: var(--card-fill-quiet);
+  border: 0;
+  color: var(--card-ink);
+}
+
+.agent-gate__approve:hover,
+.agent-gate__deny:hover {
+  background: var(--card-fill-hover);
+}
+
+.agent-gate__hold,
+.agent-gate__approve-one {
+  background: transparent;
+  border: 1px solid rgba(255, 69, 58, 0.6);
+  color: var(--red);
+}
+
+.agent-gate__hold-fill {
+  background: rgba(255, 69, 58, 0.28);
+}
+
+.agent-gate__dismiss {
+  font-size: 12px;
+}
+
+/* The strip and the trail, same surface treatment. */
+.agent-strip,
+.agent-trail {
+  font-family: var(--system);
+  font-size: 13px;
+}
+
+.agent-strip__name {
+  font-family: var(--mono);
+  font-size: 12px;
+}
+
+.agent-trail__detail,
+.agent-strip__elapsed,
+.agent-trail__at {
+  font-family: var(--mono);
+}
+
+
+/* ===== this exploration only ===== */
+/* Chrome for the exploration itself. Nothing here goes near the component. */
+body { margin: 0; background: var(--term-bg); color: var(--ink); font-family: var(--mono); }
+.wrap { max-width: 1180px; margin: 0 auto; padding: 48px 28px 100px; }
+
+.ex-head { padding-bottom: 8px; }
+.ex-kicker { margin: 0 0 20px; font-size: 11px; letter-spacing: .09em; text-transform: uppercase; color: var(--dim); }
+.ex-head h1 { margin: 0; font-family: var(--system); font-size: 27px; font-weight: 600; letter-spacing: -.02em; }
+.ex-lede { margin: 12px 0 0; font-family: var(--system); font-size: 15px; line-height: 1.55; color: var(--mid); max-width: 62ch; }
+
+.ex { margin-top: 68px; padding-top: 30px; border-top: .5px solid var(--term-rule); }
+.ex-num { margin: 0 0 8px; font-size: 11px; letter-spacing: .09em; text-transform: uppercase; color: var(--green); }
+.ex h2 { margin: 0; font-family: var(--system); font-size: 21px; font-weight: 600; letter-spacing: -.015em; }
+.ex-note { margin: 10px 0 0; font-family: var(--system); font-size: 14.5px; line-height: 1.55; color: var(--mid); max-width: 66ch; }
+.ex-cap { margin: 0 0 12px; font-size: 12px; color: var(--dim); }
+.ex-cap--sep { margin-top: 44px; }
+
+.ex-row { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 30px; }
+.ex-row--one { grid-template-columns: 1fr; }
+.ex-stage { padding: 4px 0; }
+
+/* A1, the tag */
+.tagwrap { position: relative; display: inline-block; }
+.livetag {
+  position: absolute; top: -11px; left: 14px; z-index: 3;
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 22px; padding: 0 10px; border-radius: 11px;
+  background: var(--term-bg); border: .5px solid var(--term-panel-rule);
+  font-size: 11px; letter-spacing: .02em; color: var(--mid);
+}
+.livetag--do { color: var(--ink); border-color: var(--mid); }
+.livedot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: breathe 2s ease-in-out infinite; }
+@keyframes breathe { 0%, 100% { opacity: 1 } 50% { opacity: .35 } }
+@media (prefers-reduced-motion: reduce) { .livedot { animation: none } }
+
+/* A2, the instruction */
+.invite {
+  margin: 0 0 14px; display: flex; align-items: baseline; gap: 9px;
+  font-family: var(--system); font-size: 14.5px; color: var(--ink);
+}
+.invite__arrow { color: var(--green); font-size: 10px; position: relative; top: -1px; }
+
+/* B, the filmstrip */
+.strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; margin-top: 30px; align-items: stretch; }
+/* Column flex so every stage grows to the tallest, which keeps the four
+   captions on one line instead of stepping. */
+.strip__frame { margin: 0; display: flex; flex-direction: column; }
+.strip__stage {
+  padding: 16px 12px; border: .5px solid var(--term-rule); border-radius: 12px;
+  background: var(--term-chrome); overflow: hidden;
+}
+/* One request per frame, so nothing needs scaling and the part that differs
+   between the four is never the part that gets cut off. */
+.strip__stage { display: flex; align-items: flex-start; flex: 1; }
+.strip__stage .agent-gate { width: 100%; max-width: none; }
+.strip__frame figcaption { margin-top: 12px; font-family: var(--system); font-size: 12.5px; line-height: 1.5; color: var(--mid); }
+.strip__frame figcaption b { color: var(--ink); font-weight: 600; }
+
+/* C, in context */
+.ctx { margin-top: 30px; }
+.ctx__chrome { border: .5px solid var(--term-rule); border-radius: 14px; overflow: hidden; background: var(--term-chrome); }
+.ctx__bar { display: flex; align-items: center; gap: 7px; padding: 10px 14px; border-bottom: .5px solid var(--term-rule); }
+.ctx__dot { width: 9px; height: 9px; border-radius: 50%; background: var(--term-panel-rule); }
+.ctx__name { margin-left: 10px; font-size: 11.5px; color: var(--dim); }
+.ctx__body { display: flex; gap: 0; }
+.ctx__side { width: 190px; flex: none; padding: 16px 14px; border-right: .5px solid var(--term-rule); }
+.ctx__q { margin: 0 0 10px; font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--dim); }
+.ctx__row { margin: 0 0 7px; font-size: 12px; color: var(--mid); }
+.ctx__row--on { color: var(--ink); }
+.ctx__row b { color: var(--ink); }
+.ctx__main { padding: 20px 22px 24px; flex: 1; }
+.ctx__msg { margin: 0 0 18px; font-family: var(--system); font-size: 14px; line-height: 1.55; color: var(--mid); max-width: 54ch; }
+
+.ex-empty { margin: 10px 0 0; font-family: var(--system); font-size: 13px; color: var(--card-detail); }
+.ex-again {
+  margin-top: 12px; font: inherit; font-size: 12px; padding: 5px 13px;
+  border-radius: 999px; border: .5px solid var(--term-panel-rule);
+  background: transparent; color: var(--mid); cursor: pointer;
+}
+.ex-foot { margin-top: 70px; padding-top: 20px; border-top: .5px solid var(--term-rule); }
+.ex-foot p { margin: 0; font-family: var(--system); font-size: 13.5px; color: var(--dim); }
+
+@media (max-width: 900px) {
+  .ex-row { grid-template-columns: 1fr; }
+  .strip { grid-template-columns: 1fr 1fr; }
+  .ctx__side { display: none; }
+}
+
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+<header class="ex-head">
+  <p class="ex-kicker">process, not shipped</p>
+  <h1>Three ways to make the demo look touchable</h1>
+  <p class="ex-lede">
+    Every gate on this page is live. The CSS is the real component stylesheet and
+    the real page dressing, inlined, so what you see here is what the page would
+    look like. Click things. Pick one, or pick parts of several.
+  </p>
+</header>
+
+<!-- ============ OPTION A ============ -->
+<section class="ex">
+  <p class="ex-num">Option A</p>
+  <h2>The invitation, said out loud</h2>
+  <p class="ex-note">
+    Three strengths of the same idea. The problem today is that the instruction
+    exists but is set as body prose, so it reads as description.
+  </p>
+
+  <div class="ex-row">
+    <div class="ex-cell">
+      <p class="ex-cap">A1. A tag on the card</p>
+      <div class="ex-stage">
+        <div class="tagwrap">
+          <span class="livetag"><span class="livedot"></span>Try me</span>
+          <div data-gate="a1"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ex-cell">
+      <p class="ex-cap">A2. The instruction, restyled</p>
+      <div class="ex-stage">
+        <p class="invite"><span class="invite__arrow">&#9654;</span>Clear all three in one press, then try the two below it.</p>
+        <div data-gate="a2"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ex-row ex-row--one">
+    <div class="ex-cell">
+      <p class="ex-cap">A3. Both, and the tag says what to do rather than what it is</p>
+      <div class="ex-stage">
+        <p class="invite"><span class="invite__arrow">&#9654;</span>Clear all three in one press, then try the two below it.</p>
+        <div class="tagwrap">
+          <span class="livetag livetag--do"><span class="livedot"></span>Approve me</span>
+          <div data-gate="a3"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ OPTION B ============ -->
+<section class="ex">
+  <p class="ex-num">Option B</p>
+  <h2>The filmstrip</h2>
+  <p class="ex-note">
+    The same gate at four moments, side by side, so the whole interaction is
+    legible without anyone touching it. This is the one you could not picture.
+    These four are frozen on purpose. The live one sits underneath.
+  </p>
+
+  <div class="strip">
+    <figure class="strip__frame">
+      <div class="strip__stage"><div data-gate="b1" data-set="single" data-frozen="1"></div></div>
+      <figcaption><b>1. Waiting.</b> No approve button exists in the page at all. Only a way to open it.</figcaption>
+    </figure>
+    <figure class="strip__frame">
+      <div class="strip__stage"><div data-gate="b2" data-set="single" data-frozen="1" data-open="charge"></div></div>
+      <figcaption><b>2. Opened.</b> The approve control only exists once you have opened it and read what it does.</figcaption>
+    </figure>
+    <figure class="strip__frame">
+      <div class="strip__stage"><div data-gate="b3" data-set="single" data-frozen="1" data-open="charge" data-fill="0.55"></div></div>
+      <figcaption><b>3. Holding.</b> 1.2 seconds. Let go early and it snaps back and nothing happens.</figcaption>
+    </figure>
+    <figure class="strip__frame">
+      <div class="strip__stage"><div data-gate="b4" data-set="single" data-frozen="1" data-answered="1"></div></div>
+      <figcaption><b>4. Answered.</b> Gone, because your app took it away. The gate never reports an outcome it does not own.</figcaption>
+    </figure>
+  </div>
+
+  <p class="ex-cap ex-cap--sep">And the live one underneath</p>
+  <div class="ex-stage"><div data-gate="b5"></div></div>
+</section>
+
+<!-- ============ OPTION C ============ -->
+<section class="ex">
+  <p class="ex-num">Option C</p>
+  <h2>In context, and the scenario replaces the tabs</h2>
+  <p class="ex-note">
+    No chips, no caption. The surrounding product says what the situation is, so
+    the scenario is shown rather than labelled. Three products, three gates, all
+    live.
+  </p>
+
+  <div class="ctx">
+    <div class="ctx__chrome">
+      <div class="ctx__bar"><span class="ctx__dot"></span><span class="ctx__dot"></span><span class="ctx__dot"></span><span class="ctx__name">Support &#183; refund queue</span></div>
+      <div class="ctx__body">
+        <div class="ctx__side">
+          <p class="ctx__q">Queue</p>
+          <p class="ctx__row ctx__row--on">#4473 &nbsp;<b>$240</b></p>
+          <p class="ctx__row">#4474 &nbsp;$18</p>
+          <p class="ctx__row">#4475 &nbsp;$95</p>
+        </div>
+        <div class="ctx__main">
+          <p class="ctx__msg">Customer says the plan renewed after they cancelled. I checked the logs and the cancellation did not go through.</p>
+          <div data-gate="c1"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ctx">
+    <div class="ctx__chrome">
+      <div class="ctx__bar"><span class="ctx__dot"></span><span class="ctx__dot"></span><span class="ctx__dot"></span><span class="ctx__name">Lifecycle &#183; launch campaign</span></div>
+      <div class="ctx__body">
+        <div class="ctx__main ctx__main--wide">
+          <p class="ctx__msg">Draft is ready. Segment is every customer on the annual plan, 412 people.</p>
+          <div data-gate="c2"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="ex-foot">
+  <p>Mix and match. A1 or A3 can sit on top of B or C. B and C are the ones that actually compete.</p>
+</footer>
+
+    </div>
+    <script>
+/* A working ApprovalGate in plain JS, built from the component's real markup
+   and driven by the component's real stylesheet, which is inlined above. This
+   file exists so the options can be clicked without a build step. It is an
+   exploration, not the component. */
+
+const SETS = {
+  standard: {
+    safe: [
+      ['draft', 'Drafts replies to 12 support tickets', 'saved as drafts, nothing sent'],
+      ['test', 'Runs the test suite', 'npm test'],
+      ['label', 'Tags 40 leads as cold in the CRM', 'last contacted over 90 days ago'],
+    ],
+    held: [
+      ['charge', 'Charges $200 to the card on file', 'annual plan, renews automatically'],
+      ['email', 'Sends the launch email to 412 customers', 'cannot be recalled once it is sent'],
+    ],
+  },
+  refund: {
+    safe: [['read', 'Reads the order and the refund policy', 'GET /orders/4473']],
+    held: [['refund', 'Refunds $240 to the customer', 'outside the 30 day window']],
+  },
+  send: {
+    safe: [['draft', 'Drafts the announcement', 'saved as a draft, nothing sent']],
+    held: [['send', 'Sends it to 412 customers', 'cannot be recalled once it is sent']],
+  },
+  // One request, for the filmstrip. Four scaled down copies of the whole gate
+  // hid the only part that differs between the frames, which is the bottom.
+  single: {
+    safe: [],
+    held: [['charge', 'Charges $200 to the card on file', 'annual plan, renews automatically']],
+  },
+}
+
+const el = (tag, cls, text) => {
+  const n = document.createElement(tag)
+  if (cls) n.className = cls
+  if (text != null) n.textContent = text
+  return n
+}
+
+function render(host, opts) {
+  const set = SETS[opts.set]
+  const state = opts.state
+  host.textContent = ''
+
+  const gate = el('section', 'agent-gate')
+  gate.setAttribute('aria-label', 'Waiting for you')
+
+  const head = el('header', 'agent-gate__head')
+  head.append(el('p', 'agent-gate__title', 'Waiting for you'))
+  const dismiss = el('button', 'agent-gate__dismiss', 'Not now')
+  dismiss.type = 'button'
+  head.append(dismiss)
+  gate.append(head)
+
+  const safe = set.safe.filter((r) => !state.gone.includes(r[0]))
+  const held = set.held.filter((r) => !state.gone.includes(r[0]))
+
+  if (safe.length) {
+    const group = el('div', 'agent-gate__group')
+    const list = el('ul', 'agent-gate__list')
+    safe.forEach(([id, consequence, detail]) => {
+      const li = el('li', 'agent-gate__item')
+      li.dataset.reversible = 'true'
+      li.append(el('span', 'agent-gate__consequence', consequence))
+      li.append(el('code', 'agent-gate__detail', detail))
+      list.append(li)
+    })
+    group.append(list)
+    const actions = el('div', 'agent-gate__actions')
+    const approve = el('button', 'agent-gate__approve',
+      safe.length === 1 ? 'Approve' : 'Approve all ' + safe.length)
+    approve.type = 'button'
+    approve.onclick = () => {
+      if (opts.frozen) return
+      state.gone.push(...safe.map((r) => r[0]))
+      render(host, opts)
+    }
+    const deny = el('button', 'agent-gate__deny', 'Deny')
+    deny.type = 'button'
+    deny.onclick = () => {
+      if (opts.frozen) return
+      state.gone.push(...safe.map((r) => r[0]))
+      render(host, opts)
+    }
+    actions.append(approve, deny)
+    group.append(actions)
+    gate.append(group)
+  }
+
+  if (held.length) {
+    const group = el('div', 'agent-gate__group agent-gate__group--destructive')
+    const note = el('p', 'agent-gate__note',
+      held.length === 1
+        ? 'This cannot be undone. Open it to answer.'
+        : 'These cannot be undone. Each one is answered on its own.')
+    note.dataset.tone = 'alarm'
+    group.append(note)
+
+    const list = el('ul', 'agent-gate__list')
+    held.forEach(([id, consequence, detail]) => {
+      const li = el('li', 'agent-gate__item')
+      li.dataset.reversible = 'false'
+      const open = state.open === id
+
+      const reveal = el('button', 'agent-gate__reveal')
+      reveal.type = 'button'
+      reveal.setAttribute('aria-expanded', open ? 'true' : 'false')
+      reveal.append(el('span', 'agent-gate__consequence', consequence))
+      reveal.append(el('span', 'agent-gate__reveal-hint', open ? 'Close' : 'Review'))
+      reveal.onclick = () => {
+        if (opts.frozen) return
+        state.open = open ? null : id
+        render(host, opts)
+      }
+      li.append(reveal)
+
+      if (open) {
+        const revealed = el('div', 'agent-gate__revealed')
+        revealed.append(el('code', 'agent-gate__detail', detail))
+        const actions = el('div', 'agent-gate__actions')
+
+        const hold = el('button', 'agent-gate__hold')
+        hold.type = 'button'
+        const fill = el('span', 'agent-gate__hold-fill')
+        fill.setAttribute('aria-hidden', 'true')
+        hold.append(fill, el('span', 'agent-gate__hold-label', 'Hold to approve'))
+
+        if (opts.fill != null) {
+          // Frozen mid hold. The transition is switched off so the bar simply
+          // sits where it was put.
+          fill.style.transition = 'none'
+          fill.style.clipPath = 'inset(0 ' + Math.round((1 - opts.fill) * 100) + '% 0 0)'
+        } else if (!opts.frozen) {
+          let pressing = false
+          const release = () => { pressing = false; hold.removeAttribute('data-pressing') }
+          hold.onpointerdown = (e) => {
+            if (e.button !== 0) return
+            try { hold.setPointerCapture(e.pointerId) } catch (_) {}
+            pressing = true
+            hold.dataset.pressing = 'true'
+          }
+          hold.onpointerup = release
+          hold.onpointercancel = release
+          hold.oncontextmenu = (e) => e.preventDefault()
+          hold.onkeydown = (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault()
+              state.gone.push(id); state.open = null; render(host, opts)
+            }
+          }
+          fill.ontransitionend = (e) => {
+            if (e.propertyName === 'clip-path' && pressing) {
+              release()
+              state.gone.push(id); state.open = null; render(host, opts)
+            }
+          }
+        }
+
+        const deny = el('button', 'agent-gate__deny', 'Deny')
+        deny.type = 'button'
+        deny.onclick = () => {
+          if (opts.frozen) return
+          state.gone.push(id); state.open = null; render(host, opts)
+        }
+        actions.append(hold, deny)
+        revealed.append(actions)
+        li.append(revealed)
+      }
+      list.append(li)
+    })
+    group.append(list)
+    gate.append(group)
+  }
+
+  if (!safe.length && !held.length) {
+    const done = el('p', 'ex-empty', 'Nothing left waiting.')
+    gate.append(done)
+    if (!opts.frozen) {
+      const again = el('button', 'ex-again', 'Reset')
+      again.type = 'button'
+      again.onclick = () => { state.gone = []; state.open = null; render(host, opts) }
+      gate.append(again)
+    }
+  }
+
+  host.append(gate)
+}
+
+const SETFOR = { c1: 'refund', c2: 'send' }
+
+document.querySelectorAll('[data-gate]').forEach((host) => {
+  const key = host.dataset.gate
+  const frozen = host.dataset.frozen === '1'
+  const opts = {
+    set: host.dataset.set || SETFOR[key] || 'standard',
+    frozen,
+    fill: host.dataset.fill ? parseFloat(host.dataset.fill) : null,
+    state: {
+      gone: host.dataset.answered === '1' ? ['charge'] : [],
+      open: host.dataset.open || null,
+    },
+  }
+  render(host, opts)
+})
+
+    </script>
+  </body>
+</html>
