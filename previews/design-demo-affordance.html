@@ -4,13 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>agent-indicator, demo affordance options</title>
-    <!--
-      EXPLORATION. Not shipped, not linked from the site.
-      Open it by double clicking the file. Everything is inlined, so there is no
-      server and no build step, and the styles work on load.
-      The stylesheets below are pasted verbatim from source. Regenerate rather
-      than hand edit, or this drifts the way previews/hold-to-approve.html did.
-    -->
+    <!-- EXPLORATION. Not shipped. Everything inlined, so the styles work on load.
+         Stylesheets pasted verbatim from source; regenerate rather than hand edit. -->
     <style>
 /* The docs site.
  *
@@ -791,6 +786,18 @@ body { margin: 0; background: var(--term-bg); color: var(--ink); font-family: va
       <div class="ex-stage"><div data-gate="d4" data-note="none"></div></div>
     </div>
   </div>
+
+  <p class="ex-cap ex-cap--sep">The last word, two ways</p>
+  <div class="ex-row">
+    <div class="ex-cell">
+      <p class="ex-cap">D5. Review to answer</p>
+      <div class="ex-stage"><div data-gate="d5" data-note="quiet" data-verb="answer"></div></div>
+    </div>
+    <div class="ex-cell">
+      <p class="ex-cap">D6. Review to approve</p>
+      <div class="ex-stage"><div data-gate="d6" data-note="quiet" data-verb="approve"></div></div>
+    </div>
+  </div>
 </section>
 
 <!-- ============ OPTION E ============ -->
@@ -972,9 +979,10 @@ function render(host, opts) {
     const loud = held.length === 1
       ? 'This cannot be undone. Open it to answer.'
       : 'These cannot be undone. Each one is answered on its own.'
+    const verb = opts.quietVerb || 'answer'
     const quiet = held.length === 1
-      ? 'Cannot be undone. Open it to answer.'
-      : 'Cannot be undone. Open each to answer.'
+      ? 'Cannot be undone. Review to ' + verb + '.'
+      : 'Cannot be undone. Review to ' + verb + '.'
 
     if (style === 'alarm') {
       const note = el('p', 'agent-gate__note', loud)
@@ -1097,6 +1105,7 @@ document.querySelectorAll('[data-gate]').forEach((host) => {
     note: host.dataset.note || 'alarm',
     dismiss: host.dataset.dismiss || 'notnow',
     collapsedCopy: host.dataset.copy || 'both',
+    quietVerb: host.dataset.verb || 'answer',
     frozen,
     fill: host.dataset.fill ? parseFloat(host.dataset.fill) : null,
     state: {
