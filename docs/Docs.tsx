@@ -170,7 +170,7 @@ export function Docs() {
           <dl className="contents">
             <div className="contents__row">
               <dt>ApprovalGate</dt>
-              <dd>Asks for a decision without asking five times.</dd>
+              <dd>Asks for a decision without becoming a toll booth.</dd>
             </div>
             <div className="contents__row">
               <dt>StatusIndicator</dt>
