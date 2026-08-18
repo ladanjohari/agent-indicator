@@ -558,10 +558,10 @@ body { margin: 0; background: var(--term-bg); color: var(--ink); font-family: va
 .invite__arrow { color: var(--green); font-size: 10px; position: relative; top: -1px; }
 
 /* B, the filmstrip */
-.strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; margin-top: 30px; align-items: stretch; }
+.strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; margin-top: 30px; align-items: start; }
 /* Column flex so every stage grows to the tallest, which keeps the four
    captions on one line instead of stepping. */
-.strip__frame { margin: 0; display: flex; flex-direction: column; }
+.strip__frame { margin: 0; }
 .strip__stage {
   padding: 16px 12px; border: .5px solid var(--term-rule); border-radius: 12px;
   background: var(--term-chrome); overflow: hidden;
@@ -572,11 +572,13 @@ body { margin: 0; background: var(--term-bg); color: var(--ink); font-family: va
    The card is pinned to one height across all four frames. In a real app it
    grows when you open a request; here the four are being compared, and a card
    that changes size between frames reads as four different components. */
-.strip__stage { display: block; flex: 1; }
-.strip__stage .agent-gate {
-  width: 100%; max-width: none; min-height: 288px;
-  display: flex; flex-direction: column;
-}
+.strip__stage { display: block; height: 320px; }
+.strip__stage .agent-gate { width: 100%; max-width: none; }
+/* Frames 1 and 4 are both closed states, so they match each other. Frames 2 and
+   3 are both open, and are naturally the same. Padding all four to the tallest
+   left two cards mostly empty. */
+.strip__frame:nth-child(1) .agent-gate,
+.strip__frame:nth-child(4) .agent-gate { min-height: 144px; }
 .strip__frame figcaption { margin-top: 12px; min-height: 3.1em; font-family: var(--system); font-size: 12.5px; line-height: 1.5; color: var(--mid); }
 .strip__frame figcaption b { color: var(--ink); font-weight: 600; }
 
@@ -613,6 +615,14 @@ body { margin: 0; background: var(--term-bg); color: var(--ink); font-family: va
   .strip { grid-template-columns: 1fr 1fr; }
   .ctx__side { display: none; }
 }
+
+/* D and E */
+.ex-note-quiet { color: var(--card-detail) !important; font-weight: 500; }
+.ex-chev { font-size: 11px; line-height: 1; padding: 2px 6px; }
+.ex-collapsed {
+  margin: 0; font-family: var(--system); font-size: 12.5px; color: var(--card-detail);
+}
+.ex-collapsed[data-tone='alarm'] { color: var(--card-alarm); }
 
     </style>
   </head>
@@ -748,6 +758,61 @@ body { margin: 0; background: var(--term-bg); color: var(--ink); font-family: va
   </div>
 </section>
 
+<!-- ============ OPTION D ============ -->
+<section class="ex">
+  <p class="ex-num">Option D</p>
+  <h2>The warning line, four ways</h2>
+  <p class="ex-note">
+    Its job is real: the reason those rows have no approve button is invisible,
+    and something has to say why. The question is whether it has to shout while
+    nothing is happening. Open a request in each and watch what changes.
+  </p>
+
+  <div class="ex-row">
+    <div class="ex-cell">
+      <p class="ex-cap">D1. As it is now, red at rest</p>
+      <div class="ex-stage"><div data-gate="d1" data-note="alarm"></div></div>
+    </div>
+    <div class="ex-cell">
+      <p class="ex-cap">D2. Quiet at rest, the red arrives with the hold</p>
+      <div class="ex-stage"><div data-gate="d2" data-note="quiet"></div></div>
+    </div>
+  </div>
+
+  <div class="ex-row">
+    <div class="ex-cell">
+      <p class="ex-cap">D3. Nothing until a request is opened</p>
+      <div class="ex-stage"><div data-gate="d3" data-note="onopen"></div></div>
+    </div>
+    <div class="ex-cell">
+      <p class="ex-cap">D4. No line at all</p>
+      <div class="ex-stage"><div data-gate="d4" data-note="none"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ OPTION E ============ -->
+<section class="ex">
+  <p class="ex-num">Option E</p>
+  <h2>Not now, or a chevron</h2>
+  <p class="ex-note">
+    Press the control in each header. E1 puts the gate away and tells you it
+    decided nothing. E2 collapses to a line that keeps saying so, and can be
+    opened again.
+  </p>
+
+  <div class="ex-row">
+    <div class="ex-cell">
+      <p class="ex-cap">E1. Not now</p>
+      <div class="ex-stage"><div data-gate="e1"></div></div>
+    </div>
+    <div class="ex-cell">
+      <p class="ex-cap">E2. A chevron that collapses to a waiting line</p>
+      <div class="ex-stage"><div data-gate="e2" data-dismiss="collapse"></div></div>
+    </div>
+  </div>
+</section>
+
 <footer class="ex-foot">
   <p>Mix and match. A1 or A3 can sit on top of B or C. B and C are the ones that actually compete.</p>
   <p class="ex-foot-note"><b>Not now</b> is the dismiss control. It is optional: pass <code>onDismiss</code> and it appears, leave it out and there is no header control at all. Pressing it here logs what it did, which is nothing. That is the point of it.</p>
@@ -805,20 +870,43 @@ function render(host, opts) {
 
   const head = el('header', 'agent-gate__head')
   head.append(el('p', 'agent-gate__title', 'Waiting for you'))
-  const dismiss = el('button', 'agent-gate__dismiss', 'Not now')
-  dismiss.type = 'button'
-  dismiss.onclick = () => {
-    if (opts.frozen) return
-    // Dismissing is not an answer. Everything stays exactly where it was, and
-    // saying so out loud is the only way anyone notices.
-    state.said = 'Put away. Nothing was decided, everything is still waiting.'
-    render(host, opts)
+  if (opts.dismiss === 'collapse') {
+    // A chevron rather than a verb. Collapsing is not an answer either, but it
+    // leaves a line behind that keeps saying so, which "Not now" does not.
+    const chev = el('button', 'agent-gate__dismiss ex-chev', state.collapsed ? '\u25BE' : '\u25B4')
+    chev.type = 'button'
+    chev.setAttribute('aria-expanded', state.collapsed ? 'false' : 'true')
+    chev.setAttribute('aria-label', state.collapsed ? 'Show the requests' : 'Collapse')
+    chev.onclick = () => { state.collapsed = !state.collapsed; render(host, opts) }
+    head.append(chev)
+  } else {
+    const dismiss = el('button', 'agent-gate__dismiss', 'Not now')
+    dismiss.type = 'button'
+    dismiss.onclick = () => {
+      if (opts.frozen) return
+      // Dismissing is not an answer. Everything stays exactly where it was, and
+      // saying so out loud is the only way anyone notices.
+      state.said = 'Put away. Nothing was decided, everything is still waiting.'
+      render(host, opts)
+    }
+    head.append(dismiss)
   }
-  head.append(dismiss)
   gate.append(head)
 
   const safe = set.safe.filter((r) => !state.gone.includes(r[0]))
   const held = set.held.filter((r) => !state.gone.includes(r[0]))
+
+  if (state.collapsed && (safe.length || held.length)) {
+    const bar = el('p', 'ex-collapsed')
+    const bits = []
+    if (safe.length) bits.push(safe.length + (safe.length === 1 ? ' request' : ' requests'))
+    if (held.length) bits.push(held.length + ' that cannot be undone')
+    bar.textContent = 'Still waiting: ' + bits.join(', ') + '.'
+    if (held.length) bar.dataset.tone = 'alarm'
+    gate.append(bar)
+    host.append(gate)
+    return
+  }
 
   if (safe.length) {
     const group = el('div', 'agent-gate__group')
@@ -855,12 +943,30 @@ function render(host, opts) {
 
   if (held.length) {
     const group = el('div', 'agent-gate__group agent-gate__group--destructive')
-    const note = el('p', 'agent-gate__note',
-      held.length === 1
-        ? 'This cannot be undone. Open it to answer.'
-        : 'These cannot be undone. Each one is answered on its own.')
-    note.dataset.tone = 'alarm'
-    group.append(note)
+    const style = opts.note || 'alarm'
+    const anyOpen = held.some((r) => state.open === r[0])
+    const loud = held.length === 1
+      ? 'This cannot be undone. Open it to answer.'
+      : 'These cannot be undone. Each one is answered on its own.'
+    const quiet = held.length === 1
+      ? 'Cannot be undone'
+      : 'Cannot be undone. Answered one at a time.'
+
+    if (style === 'alarm') {
+      const note = el('p', 'agent-gate__note', loud)
+      note.dataset.tone = 'alarm'
+      group.append(note)
+    } else if (style === 'quiet') {
+      // The absence of an approve button is invisible, so something has to say
+      // why these are separate. It does not have to shout while nothing is
+      // happening: the red arrives with the hold, at the moment of the decision.
+      const note = el('p', 'agent-gate__note ex-note-quiet', quiet)
+      group.append(note)
+    } else if (style === 'onopen' && anyOpen) {
+      const note = el('p', 'agent-gate__note', loud)
+      note.dataset.tone = 'alarm'
+      group.append(note)
+    }
 
     const list = el('ul', 'agent-gate__list')
     held.forEach(([id, consequence, detail]) => {
@@ -964,12 +1070,15 @@ document.querySelectorAll('[data-gate]').forEach((host) => {
   const frozen = host.dataset.frozen === '1'
   const opts = {
     set: host.dataset.set || SETFOR[key] || 'standard',
+    note: host.dataset.note || 'alarm',
+    dismiss: host.dataset.dismiss || 'notnow',
     frozen,
     fill: host.dataset.fill ? parseFloat(host.dataset.fill) : null,
     state: {
       gone: host.dataset.answered === '1' ? ['charge'] : [],
       open: host.dataset.open || null,
       said: null,
+      collapsed: host.dataset.collapsed === '1',
     },
   }
   render(host, opts)
