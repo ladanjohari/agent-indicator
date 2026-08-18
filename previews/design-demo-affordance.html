@@ -831,6 +831,58 @@ body { margin: 0; background: var(--term-bg); color: var(--ink); font-family: va
   </div>
 </section>
 
+<!-- ============ OPTION F ============ -->
+<section class="ex">
+  <p class="ex-num">Option F</p>
+  <h2>The last wording call</h2>
+  <p class="ex-note">
+    The thing this line has to do is say why <em>those two rows in particular</em>
+    are separated from the three above them. Read each version and ask whether it
+    could equally be describing the three at the top. If it could, it is not
+    doing the job.
+  </p>
+
+  <div class="ex-row">
+    <div class="ex-cell">
+      <p class="ex-cap">F1. Need your action</p>
+      <div class="ex-stage"><div data-gate="f1" data-note="quiet" data-lead="action"></div></div>
+    </div>
+    <div class="ex-cell">
+      <p class="ex-cap">F2. Cannot be undone</p>
+      <div class="ex-stage"><div data-gate="f2" data-note="quiet" data-lead="undone"></div></div>
+    </div>
+  </div>
+
+  <div class="ex-row">
+    <div class="ex-cell">
+      <p class="ex-cap">F3. Permanent</p>
+      <div class="ex-stage"><div data-gate="f3" data-note="quiet" data-lead="permanent"></div></div>
+    </div>
+    <div class="ex-cell">
+      <p class="ex-cap">F4. Need a closer look</p>
+      <div class="ex-stage"><div data-gate="f4" data-note="quiet" data-lead="look"></div></div>
+    </div>
+  </div>
+
+  <p class="ex-cap ex-cap--sep">And the collapsed line, same question</p>
+  <div class="ex-row">
+    <div class="ex-cell">
+      <p class="ex-cap">F5. 2 need your action</p>
+      <div class="ex-stage"><div data-gate="f5" data-note="quiet" data-dismiss="collapse" data-collapsed="1" data-tail="action"></div></div>
+    </div>
+    <div class="ex-cell">
+      <p class="ex-cap">F6. 2 cannot be undone</p>
+      <div class="ex-stage"><div data-gate="f6" data-note="quiet" data-dismiss="collapse" data-collapsed="1" data-tail="undone"></div></div>
+    </div>
+  </div>
+  <div class="ex-row ex-row--one">
+    <div class="ex-cell">
+      <p class="ex-cap">F7. 2 of them are permanent</p>
+      <div class="ex-stage"><div data-gate="f7" data-note="quiet" data-dismiss="collapse" data-collapsed="1" data-tail="permanent"></div></div>
+    </div>
+  </div>
+</section>
+
 <footer class="ex-foot">
   <p>Mix and match. A1 or A3 can sit on top of B or C. B and C are the ones that actually compete.</p>
   <p class="ex-foot-note"><b>Not now</b> is the dismiss control. It is optional: pass <code>onDismiss</code> and it appears, leave it out and there is no header control at all. Pressing it here logs what it did, which is nothing. That is the point of it.</p>
@@ -929,8 +981,13 @@ function render(host, opts) {
       // many is ordinary. How many are permanent is not.
       bar.textContent = ask
       if (held.length) {
+        const TAIL = {
+          undone: held.length + ' cannot be undone.',
+          action: held.length + ' need your action.',
+          permanent: held.length + ' of them are permanent.',
+        }
         const warn = el('span', 'ex-collapsed__warn',
-          ' ' + held.length + (held.length === 1 ? ' cannot' : ' cannot') + ' be undone.')
+          ' ' + TAIL[opts.collapsedTail || 'undone'])
         bar.append(warn)
       }
     }
@@ -980,9 +1037,13 @@ function render(host, opts) {
       ? 'This cannot be undone. Open it to answer.'
       : 'These cannot be undone. Each one is answered on its own.'
     const verb = opts.quietVerb || 'answer'
-    const quiet = held.length === 1
-      ? 'Cannot be undone. Review to ' + verb + '.'
-      : 'Cannot be undone. Review to ' + verb + '.'
+    const LEAD = {
+      undone: 'Cannot be undone',
+      action: 'Need your action',
+      permanent: 'Permanent',
+      look: 'Need a closer look',
+    }
+    const quiet = (LEAD[opts.quietLead || 'undone']) + '. Review to ' + verb + '.'
 
     if (style === 'alarm') {
       const note = el('p', 'agent-gate__note', loud)
@@ -1105,7 +1166,9 @@ document.querySelectorAll('[data-gate]').forEach((host) => {
     note: host.dataset.note || 'alarm',
     dismiss: host.dataset.dismiss || 'notnow',
     collapsedCopy: host.dataset.copy || 'both',
+    collapsedTail: host.dataset.tail || 'undone',
     quietVerb: host.dataset.verb || 'answer',
+    quietLead: host.dataset.lead || 'undone',
     frozen,
     fill: host.dataset.fill ? parseFloat(host.dataset.fill) : null,
     state: {
