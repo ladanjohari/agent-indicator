@@ -161,6 +161,45 @@ export function Docs() {
       </header>
 
       <main className="page">
+        {/* Four names before one of them gets a whole screen. Somebody has to be
+            able to tell what is in here in about ten seconds, and three demos of
+            the supporting cast at the top would bury the one people install it
+            for. Names and one line each, no demos. */}
+        <section id="contents" className="component">
+          <h2>Four components</h2>
+          <dl className="contents">
+            <div className="contents__row">
+              <dt>ApprovalGate</dt>
+              <dd>
+                Asks for a decision. Routine requests clear in one press, the
+                permanent ones are answered one at a time.
+              </dd>
+            </div>
+            <div className="contents__row">
+              <dt>StatusIndicator</dt>
+              <dd>
+                What one agent is doing right now, in six states. Only the
+                exceptions get colour.
+              </dd>
+            </div>
+            <div className="contents__row">
+              <dt>SessionStrip</dt>
+              <dd>
+                Many agents at once. The ones that need a person sit at the top
+                and are never folded away, and the calm ones collapse into a line
+                of counts.
+              </dd>
+            </div>
+            <div className="contents__row">
+              <dt>ActivityTrail</dt>
+              <dd>
+                What an agent did, for review. Repeated steps fold into one row,
+                questions and failures never do.
+              </dd>
+            </div>
+          </dl>
+        </section>
+
         {/* Who this is for, before why it is good. Somebody landing cold does
             not have an approval gate in their head yet, because the category is
             new enough that nobody does. */}

@@ -253,6 +253,41 @@ code {
   max-width: 56ch;
 }
 
+/* ---------- the contents ---------- */
+
+.contents {
+  margin: 22px 0 0;
+  display: grid;
+  gap: 14px;
+}
+
+.contents__row {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 18px;
+  align-items: baseline;
+}
+
+.contents dt {
+  font-size: 12.5px;
+  color: var(--ink);
+}
+
+.contents dd {
+  margin: 0;
+  font-family: var(--system);
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--mid);
+}
+
+@media (max-width: 620px) {
+  .contents__row {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+}
+
 /* ---------- the scenarios ---------- */
 
 .scenarios {
