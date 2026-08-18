@@ -70,16 +70,22 @@ function SdkExample() {
 
   return (
     <div className="gate-example">
-      <button
-        type="button"
-        className="gate-example__reset"
-        onClick={() => {
-          setDeclared((current) => !current)
-          reset()
-        }}
-      >
-        {declared ? 'Take the declaration away' : 'Declare which tools are reversible'}
-      </button>
+      <label className="switch">
+        <input
+          type="checkbox"
+          checked={declared}
+          onChange={(event) => {
+            setDeclared(event.target.checked)
+            reset()
+          }}
+        />
+        <span className="switch__track">
+          <span className="switch__knob" />
+        </span>
+        <span className="switch__label">
+          Declare <code>searchWeb</code> and <code>readOrder</code> as reversible
+        </span>
+      </label>
 
       <SdkApprovalGate
         messages={messages}
@@ -325,8 +331,8 @@ const { messages, addToolApprovalResponse } = useChat()
           <h2>One rule</h2>
           <p className="rule__line">Compress the ordinary. Never compress the exception.</p>
           <p>
-            Nine routine requests can collapse into one row. The one that deletes a
-            table cannot. Every decision in the library came from that sentence,
+            Nine routine requests can collapse into one row. The one that charges
+            a card cannot. Every decision in the library came from that sentence,
             and the state model behind it came from Session Indicator, a macOS app
             that watches real agent sessions.
           </p>

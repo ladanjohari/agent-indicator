@@ -16,8 +16,8 @@ import type { ApprovalRequest } from '../src'
 const REQUEST: ApprovalRequest[] = [
   {
     id: 'delete',
-    consequence: 'Deletes the legacy folder and everything in it',
-    detail: 'rm -rf legacy',
+    consequence: 'Charges $200 to the card on file',
+    detail: 'annual plan, renews automatically',
     reversible: false,
   },
 ]

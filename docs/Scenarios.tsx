@@ -90,6 +90,14 @@ export function Scenarios() {
 
   return (
     <div className="scenarios">
+      {/* The block was live and said nothing about it. One eyebrow to name what
+          it is, and the same arrow line the approval gate uses, so the page has
+          a single way of saying "do something here". */}
+      <p className="scenarios__eyebrow">Examples</p>
+      <p className="invite">
+        <span className="invite__arrow" aria-hidden="true">&#9654;</span>
+        Pick a situation, then answer the two requests in it.
+      </p>
       <div className="scenarios__picker" role="group" aria-label="Choose a situation">
         {SCENARIOS.map((s) => (
           <button

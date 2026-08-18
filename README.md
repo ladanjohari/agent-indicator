@@ -8,7 +8,7 @@ whether they actually read it first.
 
 React components for that moment. Works with Vercel's AI SDK out of the box.
 
-<img src="https://raw.githubusercontent.com/ladanjohari/agent-indicator/main/assets/hold-to-approve.gif" alt="An approval request that cannot be undone. A click starts the fill and it snaps straight back, doing nothing. Holding for 1.2 seconds fills it and approves." width="560" />
+<img src="https://raw.githubusercontent.com/ladanjohari/agent-indicator/main/assets/hold-to-approve.gif" alt="An approval request to charge a card, which cannot be undone. A press starts the fill and it snaps straight back, doing nothing. Holding for 1.2 seconds fills it and approves." width="560" />
 
 A click is the same motion that just cleared three safe requests, so an action
 that cannot be undone does not accept one. It is held for 1.2 seconds instead.
