@@ -1,6 +1,6 @@
 {
   "name": "agent-indicator",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "When an agent needs a person, this is the interface. React approval UI for when an agent spends money, sends messages or reaches private data. Works with Vercel's AI SDK out of the box.",
   "keywords": [
     "ai-sdk",
