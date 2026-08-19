@@ -52,12 +52,13 @@
       "import": "./dist/ai-sdk.js"
     },
     "./styles.css": "./dist/agent-indicator.css",
+    "./theme-macos.css": "./dist/theme-macos.css",
     "./package.json": "./package.json"
   },
   "scripts": {
     "dev": "vite",
     "dev:docs": "vite --config vite.docs.config.ts",
-    "build": "vite build && tsc -p tsconfig.build.json",
+    "build": "vite build && tsc -p tsconfig.build.json && cp src/theme-macos.css dist/theme-macos.css",
     "build:docs": "vite build --config vite.docs.config.ts",
     "typecheck": "tsc -b",
     "lint": "oxlint",

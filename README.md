@@ -28,10 +28,11 @@ turns into something people click without reading.
 
 ## Works with Vercel's AI SDK out of the box
 
-The AI SDK lets you mark a tool as needing approval, then hands your app an
-`approval-requested` tool part and no interface at all. Its own cookbook tells
-you to build the buttons yourself. `ApprovalGate` is that interface, and the
-adapter speaks the SDK's data shape:
+Vercel's AI SDK lets you mark a tool as needing approval, pauses, and hands your
+app an `approval-requested` tool part. The approve and deny interface is yours to
+build, as [their own cookbook](https://ai-sdk.dev/cookbook/next/human-in-the-loop)
+shows. `ApprovalGate` is that interface, and the adapter speaks the SDK's data
+shape:
 
 ```jsx
 import { ApprovalGate } from 'agent-indicator/ai-sdk'
@@ -42,9 +43,28 @@ const { messages, addToolApprovalResponse } = useChat()
 <ApprovalGate
   messages={messages}
   addToolApprovalResponse={addToolApprovalResponse}
-  reversible={{ searchWeb: true, readFile: true }}
+  reversible={{ searchWeb: true, readOrder: true }}
 />
 ```
+
+### The look is optional
+
+The package ships neutral on purpose. It declares no font, so it inherits yours,
+and it mixes its neutrals from your text colour, so it is correct in light and
+dark without being configured. That is the right default: a dark vibrancy panel
+landing in someone's light dashboard is not a good default, it is a bug.
+
+If you want the look from the documentation site, it is one more import:
+
+```js
+import 'agent-indicator/styles.css'
+import 'agent-indicator/theme-macos.css'
+```
+
+System font, vibrancy, exact capsules, concentric radii, and one accent colour
+doing one job. Every value in it is a custom property on the component rather
+than on `:root`, so nothing leaks into the rest of your app and you can override
+any single value after it.
 
 Approvals the SDK settled on its own never appear, answered ones drop out, and
 tools from an MCP server are handled like any other. There is **no dependency on
